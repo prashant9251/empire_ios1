@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="./../jsPDF.js"></script>
+    <title>Document</title>
+    <link rel="stylesheet" href="test.css">
+
+</head>
+<body>
+    
+    <div class="xyz">
+        1234567890
+    </div>
+    <button onclick="createPdf();" style=" font-size: 30px;">PDF</button>
+</body>
+<script>
+function createPdf(){
+    var doc=new jsPDF();
+    var html=document.querySelector('body');
+    doc.fromHTML(html,15,15,{width: 170},
+    function(){
+        var blob = doc.output('blob');
+        console.log(blob);
+        var reader = new FileReader();
+        reader.readAsDataURL(blob); 
+        reader.onloadend = function() {
+        var base64data = reader.result;                
+        console.log(base64data);
+        try {
+            window.flutter_inappwebview.callHandler("pdfConvert",  base64data).then(function (result) {
+                    // alert(text);
+                },
+                function (err) {
+                }
+            );
+            } catch (error) {}  
+            }
+          
+    });
+   //doc.save("output.pdf");
+}
+    
+</script>
+
+
+</html>

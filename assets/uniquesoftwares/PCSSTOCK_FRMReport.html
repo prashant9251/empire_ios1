@@ -1,0 +1,335 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=100, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="2.1.3/jquery.min.js"></script>
+    <script src="3.3.6/bootstrap.min.js"></script>
+    <link href="3.3.6/bootstrap.min.css" rel="stylesheet" />
+    <script src="js/jsGetUrlParams.js"></script>
+
+</head>
+
+
+</html>
+<script>
+    var url = window.location.href;
+    var MCNO = getUrlParams(url, "MCNO");
+    var MTYPE = getUrlParams(url, "MTYPE");
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+</script>
+<script src="js/localStorageSet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsStoreDatatoIndexeddb.js"></script>
+<script src="js/jsPopUpTblSetting.js"></script>
+<script src="js/jsoptionSeriesSelect.js"></script>
+<script src="js/jsoptionFirmSelect.js"></script>
+<script src="js/jsSearchfrm.js"></script>
+
+
+
+<html>
+
+<head>
+    <title>STOCK IN HOUSE</title>
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="css/stylePrint.css">
+    <link rel="stylesheet" href="css/styleAutoComplete.css">
+
+</head>
+
+<body>
+
+    <BR>
+
+
+    <div class="container" style="width: 100%;">
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <header class="card-header">
+                        <h2 class="card-title mt-2">Stock In House Form</h2>
+                    </header>
+                    <article class="card-body">
+                        <form action="PCSSTOCK_AJXREPORT.html" method="get" target="_blank" autocomplete="off" id="myForm">
+
+
+                            
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <h3>FIRM</h3>
+                                    <select class="form-control inputText" style="height: 40px;" id="FIRM" name="FIRM">
+                                    </select>
+                                </div>
+
+                                <div class="col form-group">
+                                    <h3>CLOTH TYPE</h3>
+                                    <select id="clothType" name="clothType" class="form-control inputText"
+                                        style="height: 40px;"></select>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <div class="">
+                                    <h3> QUALITY </h3><input class="form-control inputText" autocomplete="off"
+                                        onfocus="this.value=''" placeholder="SEARCH BY QUALITY" name="qualname"
+                                        id="qualname">
+                                    <br>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="">
+                                    <h3> MAIN SCREEN </h3>
+                                    <input class="form-control inputText" autocomplete="off"
+                                        onfocus="this.value=''" placeholder="SEARCH BY MAIN SCREEN" name="mainscreenname"
+                                        id="mainscreenname">
+                                        <input type="hidden" class="form-control inputText" autocomplete="off"
+                                        onfocus="this.value=''" placeholder="SEARCH BY MAIN SCREEN" name="mainscreencode"
+                                        id="mainscreencode">
+                                    <br>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="">
+                                    <h3>CATEGORY </h3><input class="form-control inputText" autocomplete="off"
+                                        onfocus="this.value=''" placeholder="SEARCH BY CATEGORY" name="category"
+                                        id="category">
+                                    <br>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="">
+                                    <h3>GODOWN </h3><input class="form-control inputText" autocomplete="off"
+                                        onfocus="this.value=''" placeholder="SEARCH BY GODOWN" name="godown"
+                                        id="godown">
+                                    <br>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <h3>FROM</h3>
+                                    <input type="date" class="form-control inputText" placeholder="SEARCH FROM DATE"
+                                        value="" name="search_FromDate" id="search_FromDate">
+                                </div>
+
+                                <div class="col form-group">
+                                    <h3>TO</h3>
+                                    <input type="date" class="form-control inputText" placeholder="SEARCH TO DATE"
+                                        value="" name="search_ToDate" id="search_ToDate">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="hidden" class="form-control " id="firm" name="firm" value=""
+                                    placeholder="hidden party code">
+                                <input type="hidden" class="form-control" id="qualcode" name="qualcode"
+                                    placeholder="hidden qual code">
+                                <input type="hidden" class="form-control" id="ntab" name="ntab" value="NTAB"
+                                    placeholder="hidden NTAB">
+                                <input type="hidden" class="form-control" id="mobileNo" name="mobileNo" value="">
+                                <input type="hidden" class="form-control" id="partyEmail" name="partyEmail" value="">
+                            </div>
+
+                            <div class="form-group" id="">
+                                <div style="width:50%;float:left;">
+                                    <h3>SUMMARY REPORT</h3>
+                                </div>
+                                <div style="width:50%;float:right;">
+                                    <input type="checkbox" class="form-control" name="hideAbleTr" id="hideAbleTr"
+                                        value="true" />
+                                </div>
+                                <br><br><br>
+                            </div>
+
+                            <div class="form-group">
+
+                                <input type="submit" name="submit" id="submit"
+                                    class="btn btn-primary btn-lg btn-block inputText" value="SUBMIT" id="submit"><br>
+                            </div>
+
+                        </form>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+</html>
+<script>
+    var QULData, QULClothTypeData;
+    var CATEGORY_LIST=[];
+    var CATEGORY_LIST_FLG=[];
+    var MAINSCREEN_ARR=[];
+    jsGetObjectByKey(DSN, "QUL", "").then(function (data) {
+        QULData = data;
+        ////console.log(JSON.stringify(data[0]));
+        QULClothTypeData = []; var checks = [];
+        var xClothType = document.getElementById("clothType");
+        var flgMainscreen=[];
+        MAINSCREEN_ARR=[];
+        for (var k = 0; k < data.length; k++) {
+            if (!checks[data[k].QT]) {
+                var option = document.createElement("option");
+                option.value = data[k].QT;
+                option.text = data[k].QT;
+                xClothType.add(option, xClothType[0]);
+                checks[data[k].QT] = true;
+            }
+            if(!CATEGORY_LIST_FLG[data[k].CT]){
+                var obj={};
+                obj["label"]=data[k].CT;
+                obj["value"]=data[k].CT;
+                CATEGORY_LIST.push(obj);
+                CATEGORY_LIST_FLG[data[k].CT]=true;
+            }
+
+            if(!flgMainscreen[data[k].MS]){
+                var nobj={};
+                nobj.label=data[k].MS;
+                nobj.value=data[k].MS;
+                MAINSCREEN_ARR.push(nobj);
+            }
+
+        }
+        //console.log(MAINSCREEN_ARR);
+        var option = document.createElement("option");
+        option.value = "";
+        option.text = "ALL";
+        xClothType.add(option, xClothType[0]);
+        xClothType.value = "";
+        //console.log(QULClothTypeData);
+        $("#qualname").keyup(function (e) {
+            if (e.which == 38 || e.which == 40 || e.which == 13) {
+                return;
+            } else {
+                var qual = $(this).val();
+                //alert(qual);
+                if (qual !== "") {
+                    if (QULData.length > 0) {
+                        //console.log("----" + qual);
+                        $("#qualname").autocomplete({
+                            minLength: 1,
+                            source: function (request, response) {
+                                var term = $.ui.autocomplete.escapeRegex(
+                                    request.term
+                                ),
+                                    startsWithMatcher = new RegExp("^" + term, "i"),
+                                    startsWith = $.grep(QULData, function (
+                                        value
+                                    ) {
+                                        return startsWithMatcher.test(
+                                            value.label || value.value || value
+                                        );
+                                    }),
+                                    containsMatcher = new RegExp(term, "i"),
+                                    contains = $.grep(QULData, function (value) {
+                                        return (
+                                            $.inArray(value, startsWith) < 0 &&
+                                            containsMatcher.test(
+                                                value.label || value.value || value
+                                            )
+                                        );
+                                    });
+
+                                response(startsWith.concat(contains));
+                            },
+                            select: function (event, ui) {
+                                event.preventDefault();
+                                $(this).val(ui.item.label);
+                                $("#qualcode").val(ui.item.value);
+                                $("#qualname").val(ui.item.label);
+                            },
+                        });
+                          }
+                }
+            }
+        });
+
+        
+
+        $("#mainscreenname").keyup(function (e) {
+            if (e.which == 38 || e.which == 40 || e.which == 13) {
+                return;
+            } else {
+                var qual = $(this).val();
+                //alert(qual);
+                if (qual !== "") {
+                    if (MAINSCREEN_ARR.length > 0) {
+                        //console.log("----" + qual);
+                        $("#mainscreenname").autocomplete({
+                            minLength: 1,
+                            source: function (request, response) {
+                                var term = $.ui.autocomplete.escapeRegex(
+                                    request.term
+                                ),
+                                    startsWithMatcher = new RegExp("^" + term, "i"),
+                                    startsWith = $.grep(MAINSCREEN_ARR, function (
+                                        value
+                                    ) {
+                                        return startsWithMatcher.test(
+                                            value.label || value.value || value
+                                        );
+                                    }),
+                                    containsMatcher = new RegExp(term, "i"),
+                                    contains = $.grep(MAINSCREEN_ARR, function (value) {
+                                        return (
+                                            $.inArray(value, startsWith) < 0 &&
+                                            containsMatcher.test(
+                                                value.label || value.value || value
+                                            )
+                                        );
+                                    });
+
+                                response(startsWith.concat(contains));
+                            },
+                            select: function (event, ui) {
+                                event.preventDefault();
+                                $(this).val(ui.item.label);
+                                $("#mainscreencode").val(ui.item.value);
+                                $("#mainscreenname").val(ui.item.label);
+                            },
+                        });
+                          }
+                }
+            }
+        });
+
+        $("#category").autocomplete({
+            minLength: 1,
+            source: CATEGORY_LIST
+        });  
+    });
+    function loadBarCode(barcode){
+        var categoryName= getCategoryByBarCodeSr(barcode);
+        if(categoryName=="")return;
+        $('#category').val(categoryName);
+        //document.getElementById("hideAbleTr").checked = true;
+        document.getElementsByClassName("btn btn-primary btn-lg btn-block inputText")[0].click()
+    }
+
+    function getCategoryByBarCodeSr(barcode){
+       var qualBarcodeList= QULData.filter(function(d){
+            return d.ISR==barcode;
+        })
+        if(qualBarcodeList.length>0){
+            return qualBarcodeList[0].CT;
+        }else{
+            showtoast("Invalid Barcode");
+            return "";
+        }
+    }
+    $(document).ready(function () {
+        SelectFirmOptions("FIRM");
+    });
+
+</script>

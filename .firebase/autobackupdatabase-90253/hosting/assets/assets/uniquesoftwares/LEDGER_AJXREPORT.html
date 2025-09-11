@@ -1,0 +1,155 @@
+<html>
+
+<head>
+    <title>LEDGER </title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.2/jquery.js"></script>
+    <script src="1.10.4/jquery-ui.js"></script>
+    <script src="js/jsGetUrlParams.js"></script>
+
+</head>
+<Style>
+    td {
+        max-width: 193px;
+        word-wrap: break-word;
+    }
+</Style>
+
+<body>
+    <div align="center" class="table-responsive overflow-hidden">
+        <table id="result" class="content-table">
+
+        </table>
+    </div>
+    <div style="display: none;" id="loader">
+        <div class="loader"></div>
+        <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+    </div>
+
+    <!-- <div class="footer pdfBtnHide" id="footer" style="display: none;">
+        <button class="btn btn-success btn-lg btn-block" onclick="filterLedgerSelected();">Load Selected</button>
+    </div> -->
+
+    <div class="footer pdfBtnHide" id="footer" style="display: none;width: 100%;">
+        <div style="width: 50%;display:inline;float: left;">
+            <button class="btn btn-lg btn-block" style="background-color: #f08827;color: white;"
+                onclick="filterLedgerSelected();">Load Selected</button>
+        </div>
+        <div style="width: 50%;display:inline;float: left;">
+            <button class="btn btn-lg btn-block" onclick="filterSelectedBulkPdfBill();"
+                style="background-color:#284a7a;color: white;">BULK PDF BILL</button>
+        </div>
+    </div>
+     
+  <div class="footer pdfBtnHide" id="footerSummery" style="width: 100%;">
+       
+  </div>
+</body>
+
+
+</html>
+<script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+</script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jsGetYearChange.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsopenSubReport.js"></script>
+<script src="js/jstoFixed.js"></script>
+<!-- <script src="js/jsLoadCallLEDGER.js"></script> -->
+<script src="js/jsLoadCallLEDGER_PARTY_WISE.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/filterSelected.js"></script>
+
+<script>
+    var Data;
+    var finalData;
+    var offset;
+    var isDataLoaded = false;
+    var finalLimit;
+    $(document).ready(function () {
+        $("#loader").addClass('has-loader');
+        load_data();
+    });
+    var tr = '';
+    var FIRM = getUrlParams(url, "FIRM");
+    var cno = '';
+    var EMP;
+    var partyname = getUrlParams(url, "partyname");
+    var partycode = getUrlParams(url, "partycode");
+    if(partyname=="" ){
+        partycode=""; 
+    }
+    var broker =  getUrlParams(url, "broker");
+    var CITY = '';
+    var haste = '';
+    var CrDrEntryType = getUrlParams(url, "CrDrEntryType");
+    var fromdate = getUrlParams(url, "search_FromDate");
+    var todate = getUrlParams(url, "search_ToDate");
+    // var CrntYearStartdate = getUrlParams(url, "CrntYearStartdate");
+
+    if (fromdate == '' || fromdate == null) {
+        if (CrntYearStartdate != '' || CrntYearStartdate != null) {
+            fromdate = DateRpl(CrntYearStartdate);
+        }
+    }
+    var DataCompmst;
+    document.title = "LEDGER " + partyname + " " + broker + " " + CITY;
+    var flagParty = [];
+    var PartyNameList = [];
+    function load_data() {
+
+        jsGetObjectByKey(DSN, "COMPMST", "").then(function (data) {
+            DataCompmst = data;
+            if (FIRM != '' && FIRM != null) {
+                for (var i = 0; i < DataCompmst.length; i++) {
+                    if (DataCompmst[i].FIRM == FIRM) {
+                        cno = DataCompmst[i].CNO;
+                    }
+                }
+            }
+            jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+                masterData = data;
+                try { AddHeaderTbl(); } catch (error) { }
+                jsGetObjectByKey(DSN, "LEDGER", "").then(function (data) {
+
+                    Data = data;
+                    if (this.cno != '' && this.cno != null) {
+                        Data = Data.filter(function (data) {
+                            return data.CNO == this.cno;
+                        })
+                    }
+                    if (partycode != '' && partycode != null) {
+                        Data = Data.filter(function (data) {
+                            return data.code == partycode;
+                        })
+                    } 
+                    if (broker != '' && broker != null) {
+                        Data = Data.filter(function (data) {
+                            return data.BCODE == broker;
+                        })
+                    }
+                    // if (partycode != '' && partycode != null) {
+                    //   Data = Data.filter(function (data) {
+                    //     return data.code.replace(/(\r\n|\n|\r)/gm, "") == partycode.replace(/(\r\n|\n|\r)/gm, "");
+                    //   })
+                    // }
+                    if (todate != '' && todate != null) {
+                        Data = Data.filter(function (data) {
+                            return new Date(DateRpl(data.DATE)).setHours(24, 0, 0, 0) <= new Date(DateRpl(todate)).setHours(24, 0, 0, 0);
+                        })
+                    }
+                    loadCall(Data);
+                });
+            })
+        })
+    }
+
+
+</script>
+<script src="js/jsHeaderTbl.js"></script>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:appcompat="http://schemas.android.com/apk/res-auto"
+
+    >
+    <item android:id="@+id/action_searchWebview"
+        android:title="SEARCH"
+        android:icon="@drawable/ic_baseline_search_24"
+        appcompat:actionViewClass="androidx.appcompat.widget.SearchView"
+        appcompat:showAsAction="ifRoom|withText" />
+<!--    <item android:id="@+id/action_Sync"-->
+<!--        android:title="SYNC"-->
+<!--        android:icon="@drawable/ic_baseline_sync_24"-->
+<!--        appcompat:showAsAction="ifRoom|withText" />-->
+    <item android:id="@+id/action_scanBarcode"
+        android:title="SCANE"
+        android:icon="@drawable/ic_baseline_qr_code_scanner_24"
+        appcompat:showAsAction="ifRoom|withText" />
+
+
+    <item
+        android:id="@+id/action_hideUnhide"
+        android:title="HIDE/UNHIDE"/>
+    <item
+        android:id="@+id/action_select"
+        android:title="SELECT"/>
+    <item
+        android:id="@+id/action_print"
+        android:title="PRINT SCREEN"/>
+    <item
+        android:id="@+id/action_viewPdfDownload"
+        android:title="VIEW PDF \&amp; DOWNLOAD "/>
+
+    <item
+        android:id="@+id/action_downloadExcel"
+        android:title="EXCEL DOWNLOAD "/>
+<!--    <item-->
+<!--        -->
+<!--        android:id="@+id/action_pdfGenerate"-->
+<!--        android:title="PDF GENERATE "/>-->
+    <item
+        android:id="@+id/action_troubleshoot"
+        android:title="TROUBLESHOOT"/>
+</menu>

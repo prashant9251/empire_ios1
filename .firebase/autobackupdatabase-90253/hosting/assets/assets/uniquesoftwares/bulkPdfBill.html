@@ -1,0 +1,169 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=100, user-scalable=no" />
+
+<script src="js/jsGetUrlParams.js"></script>
+
+<link rel="stylesheet" href="css/styleAutoComplete.css">
+<link rel="stylesheet" href="css/stylePrint.css">
+<link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<link href="1.10.4/jquery-ui.css" rel="stylesheet">
+<script src="1.10.2/jquery.js"></script>
+<script src="1.10.4/jquery-ui.js"></script>
+<script>
+    var url = window.location.href;
+    var MCNO = getUrlParams(url, "MCNO");
+    var MTYPE = getUrlParams(url, "MTYPE");
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+</script>
+<script src="js/localStorageSet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsStoreDatatoIndexeddb.js"></script>
+<script src="js/jsPopUpTblSetting.js"></script>
+<script src="js/jsoptionSeriesSelect.js"></script>
+<script src="js/jsoptionFirmSelect.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsSearchfrm.js"></script>
+
+<html>
+
+<head>
+    <title>Bulk Pdf Bill</title>
+
+</head>
+
+<body>
+
+    <div class="container" style="width: 100%;">
+
+        <!-- <div class="bgimg" align="center">
+  <div class="middle">
+    <h1>COMING SOON</h1>
+    <hr>
+  </div>
+  <div class="bottomleft">
+  </div>
+</div> -->
+        <hr>
+
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <header class="card-header">
+
+                        <h4 class="card-title mt-2">Bulk PDF BILL</h4>
+                    </header>
+                    <article class="card-body">
+                        <a style="color:blue;"> </a>
+                        <form action="Billpdf.php" method="get" target="_blank">
+                            <div class="form-group">
+                                FIRM
+                                <select class="form-control" onchange="setData();" id="FIRM" name="FIRM">
+
+                                </select>
+                            </div>
+                            <div class="col form-group" style="display: none;">
+                                <h3>TYPE</h3>
+                                <input type="text" required class="form-control inputText" onfocus="this.value='';setData();"
+                                    placeholder="REPORT TYPE" value="" name="ReportType" id="ReportType">
+                                <input type="hidden" class="form-control inputText" onfocus="this.value='';setData();"
+                                    placeholder="REPORT TYPE" value="" name="ReportATypeCode" id="ReportATypeCode">
+                                <input type="hidden" class="form-control inputText" onfocus="this.value='';setData();"
+                                    placeholder="REPORT TYPE" value="" name="ReportSeriesTypeCode"
+                                    id="ReportSeriesTypeCode">
+                                <input type="hidden" class="form-control inputText" onfocus="this.value='';setData();"
+                                    placeholder="REPORT TYPE" value="" name="ReportDOC_TYPECode"
+                                    id="ReportDOC_TYPECode">
+                            </div>
+                            <div class="form-row">
+
+                                <div class="col form-group">
+                                    FROM
+                                    <input type="date" class="form-control" value="" onchange="setData();"
+                                        id="search_FromDate" />
+                                </div> <!-- form-group end.// -->
+
+                                <div class="col form-group">
+                                    TO
+                                    <input type="date" class="form-control" onchange="setData();" id="search_ToDate" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                PARTY NAME<input class="form-control" onfocus="this.value='';setData();" autocomplete="off"
+                                    onchange="setData();" placeholder="SEARCH BY PARTY NAME" name="partyname"
+                                    id="partyname">
+                                <input type="hidden" class="form-control" onfocus="this.value='';setData();" autocomplete="off"
+                                    onchange="setData();" name="partycode" id="partycode">
+                                <input type="hidden" id="pdfBillType" value="BULK">
+                                <input type="hidden" class="form-control" id="mobileNo" name="mobileNo" value="">
+                            </div>
+                            <div class="form-group">
+                                BROKER<input class="form-control" onfocus="this.value='';setData();" autocomplete="off"
+                                    onchange="setData();" placeholder="SEARCH BY BROKER" name="broker" id="broker">
+                            </div>
+
+                            <div class="form-group">
+                                HASTE <input class="form-control" onfocus="this.value='';setData();" autocomplete="off"
+                                        onchange="setData();" name="haste" id="haste" placeholder="SEARCH BY HASTE">
+                            </div>
+                            <div class="form-group">
+                                BILL NO<input class="form-control" onfocus="this.value='';setData();" autocomplete="off"
+                                    onchange="setData();" placeholder="10,89,110,200" name="billNo" id="billNo">
+                            </div>
+                            <div class="form-group"> <a id="generatePDF" class="btn btn-primary btn-block"
+                                    name="generatePDF" target="_blank">Click Here For PDF</a>
+                        </form>
+
+                    </article>
+                    <div class="border-top card-body text-center"><a href=""></a></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+</body>
+<script>
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        document.getElementById('search_FromDate').value = getUrlParams(url, "CrntYearStartdate");
+        setSearchToDate("search_ToDate");
+        setData();
+        SelectFirmOptions("FIRM");
+
+    });
+
+    function setData() {
+        var billNo = $('#billNo').val();
+        //console.log((billNo.split(",")))
+        var mobileNo = $('#mobileNo').val();
+        var FIRM = $('#FIRM').val();
+        var search_FromDate = $('#search_FromDate').val();
+        var search_ToDate = $('#search_ToDate').val();
+        // var search_FromVNO = $('#search_FromVNO').val();
+        // var search_TOVNO = $('#search_TOVNO').val();
+        var partyname = $('#partyname').val();
+        var haste = $('#haste').val();
+        var broker = $('#broker').val();
+        var pdfBillType = $('#pdfBillType').val();
+        var setData = "FIRM=" + FIRM + "&";
+        setData += "search_FromDate=" + search_FromDate + "&";
+        setData += "search_ToDate=" + search_ToDate + "&";
+        // setData +="search_FromVNO="+search_FromVNO+"&";
+        // setData +="search_TOVNO="+search_TOVNO+"&";
+        setData += "partycode=" + encodeURIComponent(partyname) + "&";
+        setData += "partyname=" + encodeURIComponent(partyname) + "&";
+        setData += "broker=" + encodeURIComponent(broker) + "&";
+        setData += "haste=" + encodeURIComponent(haste) + "&";
+        setData += "PDFBILLTYPE=" + pdfBillType + "&";
+        setData += "mobileNo=" + mobileNo + "&";
+        setData += "billNos=" + billNo + "&";
+        document.getElementById("generatePDF").href = "Billpdf.html?ntab=NTAB&" + setData;
+
+    }
+
+</script>

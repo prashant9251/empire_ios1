@@ -1,0 +1,297 @@
+<html>
+
+<head>
+  <title>MILL STOCK</title>
+  <script src="js/jsGetUrlParams.js"></script>
+  <script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+    REPORTTYPE = getUrlParams(url, "REPORTTYPE");
+
+
+
+  </script>
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+  <script src="1.10.2/jquery.js"></script>
+  <script src="1.10.4/jquery-ui.js"></script>
+
+
+</head>
+<Style>
+  #TWVR {
+    display: block;
+  }
+</Style>
+
+<body>
+  </div>
+  <div align="center" class="table-responsive">
+    <table id="result" class="content-table" style="width: 95%;">
+
+    </table>
+  </div>
+
+  <div style="display: none;" id="loader">
+    <div class="loader"></div>
+    <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+  </div>
+
+  <div class="footer pdfBtnHide" id="footer" style="display: none;width: 100%;">
+    <!-- <div style="width: 50%;display:inline;float: left;">
+        <button class="btn btn-lg btn-block" style="background-color: #f08827;color: white;"
+            onclick="filterSelected();">Load Selected</button>
+    </div> -->
+    <div style="width: 100%;display:inline;float: left;">
+      <button class="btn btn-lg btn-block" onclick="filterSelectedBulkPdfMillChallan();"
+        style="background-color:#284a7a;color: white;">BULK PDF SHARE</button>
+    </div>
+  </div>
+</body>
+
+
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsLoadCallMillStock.js"></script>
+<script src="js/jsLoadCallMillStockQualWise.js"></script>
+<script src="js/jsLoadCallMillStock_MILLWISE_QUALITY_WISE.js"></script>
+<script src="js/jsLoadCallMillDispatch.js"></script>
+<script src="js/jsopenSubReport.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsGetDaysDif.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jstoFixedNumber.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jsgetValueNotDefineNo.js"></script>
+<script src="js/jsMillChallanTakaDetails.js"></script>
+
+<script>
+
+  var GtotalSPCS;
+  var GtotalSMTS;
+  var GtotalRMTS;
+  var GtotalPMTS;
+  var Data;
+  var PAID = 'N';
+  var ATYPE = '1';
+  var tr = '';
+  var FIRM = getUrlParams(url, "FIRM");
+  var cno = '';
+  var EMP;
+  var partyname = getUrlParams(url, "partyname");
+  var partycode = getUrlParams(url, "partycode");
+  if (partyname == "") {
+    partycode = ""
+  }
+  var qual = getUrlParams(url, "qualcode");
+  var weaver = getUrlParams(url, "weaver");
+  var broker = getUrlParams(url, "broker");
+  var CITY = getUrlParams(url, "city");
+  var haste = getUrlParams(url, "haste");
+  var fromdate = getUrlParams(url, "search_FromDate");
+  var todate = getUrlParams(url, "search_ToDate");
+  var hideAbleTr = getUrlParams(url, "hideAbleTr");
+  var takaDetails = getUrlParams(url, "takaDetails");
+  var CHALTRNdata = [];
+  var nowDate = new Date();
+  if (FIRM != '') {
+    jsGetObjectByKey(DSN, "COMPMST", "").then(function (data) {
+      //console.log(data);
+      DataCompmst = data;
+      for (var i = 0; i < DataCompmst.length; i++) {
+        if (DataCompmst[i].FIRM == FIRM) {
+          cno = DataCompmst[i].CNO;
+        }
+      }
+    })
+  }
+
+  $(document).ready(function () {
+    $("#loader").addClass('has-loader');
+    load_data();
+  });
+
+  function load_data() {
+    jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+      masterData = data;
+      try { AddHeaderTbl(); } catch (error) { }
+      jsGetObjectByKey(DSN, "MILL", "").then(function (data) {
+        Data = data;
+
+        if (cno != '' && cno != null) {
+          Data = Data.filter(function (data) {
+            return data.billDetails.some((billDetails) => billDetails['CNO'] === cno);
+          }).map(function (subdata) {
+            return {
+              code: subdata.code,
+              billDetails: subdata.billDetails.filter(function (billDetails) {
+                return (billDetails['CNO'] === cno);
+              })
+            }
+          })
+        }
+
+        if (partycode != '' && partycode != null) {
+          Data = Data.filter(function (data) {
+            return data.code == partycode;
+          })
+        }
+        if (this.broker != '' && this.broker != null) {
+          Data = Data.filter(function (data) {
+            return data.billDetails.some((billDetails) => billDetails['BCODE'] === this.broker);
+          }).map(function (subdata) {
+            return {
+              code: subdata.code,
+              billDetails: subdata.billDetails.filter(function (billDetails) {
+                return (billDetails['BCODE'] === this.broker);
+              })
+            }
+          })
+        }
+
+        if (qual != '' && qual != null) {
+          Data = Data.filter(function (data) {
+            return data.billDetails.some((billDetails) => billDetails['QUAL'] == qual);
+          }).map(function (subdata) {
+            return {
+              code: subdata.code,
+              billDetails: subdata.billDetails.filter(function (billDetails) {
+                return (billDetails['QUAL'] == qual);
+              })
+            }
+          })
+        }
+        if (weaver != '' && weaver != null) {
+          Data = Data.filter(function (data) {
+            return data.billDetails.some((billDetails) => billDetails['WVR'] == weaver);
+          }).map(function (subdata) {
+            return {
+              code: subdata.code,
+              billDetails: subdata.billDetails.filter(function (billDetails) {
+                return (billDetails['WVR'] == weaver);
+              })
+            }
+          })
+        }
+
+
+        if (fromdate != '' && fromdate != null) {
+          Data = Data.filter(function (data) {
+            return data.billDetails.some((billDetails) => new Date(DateRpl(billDetails.DATE)).setHours(0, 0, 0, 0) >= new Date(DateRpl(fromdate)).setHours(0, 0, 0, 0));
+          }).map(function (subdata) {
+            return {
+              code: subdata.code,
+              billDetails: subdata.billDetails.filter(function (billDetails) {
+                return new Date(DateRpl(billDetails.DATE)).setHours(0, 0, 0, 0) >= new Date(DateRpl(fromdate)).setHours(0, 0, 0, 0);
+              })
+            }
+          })
+        }
+        if (todate != '' && todate != null) {
+          Data = Data.filter(function (data) {
+            return data.billDetails.some((billDetails) => new Date(DateRpl(billDetails.DATE)).setHours(24, 0, 0, 0) <= new Date(DateRpl(todate)).setHours(24, 0, 0, 0));
+          }).map(function (subdata) {
+            return {
+              code: subdata.code,
+              billDetails: subdata.billDetails.filter(function (billDetails) {
+                return new Date(DateRpl(billDetails.DATE)).setHours(24, 0, 0, 0) <= new Date(DateRpl(todate)).setHours(24, 0, 0, 0);
+              })
+            }
+          })
+        }
+        if (takaDetails != null && takaDetails == "Y") {
+          jsGetObjectByKey(DSN, "CHALTRN", "").then(function (dataCHALTRN) {
+            CHALTRNdata = dataCHALTRN;
+            loadReport(Data);
+          });
+        } else {
+          loadReport(Data);
+        }
+      });
+    })
+  }
+
+  function loadReport() {
+    if (REPORTTYPE == 'MILLSTOCK') {
+      loadCall(Data);
+    } else if (REPORTTYPE == 'MILLSTOCKQUALWISE') {
+      jsLoadCallMillStockQualWise(Data);
+    } else if (REPORTTYPE == 'MILL STOCK MILL WISE QUALITY WISE') {
+      jsLoadCallMillStock_MILLWISE_QUALITY_WISE(Data);
+    } else if (REPORTTYPE == 'MILLDISPATCH') {
+      jsLoadCallMillDispatch(Data);
+    } else {
+      loadCall(Data);
+    }
+  }
+
+</script>
+<script src="js/jsHeaderTbl.js"></script>
+<script src="js/jsgetFullDataLinkByMillCardNo.js"></script>
+<script>
+  function checkAllEntry(ele) {
+    var checkboxes = document.getElementsByTagName('input');
+    if (ele.checked) {
+      for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].type == 'checkbox') {
+          checkboxes[i].checked = true;
+        }
+      }
+    } else {
+      for (var i = 0; i < checkboxes.length; i++) {
+        //console.log(i)
+        if (checkboxes[i].type == 'checkbox') {
+          checkboxes[i].checked = false;
+        }
+      }
+    }
+  }
+
+
+  function filterSelectedBulkPdfMillChallan() {
+    try {
+      var SelectList = [];
+      billNos = "";
+      var CNO = cno;
+      $('input[type=checkbox]').each(function () {
+        var millName = $(this).attr('millName');
+        var id = $(this).attr('id');
+        var CNO = $(this).attr('CNO');
+        var TYPE = $(this).attr('DTYPE');
+        var VNO = $(this).attr('VNO');
+        var CRD = $(this).attr('CRD');
+        if ($(this).is(':checked')) {
+          var obj = {};
+          obj.CNO = CNO;
+          obj.TYPE = TYPE;
+          obj.VNO = VNO;
+          obj.CRD = CRD;
+          obj.id = id;
+          obj.code = millName;
+
+          var path = window.location.pathname;
+          var page = path.split("/").pop();
+          var url = window.location.href;
+          url = url.replace(page, "FDispatchChallan.html") + "&ntab=NTAB&CRD=" + encodeURI(CRD) + "&CNO=" + encodeURI(CNO) + "&TYPE=" + encodeURI(TYPE) + "&PDFStore=true";
+          urlLink = url;
+          obj.urlLink = urlLink;
+          SelectList.push(obj);
+        } else {
+        }
+      });
+      SelectList = SelectList.filter(function (d) {
+        //console.log(JSON.stringify(d));
+        return d.code != null && d.code != "";
+      })
+      if (SelectList.length == 0) {
+        alert("Please select at least 1 Entry");
+      } else {
+        bulkPdfStartCreateShare(SelectList);
+      }
+    } catch (e) { alert(e); }
+    // document.getElementById("BulkBillpdfLink").href = url;
+  }
+
+</script>

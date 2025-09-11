@@ -1,0 +1,45 @@
+<script>
+    var url =window.location.href;
+    var DSN = getUrlParams(url,"DatabaseSource");
+  </script>
+  <script src="js/jsopenSubReport.js"></script>
+  <script src="js/jsGetUrlParams.js"></script>
+  <script src="js/jsGetYearChange.js"></script>
+  <script src="js/jsGetDaysDif.js"></script>
+  <script src="js/jsGetDateFormate.js"></script>
+  <script src="js/jsGetObjectByKey.js"></script>
+  <script src="js/jstoFixed.js"></script>
+  <script src="js/jsfunction.js"></script>
+  <script src="js/jsgetValueNotDefine.js"></script>
+  <script src="js/jsLoadCallOUTSTANDING.js"></script>
+  <script>
+    var url =window.location.href;
+    var pdfStatus=false;
+    var Data;
+    var PAID='N';
+    var ATYPE='1';
+    var tr = '';
+    var FIRM = getUrlParams(url,"FIRM");
+    var cno = '';
+    var EMP;
+    var partyname =getUrlParams(url,"partyname");
+    var partycode =getUrlParams(url,"partycode");
+    if(partyname==''){
+    partycode='';
+    }
+    var broker = getUrlParams(url,"broker");
+    var CITY = getUrlParams(url,"city");
+    var haste =getUrlParams(url,"haste");
+    var fromdate =getUrlParams(url,"search_FromDate");
+    var todate = getUrlParams(url,"search_ToDate");
+     GRD = getUrlParams(url,"GRD");
+    var DataCompmst = JSON.parse(localStorage.getItem("COMPMST"));
+    var nowDate = new Date();
+    if (FIRM != '') {
+      for (var i = 0; i < DataCompmst.length; i++) {
+        if (DataCompmst[i].FIRM == FIRM) {
+          cno = DataCompmst[i].CNO;
+        }
+      }
+    }
+  </script>

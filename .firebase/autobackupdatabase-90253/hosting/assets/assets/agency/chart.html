@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+  <title>Bar Charts</title>
+<script src="1.10.2/jquery.js"></script>
+<script src="1.10.4/jquery-ui.js"></script>
+<script src="js/jsGetUrlParams.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+<body>
+
+
+  <script src="js/jsGetObjectByKey.js"></script>
+  <script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+    $(document).ready(function () {
+      $("#loader").addClass('has-loader');
+      load_data();
+    });
+    var SERIES=[];
+    function load_data() {
+      jsGetObjectByKey(DSN, "SERIES", "").then(function (data) {
+        SERIES=data;
+        jsGetObjectByKey(DSN, "BLS", "").then(function (data) {
+        processData(data);
+        processDataAllType(data);
+      })
+    })
+    }
+    async function processData(BLS_LIST_MAIN) {
+      let monthlySales = {};
+      let monthlyPurchase = {};
+      let monthlyReturnGoods = {};
+
+      await Promise.all(BLS_LIST_MAIN.map(async (e) => {
+        const billDetails = [...e["billDetails"]];
+        await Promise.all(billDetails.map(async (c) => {
+          const b = { ...c };
+          const date = new Date(b['DTE']);
+          const monthKey = `${date.getMonth() + 1}`;
+          const amt = parseFloat(b['GAMT']);
+
+          if (b['TYPE'].toUpperCase().includes("S1") && parseInt(b['VNO']) < 100000) {
+            if (monthlySales.hasOwnProperty(monthKey)) {
+              monthlySales[monthKey] += amt;
+            } else {
+              monthlySales[monthKey] = amt;
+            }
+          }
+        }));
+      }));
+
+      //console.log("Monthly Sales:", JSON.stringify(monthlySales));
+      createChart(monthlySales, "SALE_CHART_BASED_ON_GROSS_AMT ");
+    }
+  </script>
+  <script>
+
+    function createChart(DataObj, dombId) {
+      $('body').append(`<canvas id="` + dombId + `" style="width:100%;max-width:600px"></canvas><br><br><br>`)
+      const keysArray = Object.keys(DataObj).map(Number); // Converts keys to an array of numbers
+      const monthNamesArray = keysArray.map(monthNumber => {
+        const monthNamesArray = [
+          "January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"
+        ];
+        return monthNamesArray[monthNumber - 1]; // Subtract 1 to match array indices
+      });
+      const valuesArray = Object.values(DataObj);
+      //console.log(keysArray);
+      //console.log(valuesArray);
+      var xValues = monthNamesArray;   //["Italy", "France", "Spain", "USA", "Argentina", "Italy", "France", "Spain", "USA", "Argentina"];
+      var yValues = valuesArray; //[55, 49, 44, 24, 15, 55, 49, 44, 24, 15];
+
+      var barColor = "#81cd47"; // Set the desired color for all bars
+      var barColors =[
+      "#FFD700", "#90EE90", "#ADD8E6", "#FFA500", "#BC8F8F", "#87CEEB",
+      "#F0E68C", "#98FB98", "#B0E0E6", "#FFDAB9", "#FFB6C1", "#AFEEEE"
+    ];// Array(yValues.length).fill(barColor);
+
+      var chartData = new Chart(dombId, {
+        type: "bar",
+        data: {
+          labels: xValues,
+          datasets: [{
+            backgroundColor: barColors,
+            data: yValues
+
+          }]
+        },
+        options: {
+          responsive: false,
+          legend: { display: false },
+          tooltips: {
+            "enabled": true
+          },
+          title: {
+            display: true,
+            text: dombId,
+          }, animation: {
+            onComplete: function () {
+              var chartInstance = this.chart;
+              var ctx = chartInstance.ctx;
+              ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, 'bold', Chart.defaults.global.defaultFontFamily);
+              ctx.fillStyle = "black";
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'bottom';
+
+              this.data.datasets.forEach(function (dataset) {
+                for (var i = 0; i < dataset.data.length; i++) {
+                  var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model;
+                  var scaleMax = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._yScale.maxHeight;
+                  ctx.fillText(dataset.data[i], model.x, model.y - 5);
+                }
+              });
+            }
+          }
+        }
+      });
+    }
+
+
+    
+    async function processDataAllType(BLS_LIST_MAIN) {
+      let monthlyDataByType = {};
+    
+      await Promise.all(BLS_LIST_MAIN.map(async (e) => {
+        const billDetails = [...e["billDetails"]];
+        await Promise.all(billDetails.map(async (c) => {
+          const b = { ...c };
+          const date = new Date(b['DTE']);
+          const monthKey = `${date.getMonth() + 1}`;
+          const amt = parseFloat(b['BAMT']);
+          const typeKey = b['TYPE'];
+    
+          if (parseInt(b['VNO']) < 100000) {
+            if (!monthlyDataByType[typeKey]) {
+              monthlyDataByType[typeKey] = {};
+            }
+    
+            if (!monthlyDataByType[typeKey][monthKey]) {
+              monthlyDataByType[typeKey][monthKey] = 0;
+            }
+    
+            monthlyDataByType[typeKey][monthKey] += amt;
+          }
+        }));
+      }));
+    
+      //console.log("Monthly Data by Type:", JSON.stringify(monthlyDataByType));
+
+       // Iterate through the monthlyDataByType object
+      for (const typeKey of Object.keys(monthlyDataByType)) {
+        const typeData = monthlyDataByType[typeKey];
+        
+        // Here, typeKey is the 'b['SERIES']', and typeData is the corresponding object.
+        //console.log("Type:", typeKey);
+        //console.log("Data:", typeData);
+        var seriesData=getSeriesDetailsBySendType(typeKey);
+        var name="";
+        if(seriesData.length>0){
+          name=seriesData[0].SERIES;
+        }
+        createChart(typeData, name);
+        
+        // You can further process or perform actions on typeKey and typeData as needed.
+      }
+      // You can create charts or further process the grouped data here.
+    }
+    
+
+    function getSeriesDetailsBySendType(TYPE) {
+      return SERIES.filter(function (data) {
+          return data.SERIESCODE == TYPE;
+      })
+  }
+  </script>
+
+</body>
+
+</html>

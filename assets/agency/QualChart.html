@@ -1,0 +1,228 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=.7, maximum-scale=100, user-scalable=no" />
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>CATALOG CHART</title>
+    <style>
+        @media print {
+            a[href]::after {
+                content: none !important;
+            }
+        }
+        .ui-corner-all {
+            font-size: 20px;
+        
+          }
+        
+          .ui-menu-item {
+            border: 1px solid black!important;
+            line-height: 2.5!important;
+            font-weight: 900!important;
+            margin: auto!important;
+            
+          }
+          input:focus {
+            background-color: #e6e6f1 !important;
+          }
+          input[type=submit]:focus {
+            background-color: black !important;
+          }
+            @media only screen and (max-width: 600px) {
+              .inputText{
+                  height: 50px;
+                  font-size: 15px;
+              }
+                  #DirectWhatsapp{
+                display:none;
+            }
+              
+            }
+            @media only screen and (min-width: 768px) {
+              .inputText{
+                  height: 40px;
+                  font-size: 18px;
+              }
+              #DirectWhatsapp{
+                  display:none;
+              }
+            } 
+        
+          .custbadge{
+              background-color:#343a40;color:white;
+          }
+        
+    </style>
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.2/jquery.js"></script>
+    <script src="1.10.4/jquery-ui.js"></script>
+    <!-- <link rel="stylesheet" href="css/styleAutoComplete.css"> -->
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jsGetUrlParams.js"></script>
+
+</head>
+
+<body>
+    <div style="background-color: #588c7e;" id="hideAbleDiv">
+        <div>
+            <a class="navbar-brand" style="color:white" href="#"> CATALOG CHART</a>
+        </div>
+        <div class="form-row" align="center">
+            <div class="col form-group">
+                <input type="text" autocomplete="off" name="qualname" id="qualname" onchange=""
+                    placeholder="Search by Quality" class="form-control" />
+                <input type="hidden" name="qualcode" id="qualcode" onchange="" placeholder="Search by Customer Name"
+                    class="form-control" />
+            </div>
+            <div class="col form-group">
+                <select name="qualType" onchange="changeOption();" class="form-control" id="qualType">
+                </select>
+            </div>
+            <div class="col form-group" align="center">
+                <span class="btn brn-primary" onclick="loadparty();"
+                    style="color:white;background-color: darkslategrey;"> SEARCH </span>
+            </div>
+        </div>
+    </div>
+
+    <div style="size:10px;" align="center">
+        <table id="result" style="width: 100%;" class="table">
+
+        </table>
+    </div>
+
+</body>
+
+
+<script>
+    // var DSN = 'MTEx2021';
+    // var Db = '111';
+    // var Crntyear = '2021';
+
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+</script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsLoadCallQualChart.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jsgetValueNotDefineNo.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script>
+    var Data;
+    var qualcode;
+    var SubUserPermitionArray;
+    var QualArr;
+    var qualType="";
+    var OnSelect="QT"
+    $(document).ready(function () {
+        jsGetObjectByKey(DSN, "QUL", "").then(function (data) {
+            QualData = data;
+            QualArr = data;
+            // $("#qualname").keyup(function(e) {
+            //     if (e.which == 38 || e.which == 40 || e.which == 13) {
+            //         return;
+            //     } else {
+            //         var qualname = $(this).val();
+            //         //alert(qualname);
+            //         if (qualname !== "") {
+            //             if (QualData.length > 0) {
+            //                 //console.log("----" + qualname);
+            //                 $("#qualname").autocomplete({
+            //                     minLength: 1,
+            //                     source: function(request, response) {
+            //                         var term = $.ui.autocomplete.escapeRegex(
+            //                                 request.term
+            //                             ),
+            //                             startsWithMatcher = new RegExp("^" + term, "i"),
+            //                             startsWith = $.grep(QualData, function(
+            //                                 value
+            //                             ) {
+            //                                 return startsWithMatcher.test(
+            //                                     value.value || value.label || value
+            //                                 );
+            //                             }),
+            //                             containsMatcher = new RegExp(term, "i"),
+            //                             contains = $.grep(QualData, function(value) {
+            //                                 return (
+            //                                     $.inArray(value, startsWith) < 0 &&
+            //                                     containsMatcher.test(
+            //                                         value.value || value.label || value
+            //                                     )
+            //                                 );
+            //                             });
+
+            //                         response(startsWith.concat(contains));
+            //                     },
+            //                     select: function(event, ui) {
+            //                         event.preventDefault();
+            //                         $(this).val(ui.item.label);
+            //                         $("#qualcode").val(ui.item.value);
+            //                         $("#qualname").val(ui.item.qualname);
+            //                     },
+            //                 });
+            //             }
+            //         }
+            //     }
+            // });
+
+            Data = data;
+            qualcode = $('#qualname').val();
+            SelectQualOptions("qualType")
+            loadCall(qualcode);
+
+        });
+
+    });
+
+    function load_data() {
+
+    }
+
+    $("#qualname").keyup(function (e) {
+        var qualname = $(this).val();
+        if (qualname !== "") {
+            loadCall(qualname);
+        }
+    })
+    function loadparty() {
+        qualcode = $('#qualname').val();
+        //console.log(qualcode);
+        loadCall(qualcode);
+    }
+
+    function clear_search() {
+        $('#qualname').val('');
+        $('#qualcode').val('');
+        loadCall("");
+    }
+    function SelectQualOptions(IdQualOptions) {
+        var xQual = document.getElementById(IdQualOptions);
+        var categories = [];
+
+        $.each(QualArr, function (index, value) {
+            if ($.inArray(value.QT, categories) === -1) {
+                categories.push(value.QT);
+            }
+        });
+        QualArr = categories;
+        //console.log(QualArr);
+        if (QualArr.length > 0) {
+            QualArr.forEach(function (element, index) {
+                var option = document.createElement("option");
+                option.value = element;
+                option.text = element;
+                xQual.add(option, xQual[0]);
+                //  alert(element.Qual);
+            });
+
+        }
+    }
+
+    function changeOption(){
+         qualType=document.getElementById('qualType').value;
+        loadparty();
+    }
+</script>

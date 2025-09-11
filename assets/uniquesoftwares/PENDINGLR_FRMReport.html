@@ -1,0 +1,203 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=100, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="2.1.3/jquery.min.js"></script>
+    <script src="3.3.6/bootstrap.min.js"></script>
+    <link href="3.3.6/bootstrap.min.css" rel="stylesheet" />
+    <script src="js/jsGetUrlParams.js"></script>
+
+
+</head>
+
+<script>
+    var url = window.location.href;
+    var MCNO = getUrlParams(url, "MCNO");
+    var MTYPE = getUrlParams(url, "MTYPE");
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+    //alert(DSN);
+
+</script>
+<script src="js/localStorageSet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsStoreDatatoIndexeddb.js"></script>
+<script src="js/jsPopUpTblSetting.js"></script>
+<script src="js/jsoptionSeriesSelect.js"></script>
+<script src="js/jsoptionFirmSelect.js"></script>
+<script src="js/jsSearchfrm.js"></script>
+<html>
+
+<head>
+    <title>LR PENDING</title>
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="css/stylePrint.css">
+    <link rel="stylesheet" href="css/styleAutoComplete.css">
+
+</head>
+
+<body>
+
+    <BR>
+
+
+
+    <div class="container" style="width: 100%;">
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <header class="card-header">
+                        <h2 class="card-title mt-2">LR PENDING</h2>
+                    </header>
+                    <article class="card-body">
+                        <form action="PENDINGLR_AJXREPORT.html?" method="get" target="_blank" autocomplete="off">
+
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <h3>FIRM</h3>
+                                    <select class="form-control inputText" style="height: 40px;" id="FIRM" name="FIRM">
+                                    </select>
+                                </div>
+                                <div class="col form-group">
+                                    <h3>REPORT TYPE</h3>
+                                    <select class="form-control inputText" style="height: 40px;" id="ReportFilter"
+                                        name="ReportFilter">
+                                        <option value="PENDING">PENDING LR ONLY</option>
+                                        <option value="RECEIVED">RECEIVED LR ONLY</option>
+                                        <option value="">ALL</option>
+                                    </select>
+                                </div>
+                                <div class="col form-group">
+                                    <h3>SUBTOTAL</h3>
+                                    <select class="form-control inputText" style="height: 40px;" id="REPORTTYPE"
+                                        name="REPORTTYPE">
+                                        <option>TRANSPORT-WISE</option>
+                                        <option>PARTY-WISE</option>
+                                        <option>DATE-WISE</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <h3>PARTY NAME</h3>
+                                    <input class="form-control inputText" onfocus="this.value=''" autocomplete="off"
+                                        onchange="" placeholder="SEARCH BY PARTY NAME" name="partyname" id="partyname">
+                                </div>
+
+                            </div>
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <h3>CITY</h3>
+                                    <input class="form-control inputText" onfocus="this.value=''" autocomplete="off"
+                                        name="city" id="city" placeholder="SEARCH BY CITY NAME">
+                                </div>
+                                <div class="col form-group">
+                                    <h3>TRANSPORT</h3>
+                                    <input class="form-control inputText" onfocus="this.value=''" autocomplete="off"
+                                        onchange="" placeholder="SEARCH BY TRANSPORT" name="transport" id="transport">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <h3>HASTE</h3>
+                                    <input class="form-control inputText" onfocus="this.value=''" autocomplete="off"
+                                        name="haste" id="haste" placeholder="SEARCH BY HASTE">
+                                </div>
+                                <div class="col form-group">
+                                    <h3>BROKER</h3>
+                                    <input class="form-control inputText" onfocus="this.value=''" autocomplete="off"
+                                        name="broker" id="broker" placeholder="SEARCH BY BROKER NAME">
+                                </div>
+                            </div>
+
+
+
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <h3>FROM BILL DATE</h3>
+                                    <input type="date" class="form-control inputText" placeholder="SEARCH FROM DATE"
+                                        value="" name="search_FromDate" id="search_FromDate">
+                                </div>
+
+                                <div class="col form-group">
+                                    <h3>TO BILL DATE</h3>
+                                    <input type="date" class="form-control inputText" placeholder="SEARCH TO DATE"
+                                        value="" name="search_ToDate" id="search_ToDate">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <div style="width:50%;float:left;">
+                                        <h3 for="materialUnchecked">PRODUCT DETAILS</h3>
+                                    </div>
+                                    <div style="width:50%;float:right;"><input type="checkbox"
+                                            onchange="localSave('productDet');" value="Y" id="productDet"
+                                            name="productDet" class="form-control"></div>
+                                </div>
+
+                                <div class="col form-group">
+                                    <div style="width:40%;float:left;">
+                                        <h3>SUMMARY REPORT</h3>
+                                    </div>
+                                    <div style="width:60%;float:right;">
+                                        <input type="checkbox" class="form-control" name="hideAbleTr" id="hideAbleTr"
+                                            value="true" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <h3>LR REC. FROM DATE</h3>
+                                    <input type="date" class="form-control inputText" placeholder="SEARCH FROM DATE"
+                                        value="" name="LrRecFromDate" id="LrRecFromDate">
+                                </div>
+
+                                <div class="col form-group">
+                                    <h3>LR REC. TO DATE</h3>
+                                    <input type="date" class="form-control inputText" placeholder="SEARCH TO DATE"
+                                        value="" name="LrRecToDate" id="LrRecToDate">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="hidden" class="form-control " id="firm" name="firm" value=""
+                                    placeholder="hidden party code">
+                                <input type="hidden" class="form-control" id="partycode" name="partycode"
+                                    placeholder="hidden party code">
+                                <input type="hidden" class="form-control" id="ntab" name="ntab" value="NTAB"
+                                    placeholder="hidden party code">
+                                <input type="hidden" class="form-control" id="mobileNo" name="mobileNo" value="">
+                                <input type="hidden" class="form-control" id="partyEmail" name="partyEmail" value="">
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <input type="submit" name="submit" id="submit"
+                                    class="btn btn-primary btn-lg btn-block inputText" value="SUBMIT" id="submit">
+                            </div>
+                </div>
+            </div>
+
+            </form>
+        </div>
+    </div>
+    </div>
+
+</body>
+
+
+</html>
+
+<script>
+    $(document).ready(function () {
+        SelectFirmOptions("FIRM");
+
+    });
+
+</script>

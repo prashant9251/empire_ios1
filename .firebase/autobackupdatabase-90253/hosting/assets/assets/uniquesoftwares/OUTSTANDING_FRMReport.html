@@ -1,0 +1,339 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=100, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="2.1.3/jquery.min.js"></script>
+    <script src="3.3.6/bootstrap.min.js"></script>
+    <link href="3.3.6/bootstrap.min.css" rel="stylesheet" />
+    <script src="js/jsGetUrlParams.js"></script>
+
+
+</head>
+
+<script src="js/jsGetCookies.js"></script>
+<script>
+    var url = window.location.href;
+    var MCNO = getUrlParams(url, "MCNO");
+    var MTYPE = getUrlParams(url, "MTYPE");
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+    //alert(DSN);
+
+</script>
+<script src="js/localStorageSet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsStoreDatatoIndexeddb.js"></script>
+<script src="js/jsPopUpTblSetting.js"></script>
+<script src="js/jsoptionSeriesSelect.js"></script>
+<script src="js/jsoptionFirmSelect.js"></script>
+<script src="js/jsSearchfrm.js"></script>
+<html>
+
+<head>
+    <title>Outstanding Report</title>
+
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="css/stylePrint.css">
+    <link rel="stylesheet" href="css/styleAutoComplete.css">
+
+</head>
+
+<body>
+    <!--<nav class="navbar navbar-icon-top navbar-expand-lg navbar-dark bg-dark">-->
+    <!--    <H1 class="" style="color:white;" href="#">OUTSTANDING REPORT</H1>-->
+    <!--</nav>-->
+    <BR>
+
+    <div class="container" style="width:100%;">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <header class="card-header">
+                        <div class="form-row">
+                            <div class="col form-group">
+                                <h2 class="card-title mt-2">Outstanding Form</h2>
+                               
+                            </div>
+                            <div class="col form-group">
+                                <button class="btn btn-Success btn-lg btn-block inputText" onclick="summery();" >
+                                    SUMMARY & BULK PDF SHARE</button>
+                            </div>
+                        </div>
+                    </header>
+                    <article class="card-body">
+                        <form action="OUTSTANDING_AJXREPORT.html?" method="get" target="_blank" autocomplete="off">
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <h3>FIRM</h3>
+                                    <select class="form-control inputText" onchange="" style="height: 40px;"
+                                        id="FIRM" name="FIRM">
+                                    </select>
+                                </div>
+                                <div class="col form-group">
+                                    <h3>SUBTOTAL</h3>
+                                    <select class="form-control inputText" style="height: 40px;" id="REPORTTYPE"
+                                        name="REPORTTYPE">
+                                        <option>PARTY-WISE</option>
+                                        <option>PARTY WISE FIRM WISE</option>
+                                        <option>PARTY WISE MONTH WISE</option>
+                                        <option>BROKER WISE</option>
+                                        <option>BROKER WISE PARTY WISE</option>
+                                        <option>DATE WISE</option>
+                                    </select>
+                                </div>
+                                <div class="col form-group">
+                                    <h3>TYPE</h3>
+                                    <input type="text" class="form-control inputText" onfocus="this.value=''" required
+                                        placeholder="REPORT TYPE" value="" name="ReportType" id="ReportType">
+                                    <input type="hidden" class="form-control inputText" onfocus="this.value=''"
+                                        placeholder="REPORT TYPE" value="" name="ReportATypeCode" id="ReportATypeCode">
+                                    <input type="hidden" class="form-control inputText" onfocus="this.value=''"
+                                        placeholder="REPORT TYPE" value="" name="ReportSeriesTypeCode"
+                                        id="ReportSeriesTypeCode">
+                                    <input type="hidden" class="form-control inputText" onfocus="this.value=''"
+                                        placeholder="REPORT TYPE" value="" name="ReportDOC_TYPECode"
+                                        id="ReportDOC_TYPECode">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="">
+                                    <h3>PARTY NAME</h3><input class="form-control inputText" onfocus="this.value=''"
+                                        autocomplete="off" onkeyup="" placeholder="SEARCH BY PARTY NAME"
+                                        name="partyname" id="partyname">
+                                </div>
+                            </div>
+
+
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <h3>BROKER</h3><input class="form-control inputText" onkeyup=""
+                                        onfocus="this.value=''" autocomplete="off" name="broker" id="broker"
+                                        placeholder="SEARCH BY BROKER NAME">
+                                </div>
+                                <div class="col form-group">
+                                    <h3>CITY</h3><input class="form-control inputText" onkeyup=""
+                                        onfocus="this.value=''" autocomplete="off" name="city" id="city"
+                                        placeholder="SEARCH BY CITY NAME">
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+
+                            </div>
+
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <h3>GROUP</h3><input class="form-control inputText" onchange=""
+                                        onfocus="this.value=''" autocomplete="off" name="groupname" id="groupname"
+                                        placeholder="SEARCH BY GROUP NAME">
+                                    <input type="hidden" class="form-control inputText" onchange=""
+                                        onfocus="this.value=''" autocomplete="off" name="groupcode" id="groupcode"
+                                        placeholder="SEARCH BY GROUP NAME">
+                                </div>
+
+                                <div class="col form-group">
+                                    <div style="width:50%;float:left;">
+                                        <h3 for="materialUnchecked">PRODUCT DETAILS</h3>
+                                    </div>
+                                    <div style="width:50%;float:right;"><input type="checkbox"
+                                            onchange="localSave('productDet');" value="Y" id="productDet"
+                                            name="productDet" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <h3>MARKET</h3><input class="form-control inputText" onchange=""
+                                        onfocus="this.value=''" autocomplete="off" name="MARKET" id="MARKET"
+                                        placeholder="SEARCH BY MARKET NAME">
+                                </div>
+                                <div class="col form-group">
+                                    <h3>HASTE</h3><input class="form-control inputText" onfocus="this.value=''"
+                                        autocomplete="off" name="haste" id="haste" placeholder="SEARCH BY HASTE">
+                                </div>
+                            </div>
+                            <h3>DATE FILTER</h3>
+                            <div style="border: .5px solid gray;">
+                                <div class="form-row" style="padding: 5px;">
+                                    <div class="col form-group">
+                                        <h3>FROM</h3><input type="date" onchange=""
+                                            class="form-control inputText" placeholder="SEARCH FROM DATE" value=""
+                                            name="search_FromDate" id="search_FromDate">
+                                    </div>
+                                    <div class="col form-group">
+                                        <h3>TO</h3><input type="date" onchange=""
+                                            class="form-control inputText" placeholder="SEARCH TO DATE" value=""
+                                            name="search_ToDate" id="search_ToDate">
+                                    </div>
+
+                                </div>
+
+                                <div class="form-row" style="padding: 5px;">
+                                    <div class="col form-group">
+                                        <h3>NOT APPLY ON PAYMENT</h3>
+                                    </div>
+                                    <div class="col form-group">
+                                        <input type="checkbox" class="form-control" name="chqFilterOnDate"
+                                            id="chqFilterOnDate" value="true" checked />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <h3>>DAYS FILTER</h3>
+                                    <input class="form-control inputText" onfocus="this.value=''" autocomplete="off" onkeyup="DaysConditionChange();"
+                                        name="DAYSCONDITION" id="DAYSCONDITION" placeholder="ENTER DAYS">      
+                                </div>
+                                <div class="col form-group">
+                                    <h3>GRADE</h3><select id="GRD" name="GRD" onchange="" style="height:50px;"
+                                        class="form-control inputText"></select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <h3>OUTSTANDING PAGE MSG  (AUTO SAVE)</h3>
+                                    <input class="form-control inputText" autocomplete="off"
+                                        onkeyup="saveRemark('OS_RMK',this);" name="OS_RMK" id="OS_RMK"
+                                        placeholder="ENTER MSG FOR OUTSTANDING ">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <input type="hidden" class="form-control inputText" id="partycode" name="partycode"
+                                    placeholder="hidden party code"><input type="hidden" class="form-control inputText"
+                                    id="ntab" name="ntab" value="NTAB" placeholder="hidden party code">
+                            </div>
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <div style="width:50%;float:left;">
+                                    <h3>SUMMARY REPORT</h3>
+                                        
+                                    </div>
+                                    <div style="width:50%;float:right;">
+                                        <input type="checkbox" class="form-control" name="hideAbleTr" id="hideAbleTr"
+                                        value="true" />
+                                    </div>
+                                </div>
+
+                                <div class="col form-group">
+                                    <div style="width:50%;float:left;">
+                                        <h3>DAYS WISE COLORING</h3>
+                                            
+                                        </div>
+                                        <div style="width:50%;float:right;">
+                                            <input type="checkbox" class="form-control" name="daysWiseColoring" id="daysWiseColoring"
+                                            value="Y" />
+                                        </div>
+                                    <div style="width:50%;float:right;">
+                                        <input type="hidden" class="form-control" id="FOLDER_NAME" name="FOLDER_NAME"
+                                            value="SALE OUTSTANDING" placeholder="hidden FOLDER_NAME">
+                                        <input type="hidden" class="form-control" id="mobileNo" name="mobileNo"
+                                            value="">
+                                        <input type="hidden" class="form-control" id="partyEmail" name="partyEmail"
+                                            value="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" name="submit" id="submit"
+                                class="btn btn-primary btn-lg btn-block inputText" value="SUBMIT" id="submit">
+                       
+                        </form>
+                        <!-- <br>
+                        <div class="form-group">
+                            <button class="btn btn-Success btn-lg btn-block inputText"  onclick="submitForm(event);">
+                                SUMMERY OUTSTANDING & BULK PDF SHARE</button>
+                         </div> -->
+                        
+                                <!-- <button class="btn btn-Success btn-lg btn-block inputText" id="summeryOutstandingBtn">
+                                    <a href="toDaysDueList.html?ntab=NTAB&" id="summeryOutstanding" target="_blank"
+                                        style="color: white;"> SUMMERY
+                                        OUTSTANDING</a></button> -->
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="js/jsGetDateFormate.js"></script>
+<script>
+    var FORM_TYPE = getUrlParams(url,"FORM_TYPE");
+
+    $(document).ready(function () {
+        SelectFirmOptions("FIRM");
+        var OS_RMK = localStorage.getItem("OS_RMK")??'';
+        document.getElementById('OS_RMK').value=OS_RMK;
+       // if(FORM_TYPE.indexOf("PURCHASEOUTSTANDING")>-1){
+         //   $("#summeryOutstandingBtn").css('display','none');
+       // }
+    });
+    function DaysConditionChange() {
+        var days = document.getElementById('DAYSCONDITION').value
+        var now = new Date();
+        now.setDate(now.getDate() - parseInt(days));
+        document.getElementById('search_ToDate').value = dateformate(now);
+    }
+    function submitForm(event) {
+        event.preventDefault(); // Prevents the default form submission
+        summery()
+      }
+    function summery() {
+        var GRD = $('#GRD').val();
+        GRD = GRD == null ? '' : GRD;
+        var DAYSCONDITION = $('#DAYSCONDITION').val();
+        var mobileNo = $('#mobileNo').val();
+        var FIRM = $('#FIRM').val();
+        var search_FromDate = $('#search_FromDate').val();
+        var search_ToDate = $('#search_ToDate').val();
+        var city = $('#city').val();
+        var groupname =$('#groupname').val();
+        var groupcode =$('#groupcode').val();
+        var haste =$('#haste').val();
+        // var search_FromVNO = $('#search_FromVNO').val();
+        // var search_TOVNO = $('#search_TOVNO').val();
+        var partyname = $('#partyname').val();
+        var partycode = $('#partycode').val();
+        var broker = $('#broker').val();
+        var pdfBillType = $('#pdfBillType').val();
+        var ReportType = $("#ReportType").val();
+        var ReportATypeCode = $("#ReportATypeCode").val();
+        var ReportSeriesTypeCode = $("#ReportSeriesTypeCode").val();
+        var ReportDOC_TYPECode = $("#ReportDOC_TYPECode").val();
+        var setData = "FIRM=" + encodeURIComponent(FIRM) + "&";
+        setData += "search_FromDate=" + search_FromDate + "&";
+        setData += "search_ToDate=" + search_ToDate + "&";
+        setData += "city=" + encodeURIComponent(city) + "&";
+        setData += "partycode=" + encodeURIComponent(partycode) + "&";
+        setData += "partyname=" + encodeURIComponent(partyname) + "&";
+        setData += "broker=" + encodeURIComponent(broker) + "&";
+        setData += "groupname=" + encodeURIComponent(groupname) + "&";
+        setData += "groupcode=" + encodeURIComponent(groupcode) + "&";
+        setData += "haste=" + encodeURIComponent(haste) + "&";
+        setData += "mobileNo=" + mobileNo + "&";
+        setData += "DAYSCONDITION=" + DAYSCONDITION + "&";
+        setData += "GRD=" + GRD + "&";
+        setData += "ReportType=" + ReportType + "&";
+        setData += "ReportATypeCode=" + ReportATypeCode + "&";
+        setData += "ReportSeriesTypeCode=" + ReportSeriesTypeCode + "&";
+        setData += "ReportDOC_TYPECode=" + ReportDOC_TYPECode + "&";
+        setData += "hideAbleTr=true&";
+        //console.log(setData);
+        var urlLink = "OUTSTANDING_AJXREPORT.html?ntab=NTAB&" + setData;
+        window.open(urlLink);
+    }
+
+    
+    function saveRemark(key, evt) {
+        var val = evt.value;
+        val = val == null ? "" : val;
+        localStorage.setItem(key, val);
+    }
+</script>

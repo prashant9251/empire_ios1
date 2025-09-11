@@ -1,0 +1,199 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="2.1.3/jquery.min.js"></script>
+    <script src="3.3.6/bootstrap.min.js"></script>
+    <link href="3.3.6/bootstrap.min.css" rel="stylesheet" />
+    <script src="js/jsGetUrlParams.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+
+<script>
+    var url = window.location.href;
+    var MCNO = getUrlParams(url, "MCNO");
+    var MTYPE = getUrlParams(url, "MTYPE");
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+
+</script>
+<html>
+
+<head>
+    <title>GSTIN SEARCH</title>
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="css/stylePrint.css">
+    <link rel="stylesheet" href="css/styleAutoComplete.css">
+    <style>
+        .buttonload {
+            background-color: #04AA6D;
+            /* Green background */
+            border: none;
+            /* Remove borders */
+            color: white;
+            /* White text */
+            padding: 12px 24px;
+            /* Some padding */
+            font-size: 16px;
+            /* Set a font-size */
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <BR>
+
+
+
+    <div class="container" style="width: 100%;">
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <header class="card-header">
+                        <h2 class="card-title mt-2">GSTIN SEARCH</h2>
+                    </header>
+                    <article class="card-body">
+
+
+                        <div class="form-group">
+                            <div class="">
+                                <h3>ENTER GSTIN</h3>
+                                <input class="form-control inputText" style="text-transform: uppercase;"
+                                    autocomplete="off" placeholder="ENTER GSTIN" name="GSTIN" id="GSTIN">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="">
+                                <button onclick="searchGstin();" class="buttonload"> <i class="fa fa-spinner fa-spin"
+                                        style="display: none;" id="loading"></i>Search</button>
+                            </div>
+                        </div>
+                       
+                        <div class="form-group">
+                            <div class="">
+                                <h3>ADDRESS </h3>
+                                <textarea name="address" id="address" class="form-control inputText"
+                                    rows="5"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="">
+                                <h3>Nature of Business</h3>
+                                <div id="nature">
+
+                                </div>
+                            </div>
+                        </div>
+                        <dir>
+                            <div class="form-group">
+                                <h3 id="lastUpdateDate" style="color: grey;"></h3>
+                            </div>
+                            <H3><code>Note <p style="font-size: 15px;">This Searching may be Not Updated real time</p></code></H3>
+                        </dir>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+</body>
+
+</html>
+
+<script>
+    var startYear;
+    $(document).ready(function () {
+        var gstin = localStorage.getItem("gstin_search");
+        $("#GSTIN").val(gstin);
+    });
+
+    function searchGstin() {
+        var gstin = $("#GSTIN").val();
+        //console.log(gstin);
+        if (gstin.length >= 14) {
+            callApiSearch(gstin)
+        }
+    }
+    function callApiSearch(gstin) {
+        $("#loading").css("display", "");
+        localStorage.setItem("gstin_search", gstin);
+        $.ajax({
+            url: "https://vegimarket.com/wisdom/rest/searchGstin?sid=1232454545&gstin=" + gstin,
+            type: "GET",
+            success: function (data) {
+                //console.log(data);
+                var json = JSON.parse(data);
+                //console.log(json);
+                if (json["status_code"] != null && json["status_code"] != undefined && json["status_code"] == 1) {
+                    var pradr = json["pradr"];
+                    var lastUpdateDate = json["lastUpdateDate"];
+                    $("#lastUpdateDate").html(`THIS DETAILS LAST UPDATED ON : <code>` + formatDate(lastUpdateDate) + `<code>`)
+                    var address =json["tradename"] +" , " +pradr["bno"] + " , " + pradr["flno"] + " ," + pradr["bnm"] + " ," + pradr["st"] + " ," + pradr["loc"] + " , (" + pradr["stcd"] + ") , " + pradr["pncd"];
+                    $("#address").val(address.toUpperCase());
+                    var nature = pradr["ntr"];
+                }else{
+                    alert("Please try after some time");
+                    //$("#address").val(data);
+                }
+                $("#nature").html(`<h4>`+nature+`</h4>`);
+                $("#loading").css("display", "none");
+
+            },
+            error: function (xhr, exception, thrownError) {
+                var msg = "";
+                if (xhr.status === 0) {
+                    msg = "Not connect.\n Verify Network.";
+                } else if (xhr.status == 404) {
+                    msg = "Requested page not found. [404]";
+                } else if (xhr.status == 500) {
+                    msg = "Internal Server Error [500].";
+                } else if (exception === "parsererror") {
+                    msg = "Requested JSON parse failed.";
+                } else if (exception === "timeout") {
+                    msg = "Time out error.";
+                } else if (exception === "abort") {
+                    msg = "Ajax request aborted.";
+                } else {
+                    msg = "Error:" + xhr.status + " " + xhr.responseText;
+                }
+                $("#loading").css("display", "none");
+                alert("Please try after some time");
+
+            }
+        });
+    }
+    function formatDate(date) {
+        if (date != '' && date != null) {        
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+                year = d.getFullYear();
+            // year = year.toString();
+            year = year.toString().substring(2)
+            
+    
+        if (month.length < 2) 
+            month = '0' + month; 
+        if (day.length < 2) 
+                day = '0' + day;       
+    
+        return [day, month, year].join('-');
+        } else {
+            return '';
+    }
+    }
+
+
+
+    if(IosPlateForm=="true"){
+        $('head').append('<meta name="viewport"content="width=device-width, initial-scale=.7, maximum-scale=100, user-scalable=no"/>');
+        }
+</script>

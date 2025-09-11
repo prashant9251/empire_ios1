@@ -1,0 +1,356 @@
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=100, user-scalable=no" />
+
+<script src="uniquesoftwares/js/jsGetUrlParams.js"></script>
+
+<link rel="stylesheet" href="uniquesoftwares/css/styleAutoComplete.css">
+<link rel="stylesheet" href="uniquesoftwares/css/stylePrint.css">
+<link href="uniquesoftwares/4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<link href="uniquesoftwares/1.10.4/jquery-ui.css" rel="stylesheet">
+<script src="uniquesoftwares/1.10.2/jquery.js"></script>
+<script src="uniquesoftwares/1.10.4/jquery-ui.js"></script>
+<script>
+    var url = window.location.href;
+    var MCNO = getUrlParams(url, "MCNO");
+    var MTYPE = getUrlParams(url, "MTYPE");
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+</script>
+<script src="uniquesoftwares/js/localStorageSet.js"></script>
+<script src="uniquesoftwares/js/jsGetObjectByKey.js"></script>
+<script src="uniquesoftwares/js/jsGetObjectByKey.js"></script>
+<html>
+
+<head>
+    <title>PRODUCT</title>
+
+</head>
+
+<body>
+
+    <div class="container" style="width: 100%;">      
+        <hr>
+          <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <header class="card-header">
+
+                        <h4 class="card-title mt-2">PRODUCT(BETA)Under Development</h4>
+                    </header>
+                    <article class="card-body">
+                        <a style="color:blue;"> </a>
+                        <form action="Billpdf.php" method="get" target="_blank">
+                          <div class="form-group" style="font-weight: bolder;font-size: 20px;">
+                            PRODUCT NAME<input class="form-control" onfocus="this.value=''" autocomplete="off"
+                                 placeholder="SEARCH BY PRODUCT NAME" name="qualname"
+                                id="qualname">
+                            <input type="hidden" class="form-control" onfocus="this.value=''" autocomplete="off"
+                                 name="qualcode" id="qualcode">
+                            <input type="hidden" id="pdfBillType" value="BULK">
+                            <input type="hidden" class="form-control" id="mobileNo" name="mobileNo" value="">
+                        </div>  
+                         
+
+                          <div class="form-group" style="font-weight: bolder;font-size: 20px;">
+                              MAIN SCREEN
+                              <input class="form-control" onfocus="clear();this.value='';" autocomplete="off"
+                                   placeholder="SEARCH BY MAIN SCREEN" name="mainscreen" id="mainscreen">
+                          </div>
+
+                          <div class="form-group" style="font-weight: bolder;font-size: 20px;">
+                            BASE QUALITY<input class="form-control" onfocus="clear();this.value='';" autocomplete="off" 
+                             placeholder="SEARCH BY FABRICS" name="fabricsname" id="fabricsname">
+                          </div>       
+
+                          <div class="form-group">
+                              PACKING                                
+                              <div class="col form-group">
+                                <select name="packing" onchange="changeOption();" class="form-control" id="packing">
+                                </select>
+                            </div>
+                          </div>
+
+                            <div class="form-group"> <a id="generatePDF" class="btn btn-success btn-block inputtext" onclick="setData();"
+                                    name="generatePDF" target="_blank" style="font-size: 20px; color: white;">Apply Filter</a>
+                        </form>
+
+                    </article>
+                    <div class="border-top card-body text-center"><a href=""></a></div>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+<script>
+</script>
+<script type="text/javascript">
+
+
+  function filterData(){
+    
+  }
+  function clear(){
+    FabricsData=FabricsDataMain;
+    MainScreenData=MainScreenDataMain;
+  }
+  var QualData=[];
+  var FabricsDataMain=[];
+  var FabricsData=[];
+  var MainScreenDataMain=[];
+  var MainScreenData=[];
+  $(document).ready(function () {
+    
+    jsGetObjectByKey(DSN, "QUL", "").then(function (data) {
+      QualData = data;
+      ////console.log(QualData);
+      SelectQualOptions("packing")
+      
+        var flgFabrics=[];
+        var flgMainScreen=[];
+        for(var i=0;i < QualData.length;i++){
+          element=QualData[i];
+          if(!flgFabrics[element.BQ]){
+            var obj={};
+            obj["value"]=element.BQ;
+            obj["label"]=element.BQ;
+            FabricsData.push(obj);
+            flgFabrics[element.BQ]=true;
+          }
+            if(!flgMainScreen[element.MS]){
+              var obj={};
+              obj["value"]=element.MS;
+              obj["label"]=element.MS;
+              obj["BQ"]=element.BQ;
+              MainScreenData.push(obj);
+              flgMainScreen[element.MS]=true;
+            }    
+          }
+            FabricsDataMain=FabricsData.filter(function(d){
+              return d.value !="" && d.value !=null;
+            })
+            FabricsData=FabricsDataMain;
+            MainScreenDataMain=MainScreenData.filter(function(d){
+              return d.value !="" && d.value !=null;
+            })
+            MainScreenData=MainScreenDataMain;
+        ////console.log(FabricsData,MainScreenData)
+        $("#fabricsname").keyup(function (e) {
+          if (e.which == 38 || e.which == 40 || e.which == 13) {
+            return;
+          } else {
+            var fabricsname = $(this).val();
+            //alert(fabricsname);
+            if (fabricsname !== "") {
+              if (FabricsData.length > 0) {
+                ////console.log("----" + fabricsname);
+                $("#fabricsname").autocomplete({
+                  minLength: 1,
+                  source: function (request, response) {
+                    var term = $.ui.autocomplete.escapeRegex(request.term),
+                      startsWithMatcher = new RegExp("^" + term, "i"),
+                      startsWith = $.grep(FabricsData, function (value) {
+                        return startsWithMatcher.test(
+                          value.value || value.label || value
+                        );
+                      }),
+                      containsMatcher = new RegExp(term, "i"),
+                      contains = $.grep(FabricsData, function (value) {
+                        return (
+                          $.inArray(value, startsWith) < 0 &&
+                          containsMatcher.test(
+                            value.value || value.label || value
+                          )
+                        );
+                      });
+  
+                    response(startsWith.concat(contains));
+                  },
+                  select: function (event, ui) {
+                    event.preventDefault();
+                    $(this).val(ui.item.label);
+                    $("#fabricsname").val(
+                      ui.item.value.replace(/(\r\n|\n|\r)/gm, "")
+                    );
+                    filterData();
+                  },
+                });
+              }
+            }
+          }
+        });
+        $("#mainscreen").keyup(function (e) {
+          if (e.which == 38 || e.which == 40 || e.which == 13) {
+            return;
+          } else {
+            var mainscreen = $(this).val();
+            //alert(mainscreen);
+            if (mainscreen !== "") {
+              if (MainScreenData.length > 0) {
+                ////console.log("----" + mainscreen);
+                $("#mainscreen").autocomplete({
+                  minLength: 1,
+                  source: function (request, response) {
+                    var term = $.ui.autocomplete.escapeRegex(request.term),
+                      startsWithMatcher = new RegExp("^" + term, "i"),
+                      startsWith = $.grep(MainScreenData, function (value) {
+                        return startsWithMatcher.test(
+                          value.value || value.label || value
+                        );
+                      }),
+                      containsMatcher = new RegExp(term, "i"),
+                      contains = $.grep(MainScreenData, function (value) {
+                        return (
+                          $.inArray(value, startsWith) < 0 &&
+                          containsMatcher.test(
+                            value.value || value.label || value
+                          )
+                        );
+                      });
+  
+                    response(startsWith.concat(contains));
+                  },
+                  select: function (event, ui) {
+                    event.preventDefault();
+                    $(this).val(ui.item.label);
+                    $("#mainscreen").val(
+                      ui.item.value.replace(/(\r\n|\n|\r)/gm, "")
+                    );
+                  },
+                });
+              }
+            }
+          }
+        });
+        $("#qualname").keyup(function (e) {
+          if (e.which == 38 || e.which == 40 || e.which == 13) {
+            return;
+          } else {
+            var qualname = $(this).val();
+            //alert(qualname);
+            if (qualname !== "") {
+              if (QualData.length > 0) {
+                ////console.log("----" + qualname);
+                $("#qualname").autocomplete({
+                  minLength: 1,
+                  source: function (request, response) {
+                    var term = $.ui.autocomplete.escapeRegex(request.term),
+                      startsWithMatcher = new RegExp("^" + term, "i"),
+                      startsWith = $.grep(QualData, function (value) {
+                        return startsWithMatcher.test(
+                          value.value || value.label || value
+                        );
+                      }),
+                      containsMatcher = new RegExp(term, "i"),
+                      contains = $.grep(QualData, function (value) {
+                        return (
+                          $.inArray(value, startsWith) < 0 &&
+                          containsMatcher.test(
+                            value.value || value.label || value
+                          )
+                        );
+                      });
+  
+                    response(startsWith.concat(contains));
+                  },
+                  select: function (event, ui) {
+                    event.preventDefault();
+                    $(this).val(ui.item.value);
+                    $("#qualcode").val(
+                      ui.item.label.replace(/(\r\n|\n|\r)/gm, "")
+                    );
+                  },
+                });
+              }
+            }
+          }
+        });
+      });
+    });
+
+
+    function SelectQualOptions(IdQualOptions) {
+      var xQual = document.getElementById(IdQualOptions);
+      var categories = [];
+
+      $.each(QualData, function (index, value) {
+          if ($.inArray(value.QT, categories) === -1) {
+              categories.push(value.QT);
+          }
+      });
+      QualArr = categories;
+      ////console.log(QualArr);
+      if (QualArr.length > 0) {
+          QualArr.forEach(function (element, index) {
+            if(element!=null && element !=""){
+              var option = document.createElement("option");
+              option.value = element;
+              option.text = element;
+              xQual.add(option, xQual[0]);
+            } //  alert(element.Qual);
+          });
+          
+      var option = document.createElement("option");
+      option.value = "";
+      option.text = "";
+      xQual.add(option, xQual[0]);
+      xQual.value="";
+      }
+  }
+
+  function setData(){
+    fabricsname =$('#fabricsname').val();
+    mainscreen =$('#mainscreen').val();
+    qualname =$('#qualname').val();
+    qualcode =$('#qualcode').val();
+    packing =$('#packing').val();
+    
+    if(qualname==""){
+      qualcode="";
+    }
+    var QualArr=QualData;
+    if(fabricsname!=null && fabricsname !=""){
+      QualArr=QualArr.filter(function(d){
+        return d.BQ==fabricsname;
+      })
+    }
+    if(mainscreen!=null && mainscreen !=""){
+      QualArr=QualArr.filter(function(d){
+        return d.MS==mainscreen;
+      })
+    }
+    if(qualcode!=null && qualcode !=""){
+      QualArr=QualArr.filter(function(d){
+        return d.value==qualcode;
+      })
+    }
+    if(packing!=null && packing !=""){
+      QualArr=QualArr.filter(function(d){
+        return d.QT==packing;
+      })
+    }
+    ////console.log(QualArr);
+    openProductList(QualArr);
+  }
+
+  
+//----openProductList
+function openProductList(data){
+  window.flutter_inappwebview.callHandler("openProductList",  (data)).then(function (result) {
+            resolve(key);
+          },
+          function (err) {
+            reject(key);
+          }
+        );
+        try {
+        } catch (error) {}
+  }
+
+</script>

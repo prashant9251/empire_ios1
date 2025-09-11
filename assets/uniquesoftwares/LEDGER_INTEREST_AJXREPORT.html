@@ -1,0 +1,238 @@
+<html>
+
+<head>
+    <title>LEDGER </title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.2/jquery.js"></script>
+    <script src="1.10.4/jquery-ui.js"></script>
+    <script src="js/jsGetUrlParams.js"></script>
+
+</head>
+<Style>
+    td {
+        max-width: 193px;
+        word-wrap: break-word;
+    }
+</Style>
+
+<body>
+    <div align="center" class="table-responsive">
+        <table id="result" class="content-table">
+
+        </table>
+    </div>
+    <div style="display: none;" id="loader">
+        <div class="loader"></div>
+        <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+    </div>
+
+
+    <!-- //------------- -->
+
+
+    <div id="InterestDateShow" class="modal" style="overflow: auto;height:100%">
+        <div id="InterestDateShowContent" class="modal-content">
+            <div class="modal-header" style="text-align:left;">
+                <h2>Calculation</h2>
+                <span class="close" onclick="closeInterestDateShow();">&times;</span><br>
+            </div>
+            <div class="modal-body" style="    width: 100%;">
+                <div class="tab">
+                    <button class="tablinks" onclick="openTab(event, 'INTERESTCALCULATION')">INTEREST DHARA</button>
+                </div>
+                <div id="INTERESTCALCULATION" class="tabcontent">
+
+
+                    <div style="display:flex;">
+                        <div style="width:50%;"><b>PAYMENT DATE :</b></div>
+                        <div style="width:50%;text-align:right;">
+                            <input type="date" class="form-control" style="min-width: 50%;text-align:right;"
+                                id="PaymentDate" />
+                        </div>
+                    </div>
+
+
+                    <div style="display:flex;">
+                        <div style="width:50%;"><b>INTEREST RATE % :</b></div>
+                        <div style="width:50%;text-align:right;">
+                            <input type="text" class="form-control" style="min-width: 50%;text-align:right;"
+                                onkeyup="localStorageSave('interestRate');" id="interestRate" />
+                        </div>
+                    </div>
+
+
+                    <div style="display:flex;">
+                        <div style="width:50%;"><b>GRACE DAYS :</b></div>
+                        <div style="width:50%;text-align:right;">
+                            <input type="text" class="form-control" style="min-width: 50%;text-align:right;"
+                                onkeyup="localStorageSave('GraceDays');" id="GraceDays" />
+                        </div>
+                    </div>
+
+
+
+                    <div style="display:flex;">
+                        <div style="width:50%;"><b>DAYS IN YEAR :</b></div>
+                        <div style="width:50%;text-align:right;">
+                            <input type="text" class="form-control" style="min-width: 50%;text-align:right;"
+                                onkeyup="localStorageSave('DaysInYear');" id="DaysInYear" />
+                        </div>
+                    </div>
+
+                </div>
+
+                <div style="display:flex;">
+                    <div style="width:50%;"></div>
+                    <div style="width:50%;text-align:right;"><button class="btn" onclick="loadCall();"> GENERATE
+                            REPORT</button class="btn"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+</html>
+<script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+</script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jsGetYearChange.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsGetDaysDif.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jsLoadCallLEDGER_INTEREST.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+
+<script>
+    var Data = [];
+    var finalData;
+    var offset;
+    var isDataLoaded = false;
+    var finalLimit;
+    $(document).ready(function () {
+        load_data();
+    });
+    var tr = '';
+    var FIRM = getUrlParams(url, "FIRM");
+    var cno = '';
+    var EMP;
+    var partyname = getUrlParams(url, "partyname");
+    var partycode = getUrlParams(url, "partycode");
+    var broker = '';
+    var CITY = '';
+    var haste = '';
+    var CrDrEntryType = getUrlParams(url, "CrDrEntryType");
+    var fromdate = getUrlParams(url, "search_FromDate");
+    var todate = getUrlParams(url, "search_ToDate");
+    var CrntYearStartdate = getUrlParams(url, "CrntYearStartdate");
+
+    if (fromdate == '' || fromdate == null) {
+        if (CrntYearStartdate != '' || CrntYearStartdate != null) {
+            fromdate = CrntYearStartdate;
+        }
+    }
+    var DataCompmst;
+    if (FIRM != '') {
+        jsGetObjectByKey(DSN, "COMPMST", "").then(function (data) {
+            //console.log(data);
+            DataCompmst = data;
+            for (var i = 0; i < DataCompmst.length; i++) {
+                if (DataCompmst[i].FIRM == FIRM) {
+                    cno = DataCompmst[i].CNO;
+                }
+            }
+        })
+    }
+    document.title = "LEDGER " + partyname + " " + broker + " " + CITY;
+    var InterestRate = "";
+    var GraceDaysVal = ""
+    var DaysInYear = "";
+    var BLS = [];
+    function load_data() {
+        jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+            masterData = data;
+            try { AddHeaderTbl(); } catch (error) { }
+            jsGetObjectByKey(DSN, "BLS", "").then(function (data) {
+                BLS = data;
+                jsGetObjectByKey(DSN, "LEDGER", "").then(function (data) {
+                    Data = data;
+                    interestParams().then(function (d) {
+                        //console.log(Data);
+                    });
+                });
+            });
+        })
+    }
+
+
+    function interestParams() {
+        return new Promise(function (resolve, reject) {
+            var OutstandingCalculate = document.getElementById("InterestDateShow");
+            OutstandingCalculate.style.display = "block";
+            document.getElementById("INTERESTCALCULATION").style.display = "block";
+            var now = new Date();
+
+            var day = ("0" + now.getDate()).slice(-2);
+            var month = ("0" + (now.getMonth() + 1)).slice(-2);
+            var today = now.getFullYear() + "-" + (month) + "-" + (day);
+            $('#PaymentDate').val(today);
+            getlocalStorageVal("interestRate");
+            getlocalStorageVal("GraceDays");
+            getlocalStorageVal("DaysInYear");
+        })
+
+    }
+    function interestParamsHide() {
+        var OutstandingCalculate = document.getElementById("InterestDateShow");
+        OutstandingCalculate.style.display = "none";
+    }
+
+    function openTab(evt, cityName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+    function localStorageSave(id) {
+        var val = $('#' + id).val();
+        localStorage.setItem(id, val);
+    }
+    function getlocalStorageVal(key) {
+        val = localStorage.getItem(key);
+        $('#' + key).val(val);
+    }
+
+
+
+    function getBLS(CNO, TYPE, VNO) {
+        return BLS.filter(function (data) {
+            return data.billDetails.some((billDetails) => billDetails['CNO'] === CNO &&
+                billDetails['TYPE'] === TYPE &&
+                billDetails['VNO'] === VNO);
+        }).map(function (subdata) {
+            return {
+                code: subdata.code,
+                billDetails: subdata.billDetails.filter(function (billDetails) {
+                    return (billDetails['CNO'] === CNO &&
+                        billDetails['TYPE'] === TYPE &&
+                        billDetails['VNO'] === VNO);
+                })
+            }
+        })
+    }
+</script>
+<script src="js/jsHeaderTbl.js"></script>

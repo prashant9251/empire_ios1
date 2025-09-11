@@ -1,0 +1,164 @@
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Ac Group Book</title>
+    <style>
+        @media print {
+            a[href]::after {
+                content: none !important;
+            }
+
+            #result {
+                width: 90%;
+            }
+
+            #hideAbleDiv {
+                display: none;
+            }
+
+            .content-table th {
+                font-size: 30px;
+            }
+        }
+    </style>
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.2/jquery.js"></script>
+    <script src="1.10.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="css/styleAutoComplete.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jsGetUrlParams.js"></script>
+
+</head>
+
+<body>
+    <div style="background-color: #588c7e;" id="hideAbleDiv">
+        <div>
+            <a class="navbar-brand" style="color:white" href="#"> Ac Group Book</a>
+        </div>
+        <div class="form-row" align="center">
+            <div class="col form-group">
+                <input type="text" autocomplete="off" onfocus="this.value=''" name="partyname" id="partyname"
+                    onchange="" placeholder="SERACH BY CUSTOMER NAME" class="form-control" />
+            </div>
+            <div class="col form-group">
+                <input type="text" autocomplete="off" onfocus="this.value=''" name="searchByAnything"
+                    id="searchByAnything" onchange="" placeholder="SEARCH" class="form-control" />
+            </div>
+            <div class="col form-group" align="center">
+                <span class="btn brn-primary" onclick="loadparty();"
+                    style="color:white;background-color: darkslategrey;"> SEARCH </span>
+            </div>
+        </div>
+        <input type="hidden" name="partycode" id="partycode" onchange="" placeholder="SERACH BY CUSTOMER NAME"
+            class="form-control" />
+    </div>
+    <!-- <span class="" onclick="clear_search();" style="color:white;"> Clear </span> -->
+
+    <div style="size:10px;" id="partyCard" align="center">
+        <table id="result" class="content-table">
+
+        </table>
+    </div>
+
+</body>
+
+
+<script>
+    // var DSN = 'MTEx2021';
+    // var Db = '111';
+    // var Crntyear = '2021';
+
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+</script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsLoadCallACGROUP.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script>
+    var Data;
+    var partycode;
+    var SubUserPermitionArray;
+    $(document).ready(function () {
+        jsGetObjectByKey(DSN, "ACGROUP", "").then(function (data) {
+            masterData = data;
+            $("#partyname").keyup(function (e) {
+                if (e.which == 38 || e.which == 40 || e.which == 13) {
+                    return;
+                } else {
+                    var partyname = $(this).val();
+                    //alert(partyname);
+                    if (partyname !== "") {
+                        if (masterData.length > 0) {
+                            //console.log("----" + partyname);
+                            $("#partyname").autocomplete({
+                                minLength: 1,
+                                source: function (request, response) {
+                                    var term = $.ui.autocomplete.escapeRegex(
+                                        request.term
+                                    ),
+                                        startsWithMatcher = new RegExp("^" + term, "i"),
+                                        startsWith = $.grep(masterData, function (
+                                            value
+                                        ) {
+                                            return startsWithMatcher.test(
+                                                value.label || value.value || value
+                                            );
+                                        }),
+                                        containsMatcher = new RegExp(term, "i"),
+                                        contains = $.grep(masterData, function (value) {
+                                            return (
+                                                $.inArray(value, startsWith) < 0 &&
+                                                containsMatcher.test(
+                                                    value.label || value.value || value
+                                                )
+                                            );
+                                        });
+
+                                    response(startsWith.concat(contains));
+                                },
+                                select: function (event, ui) {
+                                    event.preventDefault();
+                                    $(this).val(ui.item.label);
+                                    $("#partycode").val(ui.item.value);
+                                    $("#partyname").val(ui.item.partyname);
+                                    partycode = ui.item.value;
+                                    loadCall(partycode);
+                                },
+                            });
+                        }
+                    }
+                }
+            });
+
+
+            Data = data;
+            partycode = $('#partyname').val();
+            loadCall(partycode);
+        });
+    });
+
+    function load_data() {
+
+    }
+
+    function loadparty() {
+        partycode = $('#partycode').val();
+        searchByAnything = $('#searchByAnything').val();
+        loadCall(partycode, searchByAnything);
+    }
+
+    function clear_search() {
+        $('#partyname').val('');
+        $('#partycode').val('');
+        loadCall("");
+    }
+    if(IosPlateForm=="true"){
+        $('head').append('<meta name="viewport" content="width=device-width, initial-scale=.7, maximum-scale=100, user-scalable=no" />');
+    }else{
+    }
+</script>

@@ -1,0 +1,82 @@
+import 'package:flutter/material.dart';
+
+Widget buildTextFormField(
+  context, {
+  String? labelText,
+  String? hintText,
+  TextEditingController? controller,
+  String? initialValue,
+  Function(String)? onChanged,
+  Function(String)? onFieldSubmitted,
+  Function()? onTap,
+  TextInputType? keyboardType,
+  int? maxLength,
+  bool readOnly = false,
+  String? Function(String?)? validator,
+  labelStyle,
+  helperText,
+  helperStyle,
+  counterText,
+  maxLines = 1,
+  autofocus = false,
+  textInputAction = TextInputAction.next,
+  bool obscureText = false,
+  prefix = null,
+  prefixIcon = null,
+  suffix = null,
+  suffixIcon = null,
+}) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 10),
+    child: TextFormField(
+      style: TextStyle(color: Colors.black),
+      obscureText: obscureText,
+      controller: controller,
+      initialValue: initialValue,
+      onChanged: onChanged,
+      onFieldSubmitted: onFieldSubmitted,
+      onTap: onTap,
+      autofocus: autofocus,
+      keyboardType: keyboardType,
+      maxLength: maxLength,
+      readOnly: readOnly,
+      maxLines: maxLines,
+      textInputAction: textInputAction,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        labelText: labelText,
+        labelStyle: labelStyle,
+        helperText: helperText,
+        helperStyle: helperStyle,
+        counterText: counterText,
+        hintText: hintText,
+        filled: true,
+        fillColor: Colors.white,
+        prefix: prefix,
+        suffix: suffix,
+        prefixIcon: prefixIcon,
+        suffixIcon: suffixIcon,
+        contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.red, width: 1.5),
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.red, width: 1.5),
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+      ),
+      validator: validator,
+    ),
+  );
+}

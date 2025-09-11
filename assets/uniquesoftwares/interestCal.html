@@ -1,0 +1,378 @@
+<script src="js/jsGetUrlParams.js"></script>
+
+<link rel="stylesheet" href="css/styleAutoComplete.css">
+<link rel="stylesheet" href="css/stylePrint.css">
+<link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<link href="1.10.4/jquery-ui.css" rel="stylesheet">
+<script src="1.10.2/jquery.js"></script>
+<script src="1.10.4/jquery-ui.js"></script>
+<script>
+    var url = window.location.href;
+    var MCNO = getUrlParams(url, "MCNO");
+    var MTYPE = getUrlParams(url, "MTYPE");
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+</script>
+<script src="js/localStorageSet.js"></script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsStoreDatatoIndexeddb.js"></script>
+<script src="js/jsPopUpTblSetting.js"></script>
+<script src="js/jsoptionSeriesSelect.js"></script>
+<script src="js/jsSearchfrm.js"></script>
+<script src="js/jsoptionFirmSelect.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsgetValueNotDefineNo.js"></script>
+<script src="js/jsGetDaysDif.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+
+<html>
+
+<head>
+    <title>INTEREST CALCULATOR</title>
+
+</head>
+
+<body>
+
+    <div class="container" id="FRM" style="width: 100%;">
+
+        <!-- <div class="bgimg" align="center">
+  <div class="middle">
+    <h1>COMING SOON</h1>
+    <hr>
+  </div>
+  <div class="bottomleft">
+  </div>
+</div> -->
+        <hr>
+
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <header class="card-header">
+                        <div style="display: flex;">
+                            <div style="float:left;text-align: left;width: 50%;">
+                                <h4 class="card-title mt-2">INTEREST CALCULATOR</h4>
+                            </div>
+                            <div style="float: right;text-align: right;width: 50%;">
+                                <h4 style="color: darkblue;" id="vnoId"> 0</h4>
+                            </div>
+                        </div>
+                    </header>
+                    <article class="card-body">
+                        <a style="color:blue;"> </a>
+                        <form action="Billpdf.php" method="get" target="_blank">
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    BILL NO.
+                                    <input type="text" class="form-control" autocomplete="off" onchange="" name="billNo"
+                                        id="billNo" placeHolder="ENTER BILL NO">
+                                </div>
+                                <div class="col form-group">
+                                    BILL DATE
+                                    <input type="date" class="form-control" autocomplete="off" onchange=""
+                                        name="billDate" id="billDate">
+                                </div>
+
+                            </div>
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    BILL AMT
+                                    <input type="text" class="form-control" autocomplete="off"
+                                        oninput="setDiscountAmt();" name="billAmt" id="billAmt"
+                                        placeHolder="ENTER BILL AMT">
+                                </div>
+                                <div class="col form-group">
+                                    DISCOUNT %
+                                    <input type="text" class="form-control" autocomplete="off"
+                                        oninput="setDiscountAmt();" name="dhara" id="dhara" placeHolder="ENTER DHARA">
+                                </div>
+                                <div class="col form-group">
+                                    DISCOUNT AMT
+                                    <input type="text" class="form-control" autocomplete="off"
+                                        oninput="setDiscountAmt();" name="discount" id="discount"
+                                        placeHolder=" ENTER DISCOUNT">
+                                </div>
+
+                            </div>
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    PAY AMT
+                                    <input type="text" class="form-control" autocomplete="off"
+                                        oninput="setDiscountAmtLess();" name="payAmt" id="payAmt" placeHolder="PAY AMT">
+                                </div>
+                                <div class="col form-group">
+                                    NET AMT
+                                    <input type="text" class="form-control" autocomplete="off" onchange="" name="netAmt"
+                                        id="netAmt" placeHolder="NET AMT">
+                                </div>
+                                <div class="col form-group">
+                                    CHQ. DATE
+                                    <input type="date" class="form-control" autocomplete="off" oninput="setChqDays();"
+                                        name="chqDate" id="chqDate">
+                                </div>
+
+                            </div>
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    CHQ. DAYS
+                                    <input type="text" class="form-control" autocomplete="off" onchange=""
+                                        name="chqDays" id="chqDays" placeHolder="CHQ. DAYS">
+                                </div>
+                                <div class="col form-group">
+                                    GRACE DAYS
+                                    <input type="text" class="form-control" autocomplete="off"
+                                        oninput="setInterestDays();" name="graceDays" id="graceDays"
+                                        placeHolder="GRACE DAYS">
+                                </div>
+                                <div class="col form-group">
+                                    INTEREST RATE
+                                    <input type="text" class="form-control" autocomplete="off"
+                                        oninput="setInterestAmt();" name="interestrate" id="interestrate"
+                                        placeHolder="INTEREST RATE">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    INTEREST DAYS
+                                    <input type="text" class="form-control" autocomplete="off" onchange=""
+                                        name="interestDays" id="interestDays" placeHolder="INTEREST DAYS">
+                                </div>
+                                <div class="col form-group">
+                                    INTEREST AMT
+                                    <h3 id="interestAmt">0.00</h3>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+                                <a id="saveData" class="btn btn-primary btn-block" name="saveData" onclick="save() ;"
+                                    target="_blank">SAVE</a>
+                        </form>
+
+                    </article>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div align="center" class="table-responsive">
+        <table class="table" id="INTEREST_SHEET_TABLE">
+
+        </table>
+    </div>
+
+
+</body>
+<script>
+</script>
+<script type="text/javascript">
+    var billDate;
+    var chqDate;
+    var billNo;
+    var billAmt = 0;
+    var dhara = 0;
+    var interestrate = 0;
+    var graceDays = 0;
+    var interestAmt = 0;
+    var discount = 0;
+    var payAmt = 0;
+    var netAmt = 0;
+    var chqDays = 0;
+    var interestDays = 0;
+    var SaveArray=[];
+    var thAdded = false;
+
+    var totalinterestAmt = 0;
+    var totalbillAmt = 0;
+    var totalpayAmt = 0;
+    var totalnetAmt = 0;
+    var totaldiscount = 0;
+    jsGetObjectByKey(DSN, "EMP", "").then(function (data) {
+        SaveArray = data;
+        //console.log(SaveArray);
+        setVnoId();
+        makeTableFromArray(SaveArray);
+    })
+
+
+    function setVnoId() {
+        $('#vnoId').html(SaveArray.length + 1);
+    }
+    $(document).ready(function () {
+        document.getElementById('billDate').value = toDaysDateInStanderedFormate("-");
+    });
+    function setChqDays() {
+        billDate = $('#billDate').val();
+        chqDate = $('#chqDate').val();
+        chqDays = getDaysDif(billDate, chqDate);
+        $('#chqDays').val(chqDays);
+    }
+    function setDiscountAmtLess() {
+        payAmt = $('#payAmt').val();
+        discount = $('#discount').val();
+        discount = discount == "NaN" || discount == null || discount == "" ? 0 : discount;
+        //console.log(discount);
+        netAmt = parseFloat(payAmt) - parseFloat(discount);
+        $('#netAmt').val((netAmt));
+    }
+    function setDiscountAmt() {
+        billAmt = $('#billAmt').val();
+        dhara = $('#dhara').val();
+        discount = (parseFloat((billAmt)) * parseFloat(dhara)) / 100;
+        $('#discount').val(discount);
+    }
+    function clear() {
+        billAmt = 0;
+        dhara = 0;
+        interestrate = 0;
+        graceDays = 0;
+        interestAmt = 0;
+        discount = 0;
+        payAmt = 0;
+        netAmt = 0;
+        chqDays = 0;
+        interestDays = 0;
+        $('#billNo').val('');
+        $('#billDate').val('');
+        $('#billAmt').val('');
+        $('#dhara').val('');
+        $('#discount').val('');
+        $('#payAmt').val('');
+        $('#netAmt').val('');
+        $('#chqDate').val('');
+        $('#interestrate').val('');
+        $('#chqDays').val('');
+        $('#graceDays').val('');
+        $('#interestDays').val('');
+        $('#interestAmt').html(0.00);
+    }
+    function setInterestDays() {
+        chqDays = $('#chqDays').val();
+        graceDays = $('#graceDays').val();
+        interestDays = (chqDays) - (graceDays);
+        $('#interestDays').val(interestDays);
+    }
+    function setInterestAmt() {
+        netAmt = parseInt($('#netAmt').val());
+        interestrate = parseInt($('#interestrate').val());
+        interestDays = parseInt($('#interestDays').val());
+        interestAmt = netAmt * interestDays / 365 * interestrate / 100;
+        $('#interestAmt').html(parseInt(interestAmt));
+
+    }
+    function save() {
+        //console.log(interestrate);
+        if (interestAmt && interestAmt !== NaN && interestAmt !== "NaN") {
+            var obj = {};
+            obj.VnoId = parseInt($('#vnoId').html());
+            obj.billNo = billNo;
+            obj.billDate = billDate;
+            obj.billAmt = billAmt;
+            obj.dhara = dhara;
+            obj.chqDate = chqDate;
+            obj.interestrate = interestrate;
+            obj.graceDays = graceDays;
+            obj.interestAmt = interestAmt;
+            obj.discount = discount;
+            obj.payAmt = payAmt;
+            obj.netAmt = netAmt;
+            obj.chqDays = chqDays;
+            obj.interestDays = interestDays;
+            SaveArray.push(obj);
+            ArraySaveToDatabase(SaveArray);
+        } else {
+            //console.log(interestrate);
+            alert("Interest Amount is Blank");
+        }
+    }
+
+    function ArraySaveToDatabase(SaveArray) {
+        storedatatoIndexdb(DSN, "EMP", JSON.stringify(SaveArray)).then(function (data) {
+            setVnoId();
+            thAdded = false
+            clear();
+            makeTableFromArray(SaveArray);
+        });
+    }
+    function makeTableFromArray(Array) {
+        var table = document.getElementById("INTEREST_SHEET_TABLE");
+        $("#INTEREST_SHEET_TABLE").empty();
+        if (thAdded == false) {
+            row = table.insertRow(0);
+            row.insertCell(0).innerHTML = 'BILL NO.';
+            row.insertCell(1).innerHTML = 'BILL DATE';
+            row.insertCell(2).innerHTML = 'BILL AMT';
+            row.insertCell(3).innerHTML = 'DHARA';
+            row.insertCell(4).innerHTML = 'DISCOUNT';
+            row.insertCell(5).innerHTML = 'PAY AMT.';
+            row.insertCell(6).innerHTML = 'NET AMT.';
+            row.insertCell(7).innerHTML = 'CHQ.DATE.';
+            row.insertCell(8).innerHTML = 'INT RATE';
+            row.insertCell(9).innerHTML = 'CHQ DAYS';
+            row.insertCell(10).innerHTML = 'GRACE DAYS';
+            row.insertCell(11).innerHTML = 'INT DAYS';
+            row.insertCell(12).innerHTML = 'INT AMT.';
+            row.insertCell(13).innerHTML = 'ACT';
+            thAdded = true;
+        }
+        totalinterestAmt = 0;
+        totalbillAmt = 0;
+        totalpayAmt = 0;
+        for (var i = 0; i < Array.length; i++) {
+            var row = table.insertRow(i + 1);
+            row.insertCell(0).innerHTML = getValueNotDefine(Array[i].billNo);
+            row.insertCell(1).innerHTML = formatDate(Array[i].billDate);
+            row.insertCell(2).innerHTML = Array[i].billAmt;
+            row.insertCell(3).innerHTML = Array[i].dhara;
+            row.insertCell(4).innerHTML = Array[i].discount;
+            row.insertCell(5).innerHTML = Array[i].payAmt;
+            row.insertCell(6).innerHTML = Array[i].netAmt;
+            row.insertCell(7).innerHTML = formatDate(Array[i].chqDate);
+            row.insertCell(8).innerHTML = Array[i].interestrate;
+            row.insertCell(9).innerHTML = Array[i].chqDays;
+            row.insertCell(10).innerHTML = Array[i].graceDays;
+            row.insertCell(11).innerHTML = Array[i].interestDays;
+            row.insertCell(12).innerHTML = parseInt(Array[i].interestAmt);
+            row.insertCell(13).innerHTML = `<input autocomplete="off" style="background: none; border: none;"type="submit" onclick="removeProduct('` + Array[i].VnoId + `',this);" value="&#10060;">`;
+
+            totalinterestAmt += parseInt(Array[i].interestAmt);
+            totalbillAmt += parseInt(Array[i].billAmt);
+            totalpayAmt += parseInt(Array[i].payAmt);
+            totalnetAmt += parseInt(Array[i].netAmt);
+            totaldiscount += parseInt(Array[i].discount);
+
+
+            if (i == Array.length - 1) {
+                var row = table.insertRow(i + 2);
+                row.insertCell(0).innerHTML = "TOTAL";
+                row.insertCell(1).innerHTML = "";
+                row.insertCell(2).innerHTML = totalbillAmt;
+                row.insertCell(3).innerHTML = "";
+                row.insertCell(4).innerHTML = totaldiscount;
+                row.insertCell(5).innerHTML = totalpayAmt;
+                row.insertCell(6).innerHTML = totalnetAmt;
+                row.insertCell(7).innerHTML = "";
+                row.insertCell(8).innerHTML = "";
+                row.insertCell(9).innerHTML = "";
+                row.insertCell(10).innerHTML = "";
+                row.insertCell(11).innerHTML = "";
+                row.insertCell(12).innerHTML = totalinterestAmt;
+                row.insertCell(13).innerHTML = "";
+            }
+        }
+    }
+    function removeProduct(ID, btn) {
+        SaveArray = SaveArray.filter(function (d) {
+            return (d.VnoId != ID);
+        })
+        ArraySaveToDatabase(SaveArray);
+        //console.log(SaveArray);
+        var row = btn.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+    }
+
+</script>

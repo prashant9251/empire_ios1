@@ -1,0 +1,247 @@
+<html>
+
+<head>
+
+  <title>BILL</title>
+  <link rel="stylesheet" type="text/css" href="css/billPdf.css">
+  <script src="3.3.1/jquery.min.js"></script>
+  <script src="3.3.7/bootstrap.min.js"></script>
+  <script src="js/jsGetUrlParams.js"></script>
+  <style>
+    .hcategory {
+      display: none;
+    }
+
+    .hNetMts {
+      display: none;
+    }
+
+    .hLessFold {
+      display: none;
+    }
+
+    .hDiscRate {
+      display: none;
+    }
+  </style>
+</head>
+
+<body style="font-family: serif;">
+  <div style="display: none;" id="loader">
+    <div class="loader"></div>
+    <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+  </div>
+</body>
+<script>
+  var url = window.location.href;
+  var DSN = getUrlParams(url, "DatabaseSource");
+  var Crntyear = getUrlParams(url, "Currentyear");
+  var ClDb = DSN.replace(Crntyear, "");
+</script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/getDataUserSetting.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jstoFixedNumber.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsGetDaysDif.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jsgetValueNotDefineNo.js"></script>
+<script src="js/jsGetYearChange.js"></script>
+<script src="js/creditDebitPurchaseBill.js"></script>
+<script>
+  var IDE = (getUrlParams(url, "IDE"));
+  var VNO = (getUrlParams(url, "VNO"));
+  var YearChange = (getUrlParams(url, "YearChange"));
+  var CrntyearSelectYear;
+  var FIRM = (getUrlParams(url, "FIRM"));
+  var cno = '';
+  DataCompmst = JSON.parse(localStorage.getItem("COMPMST"));
+  if (FIRM != '') {
+    for (var i = 0; i < DataCompmst.length; i++) {
+      if (DataCompmst[i].FIRM == FIRM) {
+        cno = DataCompmst[i].CNO;
+      }
+    }
+  }
+
+  var Data;
+  var partyname = getUrlParams(url, "partyname");
+  var partycode = (getUrlParams(url, "partycode"));
+  var ccd = getUrlParams(url, "ccd");
+  if (partyname == '') {
+    partycode = '';
+  }
+  var broker = getUrlParams(url, "broker");
+  var haste = getUrlParams(url, "haste");
+  var CITY = getUrlParams(url, "city");
+  var fromdate = getUrlParams(url, "search_FromDate");
+  var todate = getUrlParams(url, "search_ToDate");
+  var CrntYearStartdate = getUrlParams(url, "CrntYearStartdate");
+  var pdfBillType = getUrlParams(url, "pdfBillType");
+  if (pdfBillType == 'BULK') {
+    if (fromdate == '' || fromdate == null) {
+      if (CrntYearStartdate != '' || CrntYearStartdate != null) {
+        fromdate = CrntYearStartdate;
+      }
+    }
+  }
+  $(document).ready(function () {
+    $("#loader").addClass('has-loader');
+    load_data();
+  });
+
+  function load_data() {
+    try {
+
+      jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+        masterData = data;
+        jsGetObjectByKey(DSN, "BLS", "").then(function (dataBLS) {
+          Data = dataBLS;
+          // Data = Data.sort(function (a, b) {
+          //   if (a.code < b.code) {
+          //     return -1;
+          //   }
+          //   if (a.code > b.code) {
+          //     return 1;
+          //   }
+          //   return 0;
+          // })
+          //console.log(IDE, Data);
+
+          if (pdfBillType == 'BULK') {
+            Data = Data.filter(function (data) {
+              return data.billDetails.some((bill) => (bill['DT'] != null && bill['DT'] != ""));
+            }).map(function (subdata) {
+              return {
+                COD: subdata.COD,
+                ATP: subdata.ATP,
+                CT: subdata.CT,
+                CG: subdata.CG,
+                billDetails: subdata.billDetails.filter(function (bill) {
+                  return (bill['DT'] != null && bill['DT'] != "");
+                })
+              }
+            })
+            Data = Data.filter(function (data) {
+              return data.billDetails.some((bill) => (bill.DT.trim().toUpperCase().indexOf('OS') > -1));
+            }).map(function (subdata) {
+              return {
+                COD: subdata.COD,
+                ATP: subdata.ATP,
+                CT: subdata.CT,
+                CG: subdata.CG,
+                billDetails: subdata.billDetails.filter(function (bill) {
+                  return (bill.DT.trim().toUpperCase().indexOf('OS') > -1);
+                })
+              }
+            })
+          }
+
+          if (IDE != '' && IDE != null) {
+            Data = Data.filter(function (data) {
+              return data.billDetails.some((billDetails) => billDetails['IDE'].toUpperCase() == IDE.toUpperCase());
+            }).map(function (subdata) {
+              return {
+                COD: subdata.COD,
+                ATP: subdata.ATP,
+                CT: subdata.CT,
+                CG: subdata.CG,
+                billDetails: subdata.billDetails.filter(function (billDetails) {
+                  return ((billDetails['IDE'].toUpperCase() == IDE.toUpperCase()));
+                })
+              }
+            })
+          }
+          // //console.log(IDE, Data);
+          if (this.cno != '' && this.cno != null) {
+            Data = Data.filter(function (data) {
+              return data.billDetails.some((billDetails) => billDetails['CNO'] === this.cno);
+            }).map(function (subdata) {
+              return {
+                COD: subdata.COD,
+                ATP: subdata.ATP,
+                CT: subdata.CT,
+                CG: subdata.CG,
+                billDetails: subdata.billDetails.filter(function (billDetails) {
+                  return (billDetails['CNO'] === this.cno);
+                })
+              }
+            })
+          }
+          //console.log(Data);
+
+          if (partycode != '' && partycode != null) {
+            Data = Data.filter(function (data) {
+              return data.COD == partycode;
+            })
+          }
+          //console.log(ccd, Data);
+          if (ccd != '' && ccd != null) {
+            Data = Data.filter(function (data) {
+              return data.billDetails.some((billDetails) => billDetails['ccd'] === ccd);
+            }).map(function (subdata) {
+              return {
+                COD: subdata.COD,
+                ATP: subdata.ATP,
+                CT: subdata.CT,
+                CG: subdata.CG,
+                billDetails: subdata.billDetails.filter(function (billDetails) {
+                  return (billDetails['ccd'] === ccd);
+                })
+              }
+            })
+          }
+          //console.log(ccd, Data);
+          if (fromdate != '' && fromdate != null) {
+            Data = Data.filter(function (data) {
+              return data.billDetails.some((billDetails) => new Date(billDetails.DTE) >= new Date(fromdate).setHours(0, 0, 0, 0));
+            }).map(function (subdata) {
+              return {
+                COD: subdata.COD,
+                ATP: subdata.ATP,
+                CT: subdata.CT,
+                CG: subdata.CG,
+                billDetails: subdata.billDetails.filter(function (billDetails) {
+                  return new Date(billDetails.DTE) >= new Date(fromdate).setHours(0, 0, 0, 0);
+                })
+              }
+            })
+          }
+          //console.log(fromdate, Data);
+
+          if (todate != '' && todate != null) {
+            Data = Data.filter(function (data) {
+              return data.billDetails.some((billDetails) => new Date(billDetails.DTE) <= new Date(todate).setHours(24, 0, 0, 0));
+            }).map(function (subdata) {
+              return {
+                COD: subdata.COD,
+                ATP: subdata.ATP,
+                CT: subdata.CT,
+                CG: subdata.CG,
+                billDetails: subdata.billDetails.filter(function (billDetails) {
+                  return new Date(billDetails.DTE) <= new Date(todate).setHours(24, 0, 0, 0);
+                })
+              }
+            })
+          }
+          //console.log(todate, Data);
+          BLS = Data;
+          //console.log(IDE, Data);
+
+          if (YearChange != '' && YearChange != null) {
+            yearChangeDSN = ClDb + YearChange;
+          } else {
+            yearChangeDSN = DSN;
+          }
+          jsGetObjectByKey(yearChangeDSN, "DET", "").then(function (dataDET) {
+            DETdata = dataDET;
+            loadBillPdfCall();
+          });
+        });
+      })
+    } catch (error) {
+      noteError(error);
+    }
+  }
+</script>

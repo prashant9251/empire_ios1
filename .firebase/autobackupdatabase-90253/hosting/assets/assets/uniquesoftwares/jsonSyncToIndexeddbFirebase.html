@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="js/jsGetUrlParams.js"></script>
+  <script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+    var CURRENT_YEAR = Currentyear;
+    var ClDb = DSN.replace(Currentyear, "");
+    var clnt = atob(ClDb);
+    //console.log(clnt);
+    Curentyearforlocalstorage = '2122'
+    var privateNetworkIp = getUrlParams(url, "privateNetworkIp");
+    var privateNetWorkSync = getUrlParams(url, "privateNetWorkSync");
+    var LFolder = getUrlParams(url, "LFolder");
+    var StorageType = getUrlParams(url, "StorageType");
+
+    //console.log("--ONLINE--" + navigator.onLine);
+    var Enavigator = navigator.onLine;
+
+  </script>
+  <script src="firebasejs/8.6.2/firebase-app.js"></script>
+  <script src="firebasejs/8.6.2/firebase-auth.js"></script>
+  <script src="firebasejs/8.6.2/firebase-database.js"></script>
+  <script src="firebasejs/8.6.2/firebase-storage.js"></script>
+  <script src="firebasejs/8.6.2/initializeFirebase.js"></script>
+  <script src="firebasejs/8.6.2/DataTrfirebase.js"></script>
+  <script src="js/jsGetObjectByKey.js"></script>
+  <title>CURRENT_YEAR</title>
+  <style>
+    #myProgress {
+      width: 100%;
+      background-color: grey;
+    }
+
+    #myBar {
+      width: 1%;
+      height: 30px;
+      background-color: #4CAF50;
+      text-align: center;
+      /* To center it horizontally (if you want) */
+      line-height: 30px;
+      /* To center it vertically */
+      color: white;
+    }
+  </style>
+  <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+  <script src="1.10.2/jquery.js"></script>
+  <script src="1.10.4/jquery-ui.js"></script>
+</head>
+
+<body>
+
+  <h2 id="currentYearHead">
+  </h2>
+  <div id="myProgress">
+    <div id="myBar"></div>
+  </div>
+  <div id="myPersent">1%</div>
+  <p id="demo">SYNC DATA</p>
+  <div id="forRetry"></div>
+
+  <!-- <script src="js/jsprevents.js"></script> -->
+  <script src="2.1.3/jquery.min.js"></script>
+
+  <script src="js/jsStoreDatatoIndexeddb.js"></script>
+  <script src="js/jsGetDateFormate.js"></script>
+
+  <script src="js/jscreateDatabase.js"></script>
+  <script src="jsKey.js"></script>
+  <script src="js/syncOperation.js"></script>
+
+  <script>
+
+    document.getElementById('currentYearHead').innerHTML = "YEAR-" + CURRENT_YEAR;
+    document.title = "YEAR-" + CURRENT_YEAR;
+    // key = ["OUTSTANDING"];
+
+    arr = [];
+    failArr = [];
+
+    var lastUpdatetime = "";
+
+    var newDate = new Date();
+    var width = 0;
+    var keyLength
+    function frame(width) {
+      var elem = document.getElementById("myBar");
+      elem.style.width = width + "%";
+      document.getElementById("myPersent").innerHTML = Math.round(width) + "%"
+      width = width;
+      if (width > 99) {
+        ExtraDataOpt();
+        alert(lastUpdatetime);
+        // document.location.href = "./../jsonHandler.php";
+      }      
+      changeprogressBar(width)
+    }
+    $(document).ready(function () {
+      load_Data(loacCall);
+    });
+    function load_Data(callback) {
+      year = ["2122", "2021"]
+      for (var i = 0; i < year.length; i++) {       
+        createDatabase(ClDb + year[i], keyArrayInDatabase);
+      }
+      callback();
+    }
+    function loacCall(load_Data) {
+      keyLength = key.length;
+      for (var i = 0; i < key.length; i++) {
+        if (FirebaseInitialize) {
+          loadDoc(key[i]);
+        }
+      }
+    }
+
+
+    // loadDoc("BLS");
+    function loadDoc(key) {
+      getliveData(key).then(function (liveData) {
+        // //console.log(SyncType, liveData)
+        if (key == 'TIME') {
+          if (liveData.length > 0) {
+            var TIMEarray = (liveData);
+            //console.log(TIMEarray);
+            if (TIMEarray.length > 0) {
+              if (TIMEarray[0].TIME != undefined) {
+                var TIME = TIMEarray[0].TIME;
+                lastUpdatetime = TIME;
+                if (lastUpdatetime == undefined || lastUpdatetime == null) {
+                  lastUpdatetime = "";
+                }
+              }
+            }
+          }
+        }
+        $('#demo').append(`<div id=` + key + `><h6>` + key + `</h6></div>`);
+        if (liveData.length > 0) {
+          switch (key) {
+              case "BLS":
+                SYNCBLS = liveData;
+                break;
+              case "OUTSTANDING":
+                SYNCOUTSTANDING = liveData;
+                break;
+              case "ACGROUP":
+                SYNCACGROUP = liveData;
+                break;
+              case "MST":
+                data = mstOpt(liveData);
+                break;
+            }
+          storedatatoIndexdb(DSN, key, JSON.stringify(liveData)).then(function (d) {
+            $('#' + key).html(`<h6><span style='font-size:30px;color:green;'>&#10004;</span>` + key + `</h6>`);
+            //   document.getElementById("demo").innerHTML = +" "+size
+            width = width + 100 / keyLength;
+            frame(width);
+          }, function (error) {
+          });
+        } else {
+          $('#' + key).html(`<h6><span style='font-size:30px;color:green;'>&times;</span>` + key + `</h6>`);
+          width = width + 100 / keyLength;
+          frame(width);
+        }
+      }).catch(function (err) {
+        //console.log(key, err);
+        $('#' + key).html(`<h6><span style='font-size:30px;color:green;'>&times;</span>` + key + `</h6>`);
+        width = width + 100 / keyLength;
+        frame(width);
+      })
+    }
+
+
+    function reloadPendingJson() {
+      $('#Errorkey').css("display", "none");
+      $('#Errorkey').hide();
+      for (var i = 0; i < failArr.length; i++) {
+        loadDoc(failArr[i]);
+      }
+
+    }
+    function changeprogressBar(persent) {
+      try {
+        Android.changeprogressBarTradingHome(persent);
+        if (persent > 99) {
+          if (Currentyear == Curentyearforlocalstorage) {
+            Android.TradingHomeSetNewUpdateDate(lastUpdatetime);
+          }
+        }
+      } catch (error) {
+
+      }
+    }
+
+
+  </script>
+
+</body>
+
+</html>

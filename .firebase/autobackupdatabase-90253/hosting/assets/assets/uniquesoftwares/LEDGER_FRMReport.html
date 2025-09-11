@@ -1,0 +1,204 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=100, user-scalable=no" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <script src="2.1.3/jquery.min.js"></script>
+  <script src="3.3.6/bootstrap.min.js"></script>
+  <link href="3.3.6/bootstrap.min.css" rel="stylesheet" />
+  <script src="js/jsGetUrlParams.js"></script>
+</head>
+
+<script>
+  var url = window.location.href;
+  var MCNO = getUrlParams(url, "MCNO");
+  var MTYPE = getUrlParams(url, "MTYPE");
+  var DSN = getUrlParams(url, "DatabaseSource");
+  var CURRENT_YEAR = getUrlParams(url, "Currentyear");
+
+    //alert(DSN);
+</script>
+<script src="js/localStorageSet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsStoreDatatoIndexeddb.js"></script>
+<script src="js/jsPopUpTblSetting.js"></script>
+<script src="js/jsoptionSeriesSelect.js"></script>
+<script src="js/jsoptionFirmSelect.js"></script>
+<script src="js/jsSearchfrm.js"></script>
+<html>
+
+<head>
+  <title>Ledger Report</title>
+
+  <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" />
+  <link href="1.10.4/jquery-ui.css" rel="stylesheet" />
+  <script src="1.10.4/jquery-ui.js"></script>
+  <link rel="stylesheet" href="css/stylePrint.css" />
+  <link rel="stylesheet" href="css/styleAutoComplete.css" />
+</head>
+
+<body>
+  <br />
+
+  <div class="container" style="width: 100%">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <header class="card-header">
+           
+            <div class="form-row">
+              <div class="col form-group">
+                <h2 class="card-title mt-2">Ledger Form</h2>
+                 
+              </div>
+              <div class="col form-group">
+                  <button class="btn btn-Success btn-lg btn-block inputText" onclick="summery();" >
+                      SUMMARY & BULK PDF SHARE</button>
+              </div>
+          </div>
+          </header>
+          <article class="card-body">
+            <form action="LEDGER_AJXREPORT.html" method="get" target="_blank" autocomplete="off">
+              <div class="form-group">
+                <h3>FIRM</h3>
+                <select class="form-control inputText" style="height: 40px" id="FIRM" onchange="setData();"
+                  name="FIRM"></select>
+              </div>
+              <div class="form-group">
+                <h3>PARTY NAME</h3>
+                <input class="form-control inputText" onfocus="this.value=''" autocomplete="off" onkeyup="setData();"
+                  placeholder="SEARCH BY PARTY NAME" name="partyname" id="partyname" /><br />
+              </div>
+              <div class="form-group">
+                <input type="hidden" class="form-control" id="partycode" name="partycode"
+                  placeholder="hidden party code" /><input type="hidden" class="form-control" id="ntab" name="ntab"
+                  value="NTAB" placeholder="hidden party code" />
+              </div>
+              <div class="form-group">
+                <h3>BROKER</h3><input class="form-control inputText" onkeyup=""
+              onfocus="this.value=''" autocomplete="off" name="broker" id="broker"
+              placeholder="SEARCH BY BROKER NAME">
+              </div>
+              
+
+
+              <div class="form-group" style="display: none">
+                <h3>SHOW ENTRY</h3>
+                <select class="form-control inputText" style="height: 40px" name="CrDrEntryType" onkeyup="setData();"
+                  id="CrDrEntryType">
+                  <option value="">CREDIT AND DEBIT BOTH</option>
+                  <option value="DEBIT">ONLY CREDIT</option>
+                  <option value="CREDIT">ONLY DEBIT</option>
+                </select>
+              </div>
+
+              <div class="form-group" id="orderBy">
+                <h3>ENTRY ORDER BY (ONLY VIEW)</h3>
+                <div><select name="order" id="order" class="form-control inputText" style="height:40px;">
+                    <option value="ASC">ASC</option>
+                    <option value="DESC">DESC</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col form-group">
+                  <h3>FROM</h3>
+                  <input type="date" class="form-control inputText" placeholder="SEARCH FROM DATE" value=""
+                    name="search_FromDate" onchange="setData();" id="search_FromDate" />
+                </div>
+                <div class="col form-group">
+                  <h3>TO</h3>
+                  <input type="date" class="form-control inputText" onchange="setData();" value="fsd"
+                    placeholder="SEARCH TO DATE" name="search_ToDate" id="search_ToDate" />
+                </div>
+              </div>
+              <input type="hidden" class="form-control" id="mobileNo" name="mobileNo" value="" />
+              <input type="hidden" class="form-control" id="partyEmail" name="partyEmail" value="" />
+              <div class="form-group">
+                <input type="submit" name="submit" id="submit" class="btn btn-primary btn-lg btn-block inputText"
+                  value="SUBMIT" id="submit" /><br />
+              </div>
+            </form>
+            <button class="btn btn-Success btn-lg btn-block inputText">
+              <a href="toDaysDueList.html?ntab=NTAB" id="summeryOutstanding" target="_blank" style="color: white">
+                INTEREST CALCULATION ON BILL</a>
+            </button>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script>
+  $(document).ready(function () {
+    SelectFirmOptions("FIRM");
+    //setSearchToDate("search_ToDate");
+  });
+  function setData() {
+    var mobileNo = $("#mobileNo").val();
+    var FIRM = $("#FIRM").val();
+    var search_FromDate = $("#search_FromDate").val();
+    var search_ToDate = $("#search_ToDate").val();
+    // var search_FromVNO = $('#search_FromVNO').val();
+    // var search_TOVNO = $('#search_TOVNO').val();
+    var partyname = $("#partyname").val();
+    var partycode = $("#partycode").val();
+    var pdfBillType = $("#pdfBillType").val();
+    var ReportType = $("#ReportType").val();
+    var ReportATypeCode = $("#ReportATypeCode").val();
+    var ReportSeriesTypeCode = $("#ReportSeriesTypeCode").val();
+    var ReportDOC_TYPECode = $("#ReportDOC_TYPECode").val();
+    var setData = "FIRM=" + encodeURIComponent(FIRM) + "&";
+    setData += "search_FromDate=" + search_FromDate + "&";
+    setData += "search_ToDate=" + search_ToDate + "&";
+    setData += "partycode=" + encodeURIComponent(partycode) + "&";
+    setData += "partyname=" + encodeURIComponent(partyname) + "&";
+    setData += "mobileNo=" + mobileNo + "&";
+    setData += "ReportType=" + ReportType + "&";
+    setData += "ReportATypeCode=" + ReportATypeCode + "&";
+    setData += "ReportSeriesTypeCode=" + ReportSeriesTypeCode + "&";
+    setData += "ReportDOC_TYPECode=" + ReportDOC_TYPECode + "&";
+    //console.log(setData);
+    document.getElementById("summeryOutstanding").href =
+      "LEDGER_INTEREST_AJXREPORT.html?ntab=NTAB&" + setData;
+    // //console.log(setData);
+  }
+
+  function summery() {
+    try {
+      var mobileNo = $('#mobileNo').val();
+      var FIRM = $('#FIRM').val();
+      var search_FromDate = $('#search_FromDate').val();
+      var search_ToDate = $('#search_ToDate').val();
+      var partyname = $('#partyname').val();
+      var partycode = $('#partycode').val();
+      var broker = $('#broker').val();
+      var ReportType = $("#ReportType").val();
+      var ReportATypeCode = $("#ReportATypeCode").val();
+      var ReportSeriesTypeCode = $("#ReportSeriesTypeCode").val();
+      var ReportDOC_TYPECode = $("#ReportDOC_TYPECode").val();
+      var setData = "FIRM=" + encodeURIComponent(FIRM) + "&";
+      setData += "search_FromDate=" + search_FromDate + "&";
+      setData += "search_ToDate=" + search_ToDate + "&";
+      setData += "partycode=" + encodeURIComponent(partycode) + "&";
+      setData += "partyname=" + encodeURIComponent(partyname) + "&";
+      setData += "broker=" + encodeURIComponent(broker) + "&";
+      setData += "mobileNo=" + mobileNo + "&";
+      setData += "ReportType=" + ReportType + "&";
+      setData += "ReportATypeCode=" + ReportATypeCode + "&";
+      setData += "ReportSeriesTypeCode=" + ReportSeriesTypeCode + "&";
+      setData += "ReportDOC_TYPECode=" + ReportDOC_TYPECode + "&";
+      setData += "hideAbleTr=true&";
+      //console.log(setData);
+      var urlLink = "LEDGER_AJXREPORT.html?ntab=NTAB&" + setData;
+      window.open(urlLink);
+    } catch (e) { alert(e); }
+  }
+
+
+</script>
+
+</html>
+
+</html>

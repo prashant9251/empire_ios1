@@ -1,0 +1,328 @@
+<html>
+
+<head>
+    <title> JOBWORK REPORT </title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.2/jquery.js"></script>
+    <script src="1.10.4/jquery-ui.js"></script>
+    <script src="js/jsGetUrlParams.js"></script>
+    <script>
+        var url = window.location.href;
+        REPORTTYPE = getUrlParams(url, "REPORTTYPE");
+
+    </script>
+</head>
+
+<body class="loader-enabled">
+
+    <div align="center" class="table-responsive">
+        <table id="result" class="content-table">
+        </table>
+    </div>
+
+
+    <div style="display: none;" id="loader">
+        <div class="loader"></div>
+        <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+    </div>
+
+    <!-- The Modal -->
+
+
+</body>
+
+<script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+</script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsLoadCallJOBWORK_PARTYWISE_TRWISE.js"></script>
+<script src="js/jsLoadCallJOBWORK.js"></script>
+<script src="js/jsopenSubReport.js"></script>
+<script src="js/jsGetYearChange.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jsGetDaysDif.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jsgetValueNotDefineNo.js"></script>
+<script src="js/jstoFixedNumber.js"></script>
+<script src="js/jsOpenBillDetilasAsTable.js"></script>
+
+
+<script>
+    var Data;
+    var PAID = 'N';
+    var ATYPE = '1';
+    var tr = '';
+    var FIRM = getUrlParams(url, "FIRM");
+
+    var cno = '';
+    var EMP;
+    var partyname = getUrlParams(url, "partyname");
+    var partycode = getUrlParams(url, "partycode");
+    if (partyname == '') {
+        partycode = '';
+    }
+
+    var qualname = getUrlParams(url, "qualname");
+    var qualcode = getUrlParams(url, "qualcode");
+    if (qualname == '') {
+        qualcode = '';
+    }
+    var broker = getUrlParams(url, "broker");
+    broker = broker == null ? "" : broker;
+    var CITY = getUrlParams(url, "city");
+    CITY = CITY == null ? "" : CITY;
+    var haste = getUrlParams(url, "haste");
+    var fromdate = getUrlParams(url, "search_FromDate");
+    var todate = getUrlParams(url, "search_ToDate");
+    var productDet = getUrlParams(url, "productDet");
+    GRD = getUrlParams(url, "GRD");
+    var CrntYearStartdate = getUrlParams(url, "CrntYearStartdate");
+    var groupname = getUrlParams(url, "groupname");
+    var doc_type = getUrlParams(url, "doc_type");
+    var category = getUrlParams(url, "category");
+
+    var nowDate = new Date();
+    document.title = "ORDER " + partyname + " " + broker + " " + CITY;
+    $(document).ready(function () {
+        $("#loader").addClass('has-loader');
+        load_data();
+    });
+    var SERIES = [];
+    var QUAL_LIST = [];
+    function load_data() {
+        jsGetObjectByKey(DSN, "COMPMST", "").then(function (data) {
+            //console.log(data);
+            DataCompmst = data;
+            if (FIRM != '' && FIRM != null) {
+                for (var i = 0; i < DataCompmst.length; i++) {
+                    if (DataCompmst[i].FIRM == FIRM) {
+                        cno = DataCompmst[i].CNO;
+                    }
+                }
+            }
+            jsGetObjectByKey(DSN, "SERIES", "").then(function (SERIES) {
+                this.SERIES = SERIES;
+                jsGetObjectByKey(DSN, "QUL", "").then(function (data) {
+                    QUAL_LIST = data;
+                    jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+                        masterData = data;
+                        try { AddHeaderTbl(); } catch (error) { }
+                        jsGetObjectByKey(DSN, "PCORDER", "").then(function (data) {
+                            Data = data;
+                            //console.log(Data)
+                            Data = Data.map(function (subdata) {
+                                return {
+                                    code: subdata.code,
+                                    billDetails: subdata.billDetails.filter(function (billDetails) {
+                                        if (billDetails['ql'] != null && billDetails['ql'] != '') {
+                                            try {
+                                                var q = getQualData(billDetails['ql']);
+                                                billDetails['qualObj'] = q;
+                                                billDetails['CATEGORY'] = q['CT'];
+                                            } catch (e) {
+                                                billDetails['CATEGORY'] = '';
+                                            }
+                                        }
+                                        return billDetails;
+                                    })
+                                }
+                            });
+
+
+                            if (category != '' && category != null) {
+                                Data = Data.filter(function (data) {
+                                    return data.billDetails.some((billDetails) => billDetails['CATEGORY'].toString().toUpperCase().trim() == this.category);
+                                }).map(function (subdata) {
+                                    return {
+                                        code: subdata.code,
+                                        billDetails: subdata.billDetails.filter(function (billDetails) {
+                                            return (billDetails['CATEGORY'].toString().toUpperCase().trim() == this.category);
+                                        })
+                                    }
+                                })
+                            }
+
+                            if (doc_type != '' && doc_type != null) {
+                                //console.log(doc_type)
+                                Data = Data.filter(function (data) {
+                                    return data.billDetails.some((billDetails) => billDetails['DCT'].toString().toUpperCase().trim() == this.doc_type);
+                                }).map(function (subdata) {
+                                    return {
+                                        code: subdata.code,
+                                        billDetails: subdata.billDetails.filter(function (billDetails) {
+                                            return (billDetails['DCT'].toString().toUpperCase().trim() == this.doc_type);
+                                        })
+                                    }
+                                })
+                            }
+
+                            if (ReportSeriesTypeCode != "" && ReportSeriesTypeCode != null && ReportSeriesTypeCode != undefined) {
+                                Data = Data.filter(function (data) {
+                                    return data.billDetails.some((bill) => bill.TYPE.toUpperCase() == ReportSeriesTypeCode.toUpperCase());
+                                }).map(function (subdata) {
+                                    return {
+                                        code: subdata.code,
+                                        billDetails: subdata.billDetails.filter(function (bill) {
+                                            //console.log(bill.TYPE)
+                                            return bill.TYPE.toUpperCase() == ReportSeriesTypeCode.toUpperCase();
+                                        })
+                                    }
+                                })
+                            }
+
+                            if (checkPcs != '' && checkPcs != null) {
+                                //console.log(checkPcs)
+                                Data = Data.filter(function (data) {
+                                    return data.billDetails.some((billDetails) => billDetails['CPS'] == "" || billDetails['CPS'] == null);
+                                }).map(function (subdata) {
+                                    return {
+                                        code: subdata.code,
+                                        billDetails: subdata.billDetails.filter(function (billDetails) {
+                                            return (billDetails['CPS'] == "" || billDetails['CPS'] == null);
+                                        })
+                                    }
+                                })
+                            }
+
+                            if (cno != '' && cno != null) {
+                                //console.log(cno)
+                                Data = Data.filter(function (data) {
+                                    return data.billDetails.some((billDetails) => billDetails['CNO'] == this.cno);
+                                }).map(function (subdata) {
+                                    return {
+                                        code: subdata.code,
+                                        billDetails: subdata.billDetails.filter(function (billDetails) {
+                                            return (billDetails['CNO'] == this.cno);
+                                        })
+                                    }
+                                })
+                            }
+
+
+
+                            if (partycode != '' && partycode != null) {
+                                Data = Data.filter(function (data) {
+                                    return data['code'] == partycode;
+                                })
+                            }
+
+
+                            if (this.broker != '' && this.broker != null) {
+                                Data = Data.filter(function (data) {
+                                    return data.billDetails.some((billDetails) => billDetails['BCD'] === this.broker);
+                                }).map(function (subdata) {
+                                    return {
+                                        code: subdata.code,
+                                        billDetails: subdata.billDetails.filter(function (billDetails) {
+                                            return (billDetails['BCD'] === this.broker);
+                                        })
+                                    }
+                                })
+                            }
+
+
+                            if (this.qualname != '' && this.qualname != null) {
+                                Data = Data.filter(function (data) {
+                                    return data.billDetails.some((billDetails) => billDetails['ql'] === this.qualname);
+                                }).map(function (subdata) {
+                                    return {
+                                        code: subdata.code,
+                                        billDetails: subdata.billDetails.filter(function (billDetails) {
+                                            return (billDetails['ql'] === this.qualname);
+                                        })
+                                    }
+                                })
+                            }
+
+
+                            if (ReportFilter == "PENDING") {
+                                Data = Data.filter(function (data) {
+                                    return data.billDetails.some((billDetails) => parseInt(billDetails.SPS == null ? 0 : billDetails.SPS) - parseInt(billDetails.RPS == null ? 0 : billDetails.RPS) > 0 && (getValueNotDefine(billDetails.C).toUpperCase() != "Y"));
+                                }).map(function (subdata) {
+                                    return {
+                                        code: subdata.code,
+                                        billDetails: subdata.billDetails.filter(function (billDetails) {
+                                            return parseInt(billDetails.SPS == null ? 0 : billDetails.SPS) - parseInt(billDetails.RPS == null ? 0 : billDetails.RPS) > 0 && (getValueNotDefine(billDetails.C).toUpperCase() != "Y");
+                                        })
+                                    }
+                                })
+                            } else if (ReportFilter == "RECEIVED") {
+                                Data = Data.filter(function (data) {
+                                    return data.billDetails.some((billDetails) => parseInt(billDetails.SPS == null ? 0 : billDetails.SPS) - parseInt(billDetails.RPS == null ? 0 : billDetails.RPS) <= 0);
+                                }).map(function (subdata) {
+                                    return {
+                                        code: subdata.code,
+                                        billDetails: subdata.billDetails.filter(function (billDetails) {
+                                            return parseInt(billDetails.SPS == null ? 0 : billDetails.SPS) - parseInt(billDetails.RPS == null ? 0 : billDetails.RPS) <= 0;
+                                        })
+                                    }
+                                })
+                            }
+                            if (fromdate != '' && fromdate != null) {
+                                Data = Data.filter(function (data) {
+                                    return data.billDetails.some((billDetails) => new Date(DateRpl(billDetails.DT)).setHours(0, 0, 0, 0) >= new Date(DateRpl(fromdate)).setHours(0, 0, 0, 0));
+                                }).map(function (subdata) {
+                                    return {
+                                        code: subdata.code,
+                                        billDetails: subdata.billDetails.filter(function (billDetails) {
+                                            return new Date(DateRpl(billDetails.DT)).setHours(0, 0, 0, 0) >= new Date(DateRpl(fromdate)).setHours(0, 0, 0, 0);
+                                        })
+                                    }
+                                })
+                            }
+
+                            if (todate != '' && todate != null) {
+                                Data = Data.filter(function (data) {
+                                    return data.billDetails.some((billDetails) => new Date(DateRpl(billDetails.DT)).setHours(24, 0, 0, 0) <= new Date(DateRpl(todate)).setHours(24, 0, 0, 0));
+                                }).map(function (subdata) {
+                                    return {
+                                        code: subdata.code,
+                                        billDetails: subdata.billDetails.filter(function (billDetails) {
+                                            return new Date(DateRpl(billDetails.DT)).setHours(24, 0, 0, 0) <= new Date(DateRpl(todate)).setHours(24, 0, 0, 0);
+                                        })
+                                    }
+                                })
+                            }
+                            Data = Data.filter(function (data) {
+                                var partyMaster = getPartyDetailsBySendCode(data.code);
+                                var GP = "";
+                                if (partyMaster.length > 0) {
+                                    GP = getValueNotDefine(partyMaster[0]["GP"]);//GROUP CODE
+                                }
+                                ////console.log("pcode=" + data.code + " ,gp="+GP +",pp=" + partyMaster.length)
+                                data.GP = GP;
+                                return true;
+                            })
+
+                            if (groupname != '' && groupname != null && groupname != undefined) {
+                                Data = Data.filter(function (data) {
+                                    return data.GP == groupname;
+                                })
+                            }
+
+                            if (REPORTTYPE == 'PARTY WISE TRANSACTION WISE') {
+                                jsLoadCallJOBWORK_PARTYWISE_TRWISE(Data);
+                            } else {
+                                loadCall(Data);
+                            }
+                        });
+                    });
+                });
+            });
+        })
+    }
+
+    function getQualData(qualCode) {
+        return QUAL_LIST.filter(function (d) {
+            return d.value == qualCode;
+        })
+    }
+
+</script>
+<script src="js/jsHeaderTbl.js"></script>

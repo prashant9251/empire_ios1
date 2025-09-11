@@ -1,0 +1,105 @@
+<script src="js/jsGetUrlParams.js"></script>
+
+<link rel="stylesheet" href="css/styleAutoComplete.css">
+<link rel="stylesheet" href="css/stylePrint.css">
+<link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<link href="1.10.4/jquery-ui.css" rel="stylesheet">
+<script src="1.10.2/jquery.js"></script>
+<script src="1.10.4/jquery-ui.js"></script>
+<script>
+    var url = window.location.href;
+    var MCNO = getUrlParams(url, "MCNO");
+    var MTYPE = getUrlParams(url, "MTYPE");
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+</script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsStoreDatatoIndexeddb.js"></script>
+<script src="js/jsPopUpTblSetting.js"></script>
+<script src="js/jsoptionSeriesSelect.js"></script>
+<script src="js/jsoptionFirmSelect.js"></script>
+<script src="js/jsSearchfrm.js"></script>
+<script src="js/jsoptionFirmSelect.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsSearchfrm.js"></script>
+
+<html>
+
+<head>
+    <title>WHATSAPP MSG SENDER</title>
+
+</head>
+
+<body>
+
+    <div class="container" style="width: 100%;">
+
+        <!-- <div class="bgimg" align="center">
+  <div class="middle">
+    <h1>COMING SOON</h1>
+    <hr>
+  </div>
+  <div class="bottomleft">
+  </div>
+</div> -->
+        <hr>
+
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <header class="card-header">
+
+                        <h4 class="card-title mt-2">WHATSAPP MESSAGE SENDER TO NEW NO.</h4>
+                    </header>
+                    <article class="card-body">
+                        <a style="color:blue;"> </a>
+                        <form action="Billpdf.php" method="get" target="_blank">
+                            <div class="form-group">
+                                MOBILE NO<input class="form-control" autocomplete="off"
+                                    onchange="setData();" placeholder="ENTER MOBILE NO WITHOUT 0 OR +91" value=""name="mobile"
+                                    id="mobile">
+                                <input type="hidden" id="pdfBillType" value="BULK">
+                            </div>
+                            <div class="form-group">
+                                MESSAGE<input class="form-control" autocomplete="off"
+                                    onchange="setData();" placeholder="ENTER MSG"value="Hii" name="message" id="message">
+                            </div>
+                            <div class="form-group">
+                                 <a id="sendmsgUrl" class="btn btn-primary btn-block"
+                                    name="sendmsgUrl" target="_blank">SEND</a>
+                        </form>
+
+                    </article>
+                    <div class="border-top card-body text-center"><a href=""></a></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+</body>
+<script>
+</script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        setData();
+    });
+
+    function setData() {
+        var FIRM = $('#FIRM').val();
+        var search_FromDate = $('#search_FromDate').val();
+        var search_ToDate = $('#search_ToDate').val();
+        // var search_FromVNO = $('#search_FromVNO').val();
+        // var search_TOVNO = $('#search_TOVNO').val();
+        var mobile = $('#mobile').val();
+        var message = $('#message').val();
+        var pdfBillType = $('#pdfBillType').val();
+        document.getElementById("sendmsgUrl").href = "https://wa.me/91"+mobile+"?text="+encodeURIComponent(message)+"&app_absent=0";
+        // https://web.whatsapp.com/send?phone=918469190530&text=hi&app_absent=0
+    }
+
+</script>

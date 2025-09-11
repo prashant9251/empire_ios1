@@ -1,0 +1,318 @@
+<html>
+
+<head>
+    <title> SALE REPORT </title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.2/jquery.js"></script>
+    <script src="1.10.4/jquery-ui.js"></script>
+    <script src="js/jsGetUrlParams.js"></script>
+    <script>
+        var url = window.location.href;
+        var FIRM = getUrlParams(url, "FIRM");
+        REPORTTYPE = getUrlParams(url, "REPORTTYPE");
+        ////console.log(REPORTTYPE);
+        if (REPORTTYPE == 'DATE WISE') {
+            var my_awesome_script = document.createElement('script');
+            my_awesome_script.setAttribute('src', 'js/jsLoadCallBLS_DATEWISE.js');
+            document.head.appendChild(my_awesome_script);
+        } else if (REPORTTYPE == 'SUPPLIER WISE PARTY WISE') {
+            var my_awesome_script = document.createElement('script');
+            my_awesome_script.setAttribute('src', 'js/jsLoadCallBLS_SUPP_WISE_PARTY_WISE.js');
+            document.head.appendChild(my_awesome_script);
+        }else if(REPORTTYPE == 'MONTH WISE PARTY WISE'){            
+            var my_awesome_script = document.createElement('script');
+            my_awesome_script.setAttribute('src', 'js/jsLoadCallBLS_MONTH_WISE_PARTY_WISE.js');
+            document.head.appendChild(my_awesome_script);
+        } else {
+            var my_awesome_script = document.createElement('script');
+            my_awesome_script.setAttribute('src', 'js/jsLoadCallBLS.js');
+            document.head.appendChild(my_awesome_script);
+        }
+
+    </script>
+</head>
+
+<body class="loader-enabled">
+
+    <div align="center" class="table-responsive">
+        <table id="result" class="content-table" style="border-collapse: collapse;">
+        </table>
+    </div>
+
+
+    <div style="display: none;" id="loader">
+        <div class="loader"></div>
+        <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+    </div>
+
+    <!-- The Modal -->
+
+    <div class="footer pdfBtnHide" id="footer" style="display: none;">
+        <button class="btn btn-success btn-lg btn-block" onclick="filterSelected();">Load Selected With Details</button>
+    </div>
+
+</body>
+
+<script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+</script>
+<script src="js/filterSelected.js"></script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsopenSubReport.js"></script>
+<script src="js/jsGetYearChange.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jsgetArrayProductdetailsbyIDE.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jsOpenBillDetilasAsTable.js"></script>
+
+
+<script>
+    var Data;
+    var PAID = 'N';
+    var ATYPE = '1';
+    var tr = '';
+    var FIRM = getUrlParams(url, "FIRM");
+
+    var cno = '';
+    var EMP;
+    var partyname = getUrlParams(url, "partyname");
+    var partycode = getUrlParams(url, "partycode");
+    var ccd = getUrlParams(url, "ccd");
+    if (partyname == '') {
+        partycode = '';
+    }
+    var broker = getUrlParams(url, "broker");
+    var CITY = getUrlParams(url, "city");
+    var haste = getUrlParams(url, "haste");
+    var fromdate = getUrlParams(url, "search_FromDate");
+    var todate = getUrlParams(url, "search_ToDate");
+    var productDet = getUrlParams(url, "productDet");
+    GRD = getUrlParams(url, "GRD");
+    var CrntYearStartdate = getUrlParams(url, "CrntYearStartdate");
+    var partynamegrp = getUrlParams(url, "partynamegrp");
+    var partycodegrp = getUrlParams(url, "partycodegrp");
+    var ccdgrp = getUrlParams(url, "ccdgrp");
+    var ccdcodegrp = getUrlParams(url, "ccdcodegrp");
+    if(partynamegrp == ''){
+        partycodegrp = '';
+    }
+    if(ccdgrp == ''){
+        ccdcodegrp = '';
+    }
+    var search_FromRecDate = getUrlParams(url, "search_FromRecDate");
+    var search_ToRecDate = getUrlParams(url, "search_ToRecDate");
+    
+    
+    if (fromdate == '' || fromdate == null) {
+        if (CrntYearStartdate != '' || CrntYearStartdate != null) {
+            fromdate = CrntYearStartdate;
+        }
+    }
+    var DataCompmst = [];
+    var nowDate = new Date();
+    document.title = "SALE " + partyname;
+    $(document).ready(function () {
+        $("#loader").addClass('has-loader');
+        load_data();
+    });
+    function load_data() {
+        jsGetObjectByKey(DSN, "COMPMST", "").then(function (DD) {
+            DataCompmst = DD;
+            if (FIRM != '') {
+                for (var i = 0; i < DataCompmst.length; i++) {
+                    if (DataCompmst[i].FIRM == FIRM) {
+                        cno = DataCompmst[i].CNO;
+                    }
+                }
+            }
+            jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+                masterData = data;
+                ////console.log(masterData);
+                jsGetObjectByKey(DSN, "BLS", "").then(function (data) {
+                AddHeaderTbl();
+
+                    Data = data;
+                    var ReportType = getUrlParams(url, "ReportType");
+                    var ReportSeriesTypeCode = getUrlParams(url, "ReportSeriesTypeCode");
+                    var ReportATypeCode = getUrlParams(url, "ReportATypeCode");
+                    var ReportDOC_TYPECode = getUrlParams(url, "ReportDOC_TYPECode");
+
+                    ////console.log(ReportType, ReportSeriesTypeCode, ReportATypeCode, "---" + ReportDOC_TYPECode);
+                    if (ReportType != "" && ReportType != null) {
+
+                        if (ReportATypeCode != "" && ReportATypeCode != null && ReportATypeCode != undefined) {
+                            if (ReportATypeCode != '' && ReportATypeCode != null) {
+                                Data = Data.filter(function (data) {
+                                    return data['ATP'] == ReportATypeCode;
+                                })
+                            }
+                        }
+
+                        if (ReportDOC_TYPECode != "" && ReportDOC_TYPECode != null && ReportDOC_TYPECode != undefined) {
+                            Data = Data.filter(function (data) {
+                                return data.billDetails.some((bill) => (bill.DT).toUpperCase().indexOf(ReportDOC_TYPECode.toUpperCase())) > -1;
+                            }).map(function (subdata) {
+                                return {
+                                    COD: subdata.COD,
+                                    ATP: subdata.ATP,
+                                    CT: subdata.CT,
+                                    CG: subdata.CG,
+                                    billDetails: subdata.billDetails.filter(function (bill) {
+                                        return (bill.DT).toUpperCase().indexOf(ReportDOC_TYPECode.toUpperCase()) > -1;
+                                    })
+                                }
+                            })
+                        }
+
+                        //// //console.log(ReportDOC_TYPECode, Data);
+                        if (ReportSeriesTypeCode != "" && ReportSeriesTypeCode != null && ReportSeriesTypeCode != undefined) {
+                            Data = Data.filter(function (data) {
+                                return data.billDetails.some((bill) => (bill.TYPE).toUpperCase().indexOf(ReportSeriesTypeCode.toUpperCase())) > -1;
+                            }).map(function (subdata) {
+                                return {
+                                    COD: subdata.COD,
+                                    ATP: subdata.ATP,
+                                    CT: subdata.CT,
+                                    CG: subdata.CG,
+                                    billDetails: subdata.billDetails.filter(function (bill) {
+                                        return (bill.TYPE).toUpperCase().indexOf(ReportSeriesTypeCode.toUpperCase()) > -1;
+                                    })
+                                }
+                            })
+                        }
+                    }
+                    if (cno != '' && cno != null) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => billDetails['CNO'] === cno);
+                        }).map(function (subdata) {
+                            return {
+                                COD: subdata.COD,
+                                ATP: subdata.ATP,
+                                CT: subdata.CT,
+                                CG: subdata.CG,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return (billDetails['CNO'] === cno);
+                                })
+                            }
+                        })
+                    }
+                    if (partynamegrp != '' && partynamegrp != null) {
+                        ////console.log(partynamegrp)
+                        Data = Data.filter(function (data) {
+                            return data['CG'] == partynamegrp;
+                        })
+                    }
+                    if (partycode != '' && partycode != null) {
+                        Data = Data.filter(function (data) {
+                            return data['COD'] == partycode;
+                        })
+                    }
+                    if (ccd != '' && ccd != null) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => billDetails['ccd'] == ccd);
+                        }).map(function (subdata) {
+                            return {
+                                COD: subdata.COD,
+                                ATP: subdata.ATP,
+                                CT: subdata.CT,
+                                CG: subdata.CG,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return (billDetails['ccd'] == ccd);
+                                })
+                            }
+                        })
+                    }
+                    if (ccdgrp != '' && ccdgrp != null) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => billDetails['SG'] == ccdgrp);
+                        }).map(function (subdata) {
+                            return {
+                                COD: subdata.COD,
+                                ATP: subdata.ATP,
+                                CT: subdata.CT,
+                                CG: subdata.CG,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return (billDetails['SG'] == ccdgrp);
+                                })
+                            }
+                        })
+                    }
+                    if (fromdate !== '' && fromdate !== null) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => new Date(billDetails.DTE) >= new Date(fromdate).setHours(0, 0, 0, 0));
+                        }).map(function (subdata) {
+                            return {
+                                COD: subdata.COD,
+                                ATP: subdata.ATP,
+                                CT: subdata.CT,
+                                CG: subdata.CG,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return new Date(billDetails.DTE) >= new Date(fromdate).setHours(0, 0, 0, 0);
+                                })
+                            }
+                        })
+                    }
+                    ////console.log("BLS", Data);
+                    if (todate !== '' && todate !== null) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => new Date(billDetails.DTE) <= new Date(todate).setHours(24, 0, 0, 0));
+                        }).map(function (subdata) {
+                            return {
+                                COD: subdata.COD,
+                                ATP: subdata.ATP,
+                                CT: subdata.CT,
+                                CG: subdata.CG,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return new Date(billDetails.DTE) <= new Date(todate).setHours(24, 0, 0, 0);
+                                })
+                            }
+                        })
+                    }
+
+                    if (search_FromRecDate !== '' && search_FromRecDate !== null) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => new Date(billDetails.RD) >= new Date(search_FromRecDate).setHours(0, 0, 0, 0));
+                        }).map(function (subdata) {
+                            return {
+                                COD: subdata.COD,
+                                ATP: subdata.ATP,
+                                CT: subdata.CT,
+                                CG: subdata.CG,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return new Date(billDetails.RD) >= new Date(search_FromRecDate).setHours(0, 0, 0, 0);
+                                })
+                            }
+                        })
+                    }
+                    ////console.log("BLS", Data);
+                    if (search_ToRecDate !== '' && search_ToRecDate !== null) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => new Date(billDetails.RD) <= new Date(search_ToRecDate).setHours(24, 0, 0, 0));
+                        }).map(function (subdata) {
+                            return {
+                                COD: subdata.COD,
+                                ATP: subdata.ATP,
+                                CT: subdata.CT,
+                                CG: subdata.CG,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return new Date(billDetails.RD) <= new Date(search_ToRecDate).setHours(24, 0, 0, 0);
+                                })
+                            }
+                        })
+                    }
+                    
+                    loadCall(Data);
+                });
+            });
+        })
+    }
+
+
+</script>
+<script src="js/jsHeaderTbl.js"></script>

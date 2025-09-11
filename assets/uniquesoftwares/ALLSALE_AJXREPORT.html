@@ -1,0 +1,500 @@
+<html>
+
+<head>
+
+    <title> SALE REPORT </title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.2/jquery.js"></script>
+    <script src="1.10.4/jquery-ui.js"></script>
+    <script src="js/jsGetUrlParams.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        var url = window.location.href;
+        REPORTTYPE = getUrlParams(url, "REPORTTYPE");
+        var FIRM = getUrlParams(url, "FIRM");
+
+    </script>
+</head>
+
+<body class="loader-enabled">
+
+    <div align="center" class="table-responsive" style="transform: scale(1);transform-origin: 0 0;">
+
+        <table id="result" class="content-table">
+        </table>
+    </div>
+
+
+    <div style="display: none;" id="loader">
+        <div class="loader"></div>
+        <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+    </div>
+
+    <!-- The Modal -->
+
+
+    <div class="footer pdfBtnHide" id="footer" style="display: none;width: 100%;">
+        <div style="width: 50%;display:inline;float: left;">
+            <button class="btn btn-lg btn-block" style="background-color: #f08827;color: white;"
+                onclick="filterSelected();">Load Selected</button>
+        </div>
+        <div style="width: 50%;display:inline;float: left;">
+            <button class="btn btn-lg btn-block" onclick="filterSelectedBulkPdfBill();"
+                style="background-color:#284a7a;color: white;">BULK PDF BILL</button>
+        </div>
+    </div>
+
+    <div class="footer pdfBtnHide" id="footerSummery" style="width: 100%;">
+
+    </div>
+
+
+</body>
+<script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+
+</script>
+
+<script src="js/jsLoadCallBLS_TRANSACTION_WISE.js"></script>
+<script src="js/jsLoadCallBLS_BROKERWISE_PARTYWISE.js"></script>
+<script src="js/jsLoadCallBLS_ITEMWISE_PARTYWISE.js"></script>
+<script src="js/jsLoadCallBLS_PARTY_WISE_ITEM_WISE.js"></script>
+<script src="js/jsLoadCallBLS_ALLSALE.js"></script>
+<script src="js/jsLoadCallBLS_ITEM_WISE.js"></script>
+<script src="js/jsLoadCallBLS.js"></script>
+<script src="js/jsgetValueNotDefineNo.js"></script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsopenSubReport.js"></script>
+<script src="js/jsGetYearChange.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsGetDaysDif.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jstoFixedNumber.js"></script>
+<script src="js/jsgetArrayProductdetailsbyIDE.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/filterSelected.js"></script>
+<script src="js/jsOpenBillDetilasAsTable.js"></script>
+
+
+<script>
+
+    var before_loadtime = new Date().getTime();
+    var Data;
+    var PAID = 'N';
+    var ATYPE = '1';
+    var tr = '';
+    var FIRM = getUrlParams(url, "FIRM");
+
+    var cno = '';
+    var EMP;
+    var partyname = getUrlParams(url, "partyname");
+    var partycode = getUrlParams(url, "partycode");
+    if (partyname == '') {
+        partycode = '';
+    }
+    var broker = getUrlParams(url, "broker");
+    var CITY = getUrlParams(url, "city");
+    var haste = getUrlParams(url, "haste");
+    var fromdate = getUrlParams(url, "search_FromDate");
+    var todate = getUrlParams(url, "search_ToDate");
+    var productDet = getUrlParams(url, "productDet");
+    GRD = getUrlParams(url, "GRD");
+    var CrntYearStartdate = getUrlParams(url, "CrntYearStartdate");
+    var groupname = getUrlParams(url, "groupname");
+    var pendingEwayBill = getUrlParams(url, "pendingEwayBill");
+
+    if (fromdate == '' || fromdate == null) {
+        if (CrntYearStartdate != '' || CrntYearStartdate != null) {
+            fromdate = CrntYearStartdate;
+        }
+    }
+    var nowDate = new Date();
+    document.title = "SALE " + partyname + " " + broker + " " + CITY;
+    $(document).ready(function () {
+        $("#loader").addClass('has-loader');
+        load_data();
+    });
+    var MainData = [];
+    var MainDataBillDetails = [];
+    function load_data() {
+        jsGetObjectByKey(DSN, "COMPMST", "").then(function (data) {
+            ////console.log(data);
+            DataCompmst = data;
+            if (FIRM != '' && FIRM != null) {
+                for (var i = 0; i < DataCompmst.length; i++) {
+                    if (DataCompmst[i].FIRM == FIRM) {
+                        cno = DataCompmst[i].CNO;
+                    }
+                }
+            }
+            jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+                masterData = data;
+                try { AddHeaderTbl(); } catch (error) { }
+                jsGetObjectByKey(DSN, "BLS", "").then(function (data) {
+                    Data = data;
+                    MainData = data;
+                    ////console.log(ReportType, ReportSeriesTypeCode, ReportATypeCode, ReportDOC_TYPECode);
+                    var ReportDOC_TYPECode_CN = "";
+                    var ReportDOC_TYPECode_DN = "";
+                    if (ReportType != "" && ReportType != null && REPORTTYPE != 'TRANSACTION WISE') {
+                        if (ReportSeriesTypeCode.toUpperCase() == 'P') {
+                            ReportDOC_TYPECode = "ZP";
+                            ReportDOC_TYPECode_CN = "CN";
+                            ReportDOC_TYPECode_DN = "DN";
+                            ReportSeriesTypeCode = "";
+                        } else if (ReportSeriesTypeCode.toUpperCase() == 'S') {
+                            ReportDOC_TYPECode = "OS";
+                            ReportDOC_TYPECode_CN = "CN";
+                            ReportDOC_TYPECode_DN = "DN";
+                            ReportSeriesTypeCode = "";
+                        } else {
+                            ReportDOC_TYPECode = "";
+                            ReportDOC_TYPECode_CN = "";
+                            ReportDOC_TYPECode_DN = "";
+                            ReportATypeCode = "";
+                        }
+
+                        if (ReportATypeCode != "" && ReportATypeCode != "" && ReportATypeCode != undefined) {
+                            Data = Data.filter(function (data) {
+                                return data.billDetails.some((bill) => ((bill.ATYP)) == (ReportATypeCode) && (bill.DT) != null);
+                            }).map(function (subdata) {
+                                return {
+                                    code: subdata.code,
+                                    billDetails: subdata.billDetails.filter(function (bill) {
+                                        return ((bill.ATYP)) == (ReportATypeCode) && (bill.DT) != null;
+                                    })
+                                }
+                            })
+                        }
+                        if (ReportDOC_TYPECode_CN != "" && ReportDOC_TYPECode_DN != "" && ReportDOC_TYPECode != "") {
+                            Data = Data.filter(function (data) {
+                                return data.billDetails.some((bill) =>
+                                    bill.DT.toUpperCase().indexOf(ReportDOC_TYPECode_CN) > -1
+                                    || bill.DT.toUpperCase().indexOf(ReportDOC_TYPECode_DN) > -1 ||
+                                    bill.DT.toUpperCase().indexOf(ReportDOC_TYPECode) > -1);
+                            }).map(function (subdata) {
+                                return {
+                                    code: subdata.code,
+                                    billDetails: subdata.billDetails.filter(function (bill) {
+                                        return bill.DT.toUpperCase().indexOf(ReportDOC_TYPECode_CN) > -1
+                                            || bill.DT.toUpperCase().indexOf(ReportDOC_TYPECode_DN) > -1 ||
+                                            bill.DT.toUpperCase().indexOf(ReportDOC_TYPECode) > -1;
+                                    })
+                                }
+                            })
+                        }
+                        if (ReportDOC_TYPECode != "" && ReportDOC_TYPECode != "" && ReportDOC_TYPECode != undefined) {
+                            Data = Data.filter(function (data) {
+                                return data.billDetails.some((bill) => bill.DT.toUpperCase().indexOf(ReportDOC_TYPECode) > -1
+                                    || bill.DT.toUpperCase().indexOf(ReportDOC_TYPECode_DN) > -1 ||
+                                    bill.DT.toUpperCase().indexOf(ReportDOC_TYPECode_CN) > -1);
+                            }).map(function (subdata) {
+                                return {
+                                    code: subdata.code,
+                                    billDetails: subdata.billDetails.filter(function (bill) {
+                                        return bill.DT.toUpperCase().indexOf(ReportDOC_TYPECode) > -1
+                                            || bill.DT.toUpperCase().indexOf(ReportDOC_TYPECode_DN) > -1 ||
+                                            bill.DT.toUpperCase().indexOf(ReportDOC_TYPECode_CN) > -1;
+                                    })
+                                }
+                            })
+                        }
+
+                        if (ReportSeriesTypeCode != "" && ReportSeriesTypeCode != "" && ReportSeriesTypeCode != undefined) {
+                            Data = Data.filter(function (data) {
+                                return data.billDetails.some((bill) => ((bill.TYPE).toUpperCase()) == ReportSeriesTypeCode.toUpperCase());
+                            }).map(function (subdata) {
+                                return {
+                                    code: subdata.code,
+                                    billDetails: subdata.billDetails.filter(function (bill) {
+                                        return ((bill.TYPE).toUpperCase()) == ReportSeriesTypeCode.toUpperCase()
+                                    })
+                                }
+                            })
+                        }
+                    }
+
+
+                    if (pendingEwayBill != '' && pendingEwayBill != null && pendingEwayBill == "true") {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => billDetails['EWB'] == "" || billDetails['EWB'] == null);
+                        }).map(function (subdata) {
+                            return {
+                                code: subdata.code,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return (billDetails['EWB'] == "" || billDetails['EWB'] == null);
+                                })
+                            }
+                        })
+                    }
+
+                    if (cno != '' && cno != null) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => billDetails['CNO'] === cno);
+                        }).map(function (subdata) {
+                            return {
+                                code: subdata.code,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return (billDetails['CNO'] === cno);
+                                })
+                            }
+                        })
+                    }
+                    ////console.log("BLS",Data);
+                    if (partycode != '' && partycode != null) {
+                        partycode = partycode.trim();
+                        Data = Data.filter(function (data) {
+                            return data.code == partycode;
+                        })
+                    }
+                    ////console.log("BLS",Data);
+                    if (this.broker != '' && this.broker != null) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => billDetails['BCODE'] === this.broker);
+                        }).map(function (subdata) {
+                            return {
+                                code: subdata.code,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return (billDetails['BCODE'] === this.broker);
+                                })
+                            }
+                        })
+                    }
+                    ////console.log("BLS",Data);
+                    if (CITY != '' && CITY != null) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => billDetails['CITY'] == this.CITY);
+                        }).map(function (subdata) {
+                            return {
+                                code: subdata.code,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return (billDetails['CITY'] == this.CITY);
+                                })
+                            }
+                        })
+                    }
+                    ////console.log("BLS",Data);
+                    if (haste != '' && haste != null) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => billDetails['haste'] === haste);
+                        }).map(function (subdata) {
+                            return {
+                                code: subdata.code,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return (billDetails['haste'] === haste);
+                                })
+                            }
+                        })
+                    }
+
+                    if (groupname != '' && groupname != null && groupname != undefined) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => billDetails['GP'] === groupname);
+                        }).map(function (subdata) {
+                            return {
+                                code: subdata.code,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return (billDetails['GP'] === groupname);
+                                })
+                            }
+                        })
+                    }
+                    ////console.log("BLS", Data);
+                    if (fromdate !== '' && fromdate !== null) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => new Date(DateRpl(billDetails.DATE)).setHours(0, 0, 0, 0) >= new Date(DateRpl(fromdate)).setHours(0, 0, 0, 0));
+                        }).map(function (subdata) {
+                            return {
+                                code: subdata.code,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return new Date(DateRpl(billDetails.DATE)).setHours(0, 0, 0, 0) >= new Date(DateRpl(fromdate)).setHours(0, 0, 0, 0);
+                                })
+                            }
+                        })
+                    }
+                    ////console.log("BLS", Data);
+                    if (todate !== '' && todate !== null) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => new Date(DateRpl(billDetails.DATE)).setHours(24, 0, 0, 0) <= new Date(DateRpl(todate)).setHours(24, 0, 0, 0));
+                        }).map(function (subdata) {
+                            return {
+                                code: subdata.code,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return new Date(DateRpl(billDetails.DATE)).setHours(24, 0, 0, 0) <= new Date(DateRpl(todate)).setHours(24, 0, 0, 0);
+                                })
+                            }
+                        })
+                    }
+
+                    if (GRD != '' && GRD != null && GRD != undefined) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => billDetails['GRD'] === GRD);
+                        }).map(function (subdata) {
+                            return {
+                                code: subdata.code,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return (billDetails['GRD'] === GRD);
+                                })
+                            }
+                        })
+                    }
+                    ////console.log(Data);
+
+                    if (REPORTTYPE == 'BROKER WISE PARTY WISE') {
+                        loadCallBROKERWISE_PARTYWISE(Data);
+                    } else if (REPORTTYPE == 'ITEM WISE PARTY WISE') {
+                        loadCallITEMWISE_PARTYWISE(Data);
+                    } else if (REPORTTYPE == 'DATE WISE') {
+                        jsLoadCallBLS_ALLSALE(Data);
+                    } else if (REPORTTYPE == 'ITEM WISE LIST') {
+                        jsLoadCallBLS_ITEM_WISE(Data);
+                    } else if (REPORTTYPE == 'PARTY WISE ITEM WISE') {
+                        jsLoadCallBLS_PARTY_WISE_ITEM_WISE(Data);
+                    } else if (REPORTTYPE == 'TRANSACTION WISE') {
+                        jsLoadCallBLS_TRANSACTION_WISE(Data);
+                    } else {
+                        loadCall(Data);
+                    }
+                });
+            });
+        })
+    }
+
+
+    function getBlsExcelJson() {
+        var excelJson = [];
+        for (var i = 0; i < MainData.length; i++) {
+            for (var j = 0; j < MainData[i].billDetails.length; j++) {
+
+                var productDetails = MainDataBillDetails.filter(function (d) {
+                    return d.CNO == MainData[i].billDetails[j].CNO
+                        && d.TYPE == MainData[i].billDetails[j].TYPE
+                        && d.VNO.trim() == MainData[i].billDetails[j].VNO.trim();
+                });
+                if (productDetails.length > 0) {
+                    productDetails = productDetails[0].billDetails;
+                    productDetails = productDetails.sort(function (a, b) {
+                        return a.SR - b.SR;
+                    });
+                } else {
+                    productDetails = [];
+                }
+                console.log(productDetails.length);
+                for (var k = 0; k < productDetails.length; k++) {
+
+                    var obj = {};
+                    obj["CNO"] = MainData[i].billDetails[j].CNO;
+                    obj["TYPE"] = MainData[i].billDetails[j].TYPE;
+                    obj["VNO"] = MainData[i].billDetails[j].VNO;
+                    obj["Date"] = MainData[i].billDetails[j].DATE;
+                    obj["code"] = MainData[i].code;
+                    obj["BILL"] = MainData[i].billDetails[j].BILL;
+                    obj["PAYDATE"] = MainData[i].billDetails[j].PAYDET;
+                    obj["CHALLAN"] = MainData[i].billDetails[j].CHLN;
+                    obj["RRNO"] = MainData[i].billDetails[j].RRNO;
+                    obj["RRDATE"] = MainData[i].billDetails[j].RRDET;
+                    obj["WEIGHT"] = MainData[i].billDetails[j].WGT;
+                    obj["FREIGHT"] = MainData[i].billDetails[j].FRT;
+                    obj["CASENO"] = MainData[i].billDetails[j].CSNO;
+                    obj["PLACE"] = MainData[i].billDetails[j].PLC;
+                    obj["TRANSPORT"] = MainData[i].billDetails[j].TRNSP;
+                    obj["BILLAMT_AFTER_TDS"] = MainData[i].billDetails[j].BAMT;
+                    obj["TOTMTS"] = MainData[i].billDetails[j].TMTS;
+                    obj["TOTPCS"] = MainData[i].billDetails[j].TPCS;
+                    obj["REC_AMT"] = MainData[i].billDetails[j].RC_AMT;
+                    obj["DISCOUNT"] = MainData[i].billDetails[j].DISC;
+                    obj["OTH_LESS"] = MainData[i].billDetails[j].OTH_LS;
+                    obj["RD_AMT"] = MainData[i].billDetails[j].RD_AMT;
+                    obj["claims"] = MainData[i].billDetails[j].clms;
+                    obj["SWTS_AMT"] = MainData[i].billDetails[j].SWTS_AMT;
+                    obj["DDCOMM"] = MainData[i].billDetails[j].DDCOM;
+                    obj["ADD_AMT"] = MainData[i].billDetails[j].AD_AMT;
+                    obj["PART"] = MainData[i].billDetails[j].PART;
+                    obj["WT_LESS"] = MainData[i].billDetails[j].WT_LS;
+                    obj["WT_LESSRATE"] = MainData[i].billDetails[j].WT_LSRATE;
+                    obj["WT_LESSAMT"] = MainData[i].billDetails[j].WT_LSAMT;
+                    obj["finalamt"] = MainData[i].billDetails[j].fnlamt;
+                    obj["paid"] = MainData[i].billDetails[j].paid;
+                    obj["RMK"] = MainData[i].billDetails[j].RMK;
+                    obj["grossamt"] = MainData[i].billDetails[j].grsamt;
+                    obj["billdis"] = MainData[i].billDetails[j].billdis;
+                    obj["BCODE"] = MainData[i].billDetails[j].BCODE;
+                    obj["PARCELS"] = MainData[i].billDetails[j].PRCL;
+                    obj["PAYCHQ"] = MainData[i].billDetails[j].PAYCHQ;
+                    obj["add_oth2"] = MainData[i].billDetails[j].ad_oth2;
+                    obj["haste"] = MainData[i].billDetails[j].haste;
+                    obj["WT_LESSBASE"] = MainData[i].billDetails[j].WT_LSBASE;
+                    obj["TDSRATE"] = MainData[i].billDetails[j].TDSRATE;
+                    obj["TDSAMT"] = MainData[i].billDetails[j].TDSAMT;
+                    obj["QUAL"] = MainData[i].billDetails[j].QUAL;
+                    obj["Rate"] = MainData[i].billDetails[j].GRT;
+                    obj["discamt"] = MainData[i].billDetails[j].discamt;
+                    obj["LESSADD1qty"] = MainData[i].billDetails[j].LA1qty;
+                    obj["LESSADD2qty"] = MainData[i].billDetails[j].LA2qty;
+                    obj["LESSADD3qty"] = MainData[i].billDetails[j].LA3qty;
+                    obj["LESSADD1RMK"] = MainData[i].billDetails[j].LA1RMK;
+                    obj["LESSADD2RMK"] = MainData[i].billDetails[j].LA2RMK;
+                    obj["LESSADD3RMK"] = MainData[i].billDetails[j].LA3RMK;
+                    obj["LESSADD1RATE"] = MainData[i].billDetails[j].LA1RATE;
+                    obj["LESSADD2RATE"] = MainData[i].billDetails[j].LA2RATE;
+                    obj["LESSADD3RATE"] = MainData[i].billDetails[j].LA3RATE;
+                    obj["LESSADD1AMT"] = MainData[i].billDetails[j].LA1AMT;
+                    obj["LESSADD2AMT"] = MainData[i].billDetails[j].LA2AMT;
+                    obj["LESSADD3AMT"] = MainData[i].billDetails[j].LA3AMT;
+                    obj["OTHERTYPE"] = MainData[i].billDetails[j].OTHRTYPE;
+                    obj["GREYCUT"] = MainData[i].billDetails[j].GRYCT;
+                    obj["LEDGERRMK"] = MainData[i].billDetails[j].LDRRMK;
+                    obj["VATRATE"] = MainData[i].billDetails[j].VTRET;
+                    obj["VATAMT"] = MainData[i].billDetails[j].VTAMT;
+                    obj["ADD_VATRATE"] = MainData[i].billDetails[j].ADVTRET;
+                    obj["ADD_VATAMT"] = MainData[i].billDetails[j].ADVTAMT;
+                    obj["EWB_NO"] = MainData[i].billDetails[j].EWB;
+                    obj["STATE_CODE"] = MainData[i].billDetails[j].STC;
+                    obj["DOC_TYPE"] = MainData[i].billDetails[j].DT;
+                    obj["PARTY_GRADE"] = MainData[i].billDetails[j].GRD;
+                    obj["ORDERNO"] = MainData[i].billDetails[j].O;
+                    obj["IRN"] = MainData[i].billDetails[j].I;
+                    obj["SHORTNAME"] = MainData[i].billDetails[j].FRM;
+                    obj["CITY1"] = MainData[i].billDetails[j].CITY;
+                    obj["SERIES"] = MainData[i].billDetails[j].SERIES;
+                    obj["acCODE"] = MainData[i].billDetails[j].ACCODE;
+                    obj["ATYPE"] = MainData[i].billDetails[j].ATYP;
+                    obj["ADAT"] = MainData[i].billDetails[j].ADAT;
+
+                    obj["P_SRNO"] = productDetails[k].SR;
+                    obj["P_PACK"] = productDetails[k].PCK;
+                    obj["P_qual"] = productDetails[k].qual;
+                    obj["P_RATE"] = productDetails[k].RATE;
+                    obj["P_MTS"] = productDetails[k].MTS;
+                    obj["P_CUT"] = productDetails[k].CUT;
+                    obj["P_PCS"] = productDetails[k].PCS;
+                    obj["P_UNIT"] = productDetails[k].UNIT;
+                    obj["P_AMT"] = productDetails[k].AMT;
+                    obj["P_discamt"] = productDetails[k].disamt;
+                    obj["P_DISC_RATE"] = productDetails[k].DR;
+                    obj["P_CATEGORY"] = productDetails[k].CTGRY;
+                    obj["P_DETAILS"] = productDetails[k].DET;
+                    obj["P_BASEQUAL"] = productDetails[k].BSQL;
+                    obj["P_altqual"] = productDetails[k].altql;
+                    obj["P_DETVATRATE"] = productDetails[k].DTVTRET;
+                    obj["P_DETVATAMT"] = productDetails[k].DTVTAMT;
+                    obj["P_hsn_code"] = productDetails[k].hsn;
+                    obj["P_LESSFOLD"] = productDetails[k].LF;
+                    obj["P_DET_CASENO"] = productDetails[k].CN;
+                    excelJson.push(obj);
+
+                }
+            }
+        }
+        return excelJson;
+    }
+
+
+</script>
+<script src="js/jsHeaderTbl.js"></script>

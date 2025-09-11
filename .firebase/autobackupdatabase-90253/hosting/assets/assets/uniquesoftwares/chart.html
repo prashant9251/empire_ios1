@@ -1,0 +1,692 @@
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <script src="2.1.3/jquery.min.js"></script>
+  <script src="3.3.6/bootstrap.min.js"></script>
+  <link href="3.3.6/bootstrap.min.css" rel="stylesheet" />
+  <script src="js/jsGetUrlParams.js"></script>
+</head>
+<script>
+  var url = window.location.href;
+  var MCNO = getUrlParams(url, "MCNO");
+  var MTYPE = getUrlParams(url, "MTYPE");
+  var DSN = getUrlParams(url, "DatabaseSource");
+  var Currentyear = getUrlParams(url, "Currentyear");
+  //alert(DSN);
+
+</script>
+<script src="js/localStorageSet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsStoreDatatoIndexeddb.js"></script>
+<script src="js/jsPopUpTblSetting.js"></script>
+<script src="js/jsoptionSeriesSelect.js"></script>
+<script src="js/jsoptionFirmSelect.js"></script>
+<script src="js/jsSearchfrm.js"></script>
+<html>
+
+<head>
+  <title>All Sale Report</title>
+  <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+  <script src="1.10.4/jquery-ui.js"></script>
+  <link rel="stylesheet" href="css/stylePrint.css">
+  <link rel="stylesheet" href="css/styleAutoComplete.css">
+  <script src="js/jsGetDateFormate.js"></script>
+
+</head>
+
+<body>
+
+  <BR>
+  <div class="container" style="width: 100%;display: none;" id="mainChartContainer">
+
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <article class="card-body">
+            <form action="" method="get" target="_blank" autocomplete="off">
+
+
+              <div class="form-row">
+                <div class="col form-group">
+                  <h3>FIRM</h3>
+                  <select class="form-control inputText" style="height: 40px;" id="FIRM" name="FIRM"
+                    onchange="processDataAllType();">
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col form-group">
+                  <h3>PARTY NAME</h3>
+                  <input class="form-control inputText" onfocus="this.value=''" autocomplete="off" onchange=""
+                    placeholder="SEARCH BY PARTY NAME" name="partyname" id="partyname">
+                </div>
+                <input type="hidden" class="form-control" id="partycode" name="partycode">
+                <input type="hidden" class="form-control" id="mobileNo" name="mobileNo" value="">
+                <input type="hidden" class="form-control" id="partyEmail" name="partyEmail" value="">
+              </div>
+              <div class="form-row">
+                <div class="col form-group">
+                  <h3>BROKER</h3>
+                  <input class="form-control inputText" onfocus="this.value=''" autocomplete="off" name="broker"
+                    id="broker" placeholder="SEARCH BY BROKER NAME">
+                </div>
+
+              </div>
+              <div class="form-row">
+                <div class="col form-group">
+                  <h3>FROM</h3>
+                  <input type="date" class="form-control inputText" placeholder="SEARCH FROM DATE"
+                    onchange="processDataAllType();" value="" name="search_FromDate" id="search_FromDate">
+                </div>
+
+                <div class="col form-group">
+                  <h3>TO</h3>
+                  <input type="date" class="form-control inputText" placeholder="SEARCH TO DATE"
+                    onchange="processDataAllType();" value="" name="search_ToDate" id="search_ToDate">
+                </div>
+              </div>
+
+
+
+
+        </div>
+      </div>
+
+      </form>
+      <!-- <div class="form-group">
+                        <button class="btn btn-Success btn-lg btn-block inputText" onclick="summery();" >
+                             SALE SUMMERY & BULK PDF SHARE</button>
+                 </div> -->
+    </div>
+  </div>
+  </div>
+  <div id="result"></div>
+</body>
+
+
+</html>
+<!DOCTYPE html>
+<html>
+<title>Bar Charts</title>
+<script src="1.10.2/jquery.js"></script>
+<script src="1.10.4/jquery-ui.js"></script>
+<script src="js/jsGetUrlParams.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+<link href="3.3.6/bootstrap.min.css" rel="stylesheet" />
+<link href="1.10.4/jquery-ui.css" rel="stylesheet">
+<link rel="stylesheet" href="css/stylePrint.css">
+<link rel="stylesheet" href="css/styleAutoComplete.css">
+
+<body>
+  <script src="js/jsGetObjectByKey.js"></script>
+  <script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+    $(document).ready(function () {
+      $("#mainChartContainer").css("display", "");
+      $("#loader").addClass('has-loader');
+      load_data();
+    });
+    var BLS_LIST_MAIN = [];
+    var LEDGER_LIST_MAIN = [];
+    var LEDGER_LIST_PAYMENT = [];
+    var COMPMST = [];
+    var SERIES = [];
+    function load_data() {
+      jsGetObjectByKey(DSN, "SERIES", "").then(function (SERIES) {
+        this.SERIES = SERIES;
+        jsGetObjectByKey(DSN, "COMPMST", "").then(function (COMPMST) {
+          this.COMPMST = COMPMST;
+          jsGetObjectByKey(DSN, "BLS", "").then(function (data) {
+            BLS_LIST_MAIN = data;
+            jsGetObjectByKey(DSN, "LEDGER", "").then(function (data) {
+              LEDGER_LIST_MAIN = data;
+
+              //processData(data);
+              processDataAllType();
+             // ledgerChart();
+            })
+          })
+        })
+      })
+    }
+    async function processData() {
+      let monthlySales = {};
+      let monthlyPurchase = {};
+      let monthlyReturnGoods = {};
+
+      await Promise.all(BLS_LIST_MAIN.map(async (e) => {
+        const billDetails = [...e["billDetails"]];
+        await Promise.all(billDetails.map(async (c) => {
+          const b = { ...c };
+          const date = new Date(b['DATE']);
+          const monthKey = `${date.getMonth() + 1}`;
+          const amt = parseFloat(b['BAMT']);
+
+          if (b['DT'].toUpperCase().includes("OS") &&
+            b['SERIES'].toUpperCase().includes("SALES") &&
+            b['ATYP'].trim() === "1" &&
+            parseInt(b['VNO']) < 100000) {
+            if (monthlySales.hasOwnProperty(monthKey)) {
+              monthlySales[monthKey] += amt;
+            } else {
+              monthlySales[monthKey] = amt;
+            }
+          }
+
+          if (b['DT'].toUpperCase().includes("ZP") &&
+            b['TYPE'].toUpperCase().includes("P") &&
+            parseInt(b['VNO']) < 100000) {
+            if (monthlyPurchase.hasOwnProperty(monthKey)) {
+              monthlyPurchase[monthKey] += amt;
+            } else {
+              monthlyPurchase[monthKey] = amt;
+            }
+          }
+
+          if (b['DT'].toUpperCase().includes("CN") &&
+            b['SERIES'].toUpperCase().includes("RETURN") &&
+            parseInt(b['VNO']) < 100000) {
+            if (monthlyReturnGoods.hasOwnProperty(monthKey)) {
+              monthlyReturnGoods[monthKey] += amt;
+            } else {
+              monthlyReturnGoods[monthKey] = amt;
+            }
+          }
+        }));
+      }));
+
+      //console.log("Monthly Sales:", JSON.stringify(monthlySales));
+      //console.log("Monthly Purchase:", JSON.stringify(monthlyPurchase));
+      //console.log("Monthly Return Goods:", JSON.stringify(monthlyReturnGoods));
+      createChart(monthlySales, "SALE_ CHART");
+      //createChart(monthlyReturnGoods, "GOODS_RETURN_CHART");
+      createChart(monthlyPurchase, "PURCHASE_CHART");
+    }
+  </script>
+  <script>
+
+    function createChart(DataObj, dombId) {
+      $('#result').append(`<canvas id="` + dombId + `" style="width:100%;max-width:600px"></canvas><br><br><br>`)
+      const keysArray = Object.keys(DataObj).map(Number); // Converts keys to an array of numbers
+      const monthNamesArray = keysArray.map(monthNumber => {
+        const monthNamesArray = [
+          "January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"
+        ];
+        return monthNamesArray[monthNumber - 1]; // Subtract 1 to match array indices
+      });
+      const valuesArray = Object.values(DataObj);
+      //console.log(keysArray);
+      //console.log(valuesArray);
+      var xValues = monthNamesArray;   //["Italy", "France", "Spain", "USA", "Argentina", "Italy", "France", "Spain", "USA", "Argentina"];
+      var yValues = valuesArray; //[55, 49, 44, 24, 15, 55, 49, 44, 24, 15];
+
+      var barColor = "#81cd47"; // Set the desired color for all bars
+      var barColors = [
+        "#FFD700", "#90EE90", "#ADD8E6", "#FFA500", "#BC8F8F", "#87CEEB",
+        "#F0E68C", "#98FB98", "#B0E0E6", "#FFDAB9", "#FFB6C1", "#AFEEEE"
+      ];// Array(yValues.length).fill(barColor);
+
+      var chartData = new Chart(dombId, {
+        type: "bar",
+        data: {
+          labels: xValues,
+          datasets: [{
+            backgroundColor: barColors,
+            data: yValues
+
+          }]
+        },
+        options: {
+          responsive: true,
+          legend: { display: false },
+          tooltips: {
+            "enabled": true
+          },
+          title: {
+            display: true,
+            text: dombId,
+          }, animation: {
+            onComplete: function () {
+              var chartInstance = this.chart;
+              var ctx = chartInstance.ctx;
+              ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, 'bold', Chart.defaults.global.defaultFontFamily);
+              ctx.fillStyle = "black";
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'bottom';
+
+              this.data.datasets.forEach(function (dataset) {
+                for (var i = 0; i < dataset.data.length; i++) {
+                  var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model;
+                  var scaleMax = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._yScale.maxHeight;
+                  ctx.fillText(dataset.data[i], model.x, model.y - 5);
+                }
+              });
+            }
+          },
+          onClick: function (event, elements) {
+            var monthNames = ["April", "May", "June", "July", "August", "September", "October", "November", "December", "January", "February", "March",];
+            if (elements.length > 0) {
+              // Get the clicked element
+              var clickedElement = elements[0];
+
+              // Access the data associated with the clicked element
+              var clickedData = chartData.data.datasets[clickedElement._datasetIndex].data[clickedElement._index];
+              var folderName = getCurrentFolderName(window.location.href);
+
+              var clickedMonth = chartData.data.labels[clickedElement._index];
+              var { startDate, endDate } = getStartAndEndDateOfMonth(clickedMonth);
+              var typeKeyArr = getSeriesDetailsBySendName(dombId);
+              var typeKey = "";
+              if (typeKeyArr.length > 0) {
+                typeKey = typeKeyArr[0].SERIESCODE;
+              }
+              ////console.log(startDate+"Clicked Data:," +typeKey);
+              var hrefLink = "?ntab=NTAB&partycode=" + encodeURIComponent(partycode) + "&partyname=" + encodeURIComponent(partycode) + "&broker=" + encodeURIComponent(broker) + "&FIRM=" + encodeURIComponent(FIRM) + "&ReportType=" + encodeURIComponent(dombId) + "&ReportSeriesTypeCode=" + typeKey + "&mobileNo=" + MO + "&partyEmail=" + encodeURIComponent(partyEmail) + "&search_FromDate=" + (startDate) + "&search_ToDate=" + (endDate);
+              hrefLink = folderName + "ALLSALE_AJXREPORT.html" + hrefLink;
+              window.open(hrefLink);
+              // Add your custom logic here based on the clicked data
+            }
+          }
+        }
+      });
+    }
+    var FIRM = "";
+    var fromdate = "";
+    var todate = "";
+    var partyname = "";
+    var partycode = "";
+    var broker = "";
+    var cno = "";
+    var MO = "";
+    var partyEmail = ""
+    var ReportSeriesTypeCode = "";
+    var ReportType = "";
+    async function processDataAllType() {
+      $('#result').html("");
+      FIRM = $("#FIRM").val();
+      fromdate = $("#search_FromDate").val();
+      todate = $("#search_ToDate").val();
+      partyname = $("#partyname").val();
+      partycode = $("#partycode").val();
+      broker = $("#broker").val();
+      MO = $("#mobileNo").val();
+      partyEmail = $("#partyEmail").val();
+
+      if (partyname == '') {
+        partycode = '';
+      }
+      cno = "";
+      let monthlyDataByType = {};
+      var BLS = BLS_LIST_MAIN;
+      try {
+          if (FIRM != '' && FIRM != null) {
+            for (var i = 0; i < COMPMST.length; i++) {
+              if (COMPMST[i].FIRM == FIRM) {
+                cno = COMPMST[i].CNO;
+              }
+            }
+          }
+          if (cno != '' && cno != null) {
+            BLS = BLS.filter(function (data) {
+              return data.billDetails.some((billDetails) => billDetails['CNO'] === cno);
+            }).map(function (subdata) {
+              return {
+                code: subdata.code,
+                billDetails: subdata.billDetails.filter(function (billDetails) {
+                  return (billDetails['CNO'] === cno);
+                })
+              }
+            })
+          }
+
+          if (partycode != '' && partycode != null) {
+            partycode = partycode.trim();
+            BLS = BLS.filter(function (data) {
+              return data.code == partycode;
+            })
+          }
+          if (broker != '' && broker != null) {
+            BLS = BLS.filter(function (data) {
+              return data.billDetails.some((billDetails) => billDetails['BCODE'] === broker);
+            }).map(function (subdata) {
+              return {
+                code: subdata.code,
+                billDetails: subdata.billDetails.filter(function (billDetails) {
+                  return (billDetails['BCODE'] === broker);
+                })
+              }
+            })
+          }
+          if (fromdate !== '' && fromdate !== null) {
+            BLS = BLS.filter(function (data) {
+              return data.billDetails.some((billDetails) => new Date(DateRpl(billDetails.DATE)).setHours(0, 0, 0, 0) >= new Date(DateRpl(fromdate)).setHours(0, 0, 0, 0));
+            }).map(function (subdata) {
+              return {
+                code: subdata.code,
+                billDetails: subdata.billDetails.filter(function (billDetails) {
+                  return new Date(DateRpl(billDetails.DATE)).setHours(0, 0, 0, 0) >= new Date(DateRpl(fromdate)).setHours(0, 0, 0, 0);
+                })
+              }
+            })
+          }
+          // //console.log("BLS", Data);
+          if (todate !== '' && todate !== null) {
+            BLS = BLS.filter(function (data) {
+              return data.billDetails.some((billDetails) => new Date(DateRpl(billDetails.DATE)).setHours(24, 0, 0, 0) <= new Date(DateRpl(todate)).setHours(24, 0, 0, 0));
+            }).map(function (subdata) {
+              return {
+                code: subdata.code,
+                billDetails: subdata.billDetails.filter(function (billDetails) {
+                  return new Date(DateRpl(billDetails.DATE)).setHours(24, 0, 0, 0) <= new Date(DateRpl(todate)).setHours(24, 0, 0, 0);
+                })
+              }
+            })
+          }
+      } catch (e) {
+        alert(e);
+      }
+
+      if (BLS.length > 0) {
+        await Promise.all(BLS.map(async (e) => {
+          const billDetails = [...e["billDetails"]];
+          await Promise.all(billDetails.map(async (c) => {
+            const b = { ...c };
+            const date = new Date(b['DATE']);
+            const monthKey = `${date.getMonth() + 1}`;
+            const amt = parseFloat(b['BAMT']);
+            const typeKey = b['SERIES'];
+
+            if (parseInt(b['VNO']) < 100000) {
+              if (!monthlyDataByType[typeKey]) {
+                monthlyDataByType[typeKey] = {};
+              }
+
+              if (!monthlyDataByType[typeKey][monthKey]) {
+                monthlyDataByType[typeKey][monthKey] = 0;
+              }
+
+              monthlyDataByType[typeKey][monthKey] += amt;
+            }
+          }));
+        }));
+        monthlyDataByType = Object.keys(monthlyDataByType).sort().reduce(
+          (obj, key) => {
+            obj[key] = monthlyDataByType[key];
+            return obj;
+          },
+          {}
+        );
+        //console.log("Monthly Data by Type:", JSON.stringify(monthlyDataByType));
+
+        // Iterate through the monthlyDataByType object
+        for (const typeKey of Object.keys(monthlyDataByType)) {
+          const typeData = monthlyDataByType[typeKey];
+
+          // Here, typeKey is the 'b['SERIES']', and typeData is the corresponding object.
+          //console.log("Type:", typeKey);
+          //console.log("Data:", typeData);
+
+          createChart(typeData, typeKey);
+          // You can further process or perform actions on typeKey and typeData as needed.
+        }
+        // You can create charts or further process the grouped data here.
+      } else {
+        $('#result').append("<h2 style='text-align:center;'>Not Found</h2>")
+      }
+    }
+    function getCurrentFolderName(url) {
+      var pathArray = url.split('/');
+      // Assuming the folder name is the second-to-last element in the path
+      var folderName = pathArray[pathArray.length - 2];
+      return folderName;
+    }
+    function getStartAndEndDateOfMonth(monthName) {
+      // Map month names to their numerical representations
+      var monthMapping = {
+        "January": 0,
+        "February": 1,
+        "March": 2,
+        "April": 3,
+        "May": 4,
+        "June": 5,
+        "July": 6,
+        "August": 7,
+        "September": 8,
+        "October": 9,
+        "November": 10,
+        "December": 11
+      };
+
+      // Get the numerical representation of the month
+      var monthIndex = monthMapping[monthName];
+      var fullYear = new Date().getFullYear();
+      if (monthIndex > 2 && monthIndex <= 11) {
+        var y = CurrentyearSelected.substring(0, 2);
+        fullYear = Number.parseInt("20" + y);
+      } else {
+        var y = CurrentyearSelected.substring(2, 4);
+        fullYear = Number.parseInt("20" + y);
+      }
+      // Create a new Date object for the first day of the clicked month
+      var startDate = new Date(fullYear, monthIndex, 1);
+
+      // Calculate the last day of the clicked month
+      var endDate = new Date(fullYear, monthIndex + 1, 0);
+
+      // Format the dates to yyyy-mm-dd
+      var formattedStartDate = formatDate(startDate);
+      var formattedEndDate = formatDate(endDate);
+
+      return {
+        startDate: formattedStartDate,
+        endDate: formattedEndDate
+      };
+    }
+
+    // Function to format a date to yyyy-mm-dd
+    function formatDate(date) {
+      var year = date.getFullYear();
+      var month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
+      var day = date.getDate().toString().padStart(2, '0');
+      return year + '-' + month + '-' + day;
+    }
+
+    function getSeriesDetailsBySendName(name) {
+      return SERIES.filter(function (data) {
+        return data.SERIES == name;
+      })
+    }
+    function getSeriesDetailsBySendCode(code) {
+      return SERIES.filter(function (data) {
+        return data.SERIESCODE == code;
+      })
+    }
+
+
+    var flagParty = [];
+    var PartyNameList = [];
+
+    async function ledgerChart() {
+      try {
+        let monthlyDataByType = {};
+        var LEDGER = LEDGER_LIST_MAIN;
+          if (FIRM != '' && FIRM != null) {
+            for (var i = 0; i < COMPMST.length; i++) {
+              if (COMPMST[i].FIRM == FIRM) {
+                cno = COMPMST[i].CNO;
+              }
+            }
+          }
+          if (cno != '' && cno != null) {
+            LEDGER = LEDGER.filter(function (data) {
+              return data['CNO'] === cno;
+            });
+          }
+
+          if (partycode != '' && partycode != null) {
+            partycode = partycode.trim();
+            LEDGER = LEDGER.filter(function (data) {
+              return data.code == partycode;
+            })
+          }
+          if (fromdate !== '' && fromdate !== null) {
+            LEDGER = LEDGER.filter(function (data) {
+              return new Date(DateRpl(data.DATE)).setHours(0, 0, 0, 0) >= new Date(DateRpl(fromdate)).setHours(0, 0, 0, 0);
+          })
+          }
+          // //console.log("LEDGER", Data);
+          if (todate !== '' && todate !== null) {
+            LEDGER = LEDGER.filter(function (data) {
+              return new Date(DateRpl(data.DATE)).setHours(24, 0, 0, 0) <= new Date(DateRpl(todate)).setHours(24, 0, 0, 0);
+          })
+          }
+        if (LEDGER.length > 0) {
+          await Promise.all(LEDGER.map(async (e) => {
+            const b = { ...e };
+            const date = new Date(b['DATE']);
+            const monthKey = `${date.getMonth() + 1}`;
+            var amt = Math.abs(parseFloat(b.DRAMT) - parseFloat(b.CRAMT))
+
+            var seriesArr = getSeriesDetailsBySendCode(b.TYPE);
+            typeKey = b['SERIES'];
+            if (seriesArr.length > 0) {
+              typeKey = seriesArr[0].SERIES;
+            }
+
+            if (parseInt(b['VNO']) < 100000) {
+              if (!monthlyDataByType[typeKey]) {
+                monthlyDataByType[typeKey] = {};
+              }
+
+              if (!monthlyDataByType[typeKey][monthKey]) {
+                monthlyDataByType[typeKey][monthKey] = 0;
+              }
+
+              monthlyDataByType[typeKey][monthKey] += amt;
+            }
+          }));
+          monthlyDataByType = Object.keys(monthlyDataByType).sort().reduce(
+            (obj, key) => {
+              obj[key] = monthlyDataByType[key];
+              return obj;
+            },
+            {}
+          );
+          //console.log("Monthly Data by Type:", JSON.stringify(monthlyDataByType));
+
+          // Iterate through the monthlyDataByType object
+          for (const typeKey of Object.keys(monthlyDataByType)) {
+            const typeData = monthlyDataByType[typeKey];
+
+            // Here, typeKey is the 'b['SERIES']', and typeData is the corresponding object.
+            //console.log("Type:", typeKey);
+            //console.log("Data:", typeData);
+
+            createChartLedger(typeData, typeKey);
+            // You can further process or perform actions on typeKey and typeData as needed.
+          }
+          // You can create charts or further process the grouped data here.
+        } else {
+          $('#result').append("<h2 style='text-align:center;'>Not Found</h2>")
+        }
+      } catch (e) {
+        alert(e);
+      }
+    }
+
+    function createChartLedger(DataObj, dombId) {
+      $('#result').append(`<canvas id="` + dombId + `" style="width:100%;max-width:600px"></canvas><br><br><br>`)
+      const keysArray = Object.keys(DataObj).map(Number); // Converts keys to an array of numbers
+      const monthNamesArray = keysArray.map(monthNumber => {
+        const monthNamesArray = [
+          "January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"
+        ];
+        return monthNamesArray[monthNumber - 1]; // Subtract 1 to match array indices
+      });
+      const valuesArray = Object.values(DataObj);
+      //console.log(keysArray);
+      //console.log(valuesArray);
+      var xValues = monthNamesArray;   //["Italy", "France", "Spain", "USA", "Argentina", "Italy", "France", "Spain", "USA", "Argentina"];
+      var yValues = valuesArray; //[55, 49, 44, 24, 15, 55, 49, 44, 24, 15];
+
+      var barColor = "#81cd47"; // Set the desired color for all bars
+      var barColors = [
+        "#FFD700", "#90EE90", "#ADD8E6", "#FFA500", "#BC8F8F", "#87CEEB",
+        "#F0E68C", "#98FB98", "#B0E0E6", "#FFDAB9", "#FFB6C1", "#AFEEEE"
+      ];// Array(yValues.length).fill(barColor);
+
+      var chartData = new Chart(dombId, {
+        type: "bar",
+        data: {
+          labels: xValues,
+          datasets: [{
+            backgroundColor: barColors,
+            data: yValues
+
+          }]
+        },
+        options: {
+          responsive: true,
+          legend: { display: false },
+          tooltips: {
+            "enabled": true
+          },
+          title: {
+            display: true,
+            text: dombId,
+          }, animation: {
+            onComplete: function () {
+              var chartInstance = this.chart;
+              var ctx = chartInstance.ctx;
+              ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, 'bold', Chart.defaults.global.defaultFontFamily);
+              ctx.fillStyle = "black";
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'bottom';
+
+              this.data.datasets.forEach(function (dataset) {
+                for (var i = 0; i < dataset.data.length; i++) {
+                  var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model;
+                  var scaleMax = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._yScale.maxHeight;
+                  ctx.fillText(dataset.data[i].toFixed(2), model.x, model.y - 5);
+                }
+              });
+            }
+          },
+          onClick: function (event, elements) {
+            var monthNames = ["April", "May", "June", "July", "August", "September", "October", "November", "December", "January", "February", "March",];
+            if (elements.length > 0) {
+              // Get the clicked element
+              var clickedElement = elements[0];
+
+              // Access the data associated with the clicked element
+              var clickedData = chartData.data.datasets[clickedElement._datasetIndex].data[clickedElement._index];
+              var folderName = getCurrentFolderName(window.location.href);
+
+              var clickedMonth = chartData.data.labels[clickedElement._index];
+              var { startDate, endDate } = getStartAndEndDateOfMonth(clickedMonth);
+              var typeKeyArr = getSeriesDetailsBySendName(dombId);
+              var typeKey = "";
+              if (typeKeyArr.length > 0) {
+                typeKey = typeKeyArr[0].SERIESCODE;
+              }
+              ////console.log(startDate+"Clicked Data:," +typeKey);
+              var hrefLink = "?ntab=NTAB&partycode=" + encodeURIComponent(partycode) + "&partyname=" + encodeURIComponent(partycode) + "&broker=" + encodeURIComponent(broker) + "&FIRM=" + encodeURIComponent(FIRM) + "&ReportType=" + encodeURIComponent(dombId) + "&ReportSeriesTypeCode=" + typeKey + "&mobileNo=" + MO + "&partyEmail=" + encodeURIComponent(partyEmail) + "&search_FromDate=" + (startDate) + "&search_ToDate=" + (endDate);
+              hrefLink = folderName + "LEDGER_AJXREPORT.html" + hrefLink;
+              window.open(hrefLink);
+              // Add your custom logic here based on the clicked data
+            }
+          }
+        }
+      });
+    }
+
+  </script>
+
+</body>
+
+</html>

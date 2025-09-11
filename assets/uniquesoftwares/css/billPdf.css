@@ -1,0 +1,147 @@
+		
+         body {
+            margin: 0;
+            padding: 0;
+            background-color: white;
+            font: 12pt "Tahoma";
+        }
+        * {
+            box-sizing: unset;
+            -moz-box-sizing: border-box;
+        }
+        .page {
+            width: 21cm;
+            min-height: 29.7cm;
+            padding: 1cm;
+            margin: 1cm auto;
+            border: 1px #D3D3D3 solid;
+            border-radius: 5px;
+            background: white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .subpage {
+            padding: 1cm;
+            border: 5px red solid;
+            height: 237mm;
+            outline: 2cm #FFEAEA solid;
+        }
+        
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        @media print {
+            a[href]::after {
+                        content: none !important;
+                    } 
+            .page {
+                margin: 0;
+                border: initial;
+                border-radius: initial;
+                width: initial;
+                min-height: initial;
+                box-shadow: initial;
+                background: initial;
+                page-break-after: always;
+            }
+         .font14{
+            font-size:.8em !important;
+        }
+        .font13{            
+            font-size:.8em !important;
+        }
+        .font12{
+            font-size:.8em !important;
+        }
+        .font11{
+            font-size:.8em !important;
+        }
+        .font10{
+            font-size:1em !important;
+        }
+        .font8{
+            font-size:.5em!important ;
+        }
+        .font23{           
+            font-size: 1.2em!important ;
+        }
+        .font26{
+            font-size: 1.7em!important ;
+        }
+        }
+                .pdfhr {
+                    width: 100%;
+                    margin-top: 3px;
+                    margin-bottom: 3px;
+                    border-top: 1px dashed black;
+                }
+                .halfBold {
+                    font-weight: 600;
+                }
+        .loader {
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #343a40;
+            border-bottom: 16px solid #343a40;
+            width: 130px;
+            height: 130px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+            margin: 0px auto;
+        }
+        
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        } 
+        
+        .has-loader {
+            display: block !important;
+        }
+
+
+        @media only screen and (min-width: 600px) {
+           
+        }
+        @media only screen and (min-width: 768px) {
+        
+        }
+
+
+        .font14{
+            font-size:.8em !important;
+        }
+        .font13{            
+            font-size:.8em !important;
+        }
+        .font12{
+            font-size:.8em !important;
+        }
+        .font11{
+            font-size:.8em !important;
+        }
+        .font10{
+            font-size:1em !important;
+        }
+        .font8{
+            font-size:.5em!important ;
+        }
+        .font23{
+            font-size: 1.2em!important ;
+        }
+        .font26{
+            font-size: 1.5em!important ;
+        }

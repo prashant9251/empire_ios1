@@ -1,0 +1,214 @@
+<html>
+
+<head>
+    <title> OUTSTANDING </title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.2/jquery.js"></script>
+    <script src="1.10.4/jquery-ui.js"></script>
+    <script src="js/jsGetUrlParams.js"></script>
+
+</head>
+<Style>
+
+</Style>
+
+<body>
+    <div align="center" class="table-responsive">
+        <table id="result" class="content-table" style="border-collapse: collapse;">
+        </table>
+    </div>
+
+
+    <div style="display: none;" id="loader">
+        <div class="loader"></div>
+        <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+    </div>
+</body>
+
+</html>
+<script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var SUBTOTAL = getUrlParams(url, "SUBTOTAL");
+    if (SUBTOTAL == 'DATE WISE') {
+        var my_awesome_script = document.createElement('script');
+        my_awesome_script.setAttribute('src', 'js/jsLoadCallCOMM_DATEWISE.js');
+        document.head.appendChild(my_awesome_script);
+    } else {
+        var my_awesome_script = document.createElement('script');
+        my_awesome_script.setAttribute('src', 'js/jsLoadCallCOMM.js');
+        document.head.appendChild(my_awesome_script);
+    }
+</script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsopenSubReportCOMM.js"></script>
+<script src="js/jsGetUrlParams.js"></script>
+<script src="js/jsGetYearChange.js"></script>
+<script src="js/jsGetDaysDif.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script>
+
+    var url = window.location.href;
+    var pdfStatus = false;
+    var Data;
+    var PAID = 'N';
+    var ATYPE = '1';
+    var tr = '';
+    var FIRM = getUrlParams(url, "FIRM");
+    var cno = '';
+    var EMP;
+    var partyname = getUrlParams(url, "partyname");
+    var partycode = getUrlParams(url, "partycode");
+    var ccd = getUrlParams(url, "ccd");
+    var ccdcode = getUrlParams(url, "ccdcode");
+    if (ccd == '') {
+        ccdcode = '';
+    }
+    if (partyname == '') {
+        partycode = '';
+    }
+    var broker = getUrlParams(url, "broker");
+    var CITY = getUrlParams(url, "city");
+    var haste = getUrlParams(url, "haste");
+    var fromdate = getUrlParams(url, "search_FromDate");
+    var todate = getUrlParams(url, "search_ToDate");
+    var DAYSCONDITION = getUrlParams(url, "DAYSCONDITION");
+    GRD = getUrlParams(url, "GRD");
+    var DataCompmst = [];
+    var nowDate = new Date();
+</script>
+<script>
+    document.title = "COMM. REPORT " + partyname + " " + broker + " " + CITY;
+    $(document).ready(function () {
+        $("#loader").addClass('has-loader');
+        load_data();
+    });
+    function load_data() {
+        jsGetObjectByKey(DSN, "COMPMST", "").then(function (DD) {
+            DataCompmst = DD;
+            if (FIRM != '') {
+                for (var i = 0; i < DataCompmst.length; i++) {
+                    if (DataCompmst[i].FIRM == FIRM) {
+                        cno = DataCompmst[i].CNO;
+                    }
+                }
+            }
+            jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+                masterData = data;
+
+                jsGetObjectByKey(DSN, "COMM", "").then(function (data) {
+                    Data = data;
+                    if (ReportATypeCode != "" && ReportATypeCode != null && ReportATypeCode != undefined) {
+                        Data = Data.filter(function (data) {
+                            return data['ATP'] == ReportATypeCode;
+                        })
+                    }
+                    if (ReportType != '' && ReportType != null && ReportType != undefined && ReportType == "COMMISSION RECEIVED") {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => billDetails['RDT'] != "" && billDetails['RDT'] != null);
+                        }).map(function (subdata) {
+                            return {
+                                COD: subdata.COD,
+                                ATP: subdata.ATP,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return (billDetails['RDT'] != "" && billDetails['RDT'] != null);
+                                })
+                            }
+                        })
+                    }
+
+                    if (ReportType != '' && ReportType != null && ReportType != undefined && ReportType == "COMMISSION PENDING") {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => (billDetails['RDT'] == "" || billDetails['RDT'] == null) || (billDetails['CPA'] != 0 && billDetails['CPA'] != "" && billDetails['CPA'] != null));
+                        }).map(function (subdata) {
+                            return {
+                                COD: subdata.COD,
+                                ATP: subdata.ATP,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return ((billDetails['RDT'] == "" || billDetails['RDT'] == null) || (billDetails['CPA'] != 0 && billDetails['CPA'] != "" && billDetails['CPA'] != null));
+                                })
+                            }
+                        })
+                    }
+                    if (cno != '' && cno != null) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => billDetails['CNO'] === cno);
+                        }).map(function (subdata) {
+                            return {
+                                COD: subdata.COD,
+                                ATP: subdata.ATP,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return (billDetails['CNO'] === cno);
+                                })
+                            }
+                        })
+                    }
+
+                    //console.log(Data);
+
+                    if (ccdcode != '' && ccdcode != null) {
+                        //console.log(ccd, ccdcode);
+                        Data = Data.filter(function (data) {
+                            return data['COD'] == ccdcode;
+                        })
+                    }
+
+                    //console.log(Data);
+                    if (partyname != '' && partyname != null) {
+                        //console.log(partyname, partycode);
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => billDetails['ccd'] == partyname);
+                        }).map(function (subdata) {
+                            return {
+                                COD: subdata.COD,
+                                ATP: subdata.ATP,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return (billDetails['ccd'] == partyname);
+                                })
+                            }
+                        })
+                    }
+                    if (fromdate !== '' && fromdate !== null) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => new Date(billDetails.RDT).setHours(0, 0, 0, 0) >= new Date(fromdate).setHours(0, 0, 0, 0));
+                        }).map(function (subdata) {
+                            return {
+                                COD: subdata.COD,
+                                ATP: subdata.ATP,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return new Date(billDetails.RDT).setHours(0, 0, 0, 0) >= new Date(fromdate).setHours(0, 0, 0, 0);
+                                })
+                            }
+                        })
+                    }
+                    if (todate !== '' && todate !== null) {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((billDetails) => new Date(billDetails.RDT).setHours(24, 0, 0, 0) <= new Date(todate).setHours(24, 0, 0, 0));
+                        }).map(function (subdata) {
+                            return {
+                                COD: subdata.COD,
+                                ATP: subdata.ATP,
+                                billDetails: subdata.billDetails.filter(function (billDetails) {
+                                    return new Date(billDetails.RDT).setHours(24, 0, 0, 0) <= new Date(todate).setHours(24, 0, 0, 0);
+                                })
+                            }
+                        })
+                    }
+
+
+                    loadCall(Data);
+                });
+            });
+        })
+    }
+
+
+</script>
+
+<script src="js/jsHeaderTbl.js"></script>

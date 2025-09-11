@@ -1,0 +1,143 @@
+<html>
+
+<head>
+    <title>BILL</title>
+    <link rel="stylesheet" href="3.3.7/bootstrap.min.css">
+    <script src="3.3.1/jquery.min.js"></script>
+    <script src="3.3.7/bootstrap.min.js"></script>
+    <script src="js/jsGetUrlParams.js"></script>
+    <style>
+        @media print {
+            a[href]::after {
+                content: none !important;
+            }
+        }
+
+        .loader {
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #343a40;
+            border-bottom: 16px solid #343a40;
+            width: 130px;
+            height: 130px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+            margin: 0px auto;
+        }
+
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .has-loader {
+            display: block !important;
+        }
+
+        .sidenav {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #009879;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+
+        .sidenav a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: black;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidenav a:hover {
+            color: #f1f1f1;
+        }
+
+        .sidenav .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+
+        @media screen and (max-height: 450px) {
+            .sidenav {
+                padding-top: 15px;
+            }
+
+            .sidenav a {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="fData">
+    </div>
+    <div style="display: none;" id="loader">
+        <div class="loader"></div>
+        <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+    </div>
+</body>
+
+</html>
+<script>
+    
+    var url = window.location.href;
+    var MCNO = getUrlParams(url, "MCNO");
+    var MTYPE = getUrlParams(url, "MTYPE");
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Crntyear = getUrlParams(url, "Currentyear");
+    var ClDb = DSN.replace(Crntyear,"");
+</script>
+<script src="js/jsGetUrlParams.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsGetDaysDif.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jsgetValueNotDefineNo.js"></script>
+<script src="js/jsFData.js"></script>
+<script src="js/jsGetYearChange.js"></script>
+
+<script>
+    var IDE = (getUrlParams(url, "IDE"));
+    var CrntYearStartdate = '2020-04-01';
+    $(document).ready(function () {
+        $("#loader").addClass('has-loader');
+        load_data();
+    });
+
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "250px";
+    }
+
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+    }
+</script>

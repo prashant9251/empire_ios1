@@ -1,0 +1,574 @@
+<html>
+    <title>ORDER FORM</title>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="2.1.3/jquery.min.js"></script>
+    <script src="3.3.6/bootstrap.min.js"></script>
+    <!-- <link href="3.3.6/bootstrap.min.css" rel="stylesheet" /> -->
+    <script src="js/jsGetUrlParams.js"></script>
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="css/stylePrint.css">
+    <link rel="stylesheet" href="css/styleAutoComplete.css">
+    <link rel="stylesheet" href="css/orderForm.css">
+
+<script src="js/jsGetCookies.js"></script>
+<script>
+    var url = window.location.href;
+    var MCNO = getUrlParams(url, "MCNO");
+    var MTYPE = getUrlParams(url, "MTYPE");
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+    var usernm = getUrlParams(url, "usernm");
+    // var clnt = atob(DSN.replace(Currentyear, ""));
+    //alert(DSN);
+
+</script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jsStoreDatatoIndexeddb.js"></script>
+<script src="js/jspushDataToIndexDb.js"></script>
+<script src="js/jsPopUpTblSetting.js"></script>
+<script src="js/jsoptionSeriesSelect.js"></script>
+<script src="js/jsoptionFirmSelect.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsPdfOrderForm.js"></script>
+<script src="js/cloudOrderStD.js"></script>
+
+</head>
+
+<body>
+    <BR>
+
+    <div id="orderForm" class="container" style="width:100%;">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <header class="card-header">
+                        <div style="display: inline;">
+                            <div style="float:left;">
+                                <h4 class="card-title mt-2">ORDER FORM</h4>
+                            </div>
+                            <div style="float: right;display:none;">
+
+                                <h4 style="color: darkblue;" id="orderFormNo"> 0</h4>
+                            </div>
+                        </div>
+                    </header>
+                    <article class="card-body">
+                        <!-- <form action="" method="get" target="_blank" autocomplete="off"> -->
+                        <div class="form-row">
+                            <div class="col form-group">
+                                <h6>FIRM</h6>
+                                <select class="form-control inputText" style="height: 40px;" id="FIRM" name="FIRM">
+                                </select>
+                            </div>
+                            <div class="col form-group">
+                                <h6>BOOKING DATE</h6><input autocomplete="off" type="date" style="min-width: 100%; "
+                                    class="form-control inputText" placeholder="ENTER DATE" name="BK_DATE" id="BK_DATE">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col form-group">
+                                <h6>CUSTOMER NAME<i id="Lpartyname" style="color: red;display:none;">* Required</i></h6>
+                                <input autocomplete="off" class="form-control inputText" autocomplete="off" onchange=""
+                                    placeholder="ENTER PARTY NAME" name="partyname" id="partyname" autofocus>
+                                <input autocomplete="off" type="hidden" class="form-control inputText"
+                                    autocomplete="off" onchange="" placeholder="ENTER PARTY NAME" name="partycode"
+                                    id="partycode">
+                            </div>
+                            <div class="col form-group">
+                                <h6>CITY</h6><input autocomplete="off" class="form-control inputText" autocomplete="off"
+                                    name="city" id="city" placeholder="ENTER CITY NAME">
+
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col form-group">
+                                <h6>GST NO</h6><input autocomplete="off" class="form-control inputText"
+                                    autocomplete="off" onchange="" placeholder="ENTER GSTNO" name="city" id="GSTIN">
+                            </div>
+                            <div class="col form-group">
+                                <h6>BOOKING</h6><input autocomplete="off" class="form-control inputText"
+                                    autocomplete="off" onchange="" placeholder="ENTER STATION" name="BK_STATION"
+                                    id="BK_STATION">
+                            </div>
+                            <div class="col form-group">
+                                <h6>TRANSPORT</h6><input autocomplete="off" class="form-control inputText"
+                                    autocomplete="off" name="BK_TRANSPORT" id="BK_TRANSPORT"
+                                    placeholder="ENTER TRANSPORT">
+
+                            </div>
+                        </div>
+                        <hr style="border-color:blue">
+                        <div class="form-row">
+                            <div class="col form-group">
+                                <h6>SUPPLIER<i id="Lccd" style="color: red;display:none;">* Required</i></h6><input autocomplete="off" class="form-control inputText"
+                                    autocomplete="off" name="ccd" id="ccd" placeholder="ENTER SUPPLIER NAME">
+
+                            </div>
+                            <div class="col form-group">
+                                <h6>ADDRESS</h6><input autocomplete="off" class="form-control inputText"
+                                    autocomplete="off" name="ccdAdd" id="ccdAdd" placeholder="ENTER ADDRESS">
+
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col form-group">
+                                <h6>REMARK </h6>
+                                <input autocomplete="off" class="form-control inputText" autocomplete="off"
+                                    onfocus="this.value=''" onchange="localSave('RMK');" placeholder="ENTER REMARK"
+                                    name="RMK" id="RMK">
+                            </div>
+                            <div class="col form-group">
+                                <h6>CREATED BY <i id="LconfirmedBy" style="color: red;display:none;">* Required</i></h6>
+                                <input autocomplete="off" class="form-control inputText"
+                                    style="text-transform: uppercase;" autocomplete="off" onload=""
+                                    onchange="localSave('confirmedBy');" placeholder="NAME" name="confirmedBy"
+                                    id="confirmedBy" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+
+                        </div>
+                        <div class="form-group">
+                            <input autocomplete="off" type="hidden" class="form-control inputText" id="partycode"
+                                name="partycode" placeholder="hidden party code"><input autocomplete="off" type="hidden"
+                                class="form-control inputText" id="ntab" name="ntab" value="NTAB"
+                                placeholder="hidden party code">
+                        </div>
+                        <div class="form-group">
+                            <h5 id="add_Product" style="color:blue;cursor: pointer;" onclick="addProduct();">+ ADD
+                                PRODUCT</h5>
+                        </div>
+                        <!-- The Modal -->
+                        <div id="myModal" class="modal" style="padding: inherit;">
+                            <div class="modal-content">
+                                <h6 style="color: blue;">ADD PRODUCT</h6>
+                                <div class="form-row" style="display:none;">
+                                    <div class="col form-group">
+                                        <h6>PARCEL</h6>
+                                        <select type="date" class="form-control " style="height: 50px;" name="ptype"
+                                            id="ptype">
+                                            <option>PARCEL</option>
+                                            <option>PCS</option>
+                                            <option>CATALOG</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col form-group">
+                                        <h6>PRODUCT <i id="Lqualname" style="color: red;display:none;">* Required</i>
+                                        </h6>
+                                        <input autocomplete="off" type="text" class="form-control inputText"
+                                            onfocus="this.value=''" placeholder="ENTER PRODUCT NAME" name="qualname"
+                                            id="qualname">
+                                    </div>
+
+                                    <div class="col form-group">
+                                        <h6>PCS / QUANTITY <i id="Lqty" style="color: red;display:none;">* Required</i>
+                                        </h6>
+                                        <input autocomplete="off" type="text" class="form-control inputText"
+                                            placeholder="ENTER QUANTITY" name="qty" id="qty">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="col form-group">
+                                        <h6>PACKING</h6>
+                                        <select type="text" class="form-control inputText" style="height: 50px;"
+                                            onchange="localSave('pack');" name="pack" id="pack">
+                                            <option>BOX</option>
+                                            <option>THAILI</option>
+                                            <option>CHAIN BAG</option>
+                                            <option>CATALOGUE</option>
+                                            <option>NACKED</option>
+                                        </select>
+                                    </div>
+                                    <div class="col form-group">
+                                        <h6>RATE <i id="Lrate" style="color: red;display:none;">* Required</i></h6>
+                                        <input autocomplete="off" type="text" class="form-control inputText "
+                                            onfocus="this.value=''" placeholder="ENTER RATE" name="rate" id="rate">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="col form-group">
+                                        <h6>REMARK</h6>
+                                        <input autocomplete="off" type="text" class="form-control inputText "
+                                            onfocus="this.value=''" placeholder="ENTER REMARK" name="productRemark"
+                                            id="productRemark">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col form-group">
+                                        <button class="btn btn-primary btn-block inputText"
+                                            onclick="saveProduct();">SAVE</button>
+                                    </div>
+                                    <div class="col form-group">
+                                        <button class="btn btn-primary btn-block inputText"
+                                            onclick="saveThenAddProduct();">SAVE & ADD MORE</button>
+                                    </div>
+                                    <div class="col form-group" onclick="closeForm();">
+                                        <button class="btn btn-primary btn-block inputText">CANCEL</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <input autocomplete="off" type="submit" name="submit" onclick="saveOrderForm();" id="submit"
+                                class="btn btn-primary btn-block inputText" value="SAVE" id="submit">
+                        </div>
+
+                        <div align="center">
+                            <table class="table" style="display: none;" id="product_list">
+
+                            </table>
+                        </div>
+                        <!-- </form> -->
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: none;" id="loader">
+        <div class="loader"></div>
+    </div>
+
+</body>
+<div id="orderFormResult"></div>
+
+<script src="js/jsOrderFormAutoComplet.js"></script>
+
+<script>
+    $(document).ready(function () {
+    });
+
+    function addProduct() {
+        modal.style.display = "block";
+        document.getElementById('qualname').focus();
+        setValueInId('pack', 'SL_pack', 'NACKED');
+    }
+
+</script>
+
+<script>
+    var COMPMST;
+    var qualAdd = false;
+    var now = new Date();
+    var day = ("0" + now.getDate()).slice(-2);
+    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+    var today = now.getFullYear() + "-" + (month) + "-" + (day);
+    $('#BK_DATE').val(today);
+
+    var FIRM = $('#FIRM').val();
+    var BK_DATE = $('#BK_DATE').val();
+    var partyname = $('#partyname').val();
+    var city = $('#city').val();
+    var GSTIN = $('#GSTIN').val();
+    var BK_STATION = $('#BK_STATION').val();
+    var broker = $('#broker').val();
+    var haste = $('#haste').val();
+    var BK_TRANSPORT = $('#BK_TRANSPORT').val();
+    // Get the modal
+    var modal = document.getElementById("myModal");
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("add_Product");
+
+
+    // When the user clicks the button, open the modal 
+    btn.onclick = function () {
+        addProduct();
+    }
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    function removeProduct(productIdtoRemove, btn) {
+        productArray = productArray.filter(function (d) {
+            return (d.ID != productIdtoRemove);
+        })
+        //console.log(productArray);
+        var row = btn.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+    }
+    function closeForm() {
+        modal.style.display = "none";
+    }
+    var OrderArray = {};
+    var productArray = [];
+    var tr = ` `;
+    function saveProduct() {
+        var checkvalueAval = checkValue();
+        if (checkvalueAval == true) {
+            qualname = document.getElementById('qualname').value;
+            ptype = document.getElementById('ptype').value;
+            qty = document.getElementById('qty').value;
+            pack = document.getElementById('pack').value;
+            rate = document.getElementById('rate').value;
+            productRemark = document.getElementById('productRemark').value;
+            ID = productArray.length + 1;
+            var product = {};
+            product.qualname = qualname;
+            product.ptype = ptype;
+            product.qty = qty;
+            product.pack = pack;
+            product.rate = rate;
+            product.ID = ID;
+            product.dispatch = "N";
+            product.productRemark=productRemark
+            productArray.push(product);
+            //console.log((productArray));
+
+            var table = document.getElementById("product_list");
+            if (ID == 1 && qualAdd == false) {
+                row = table.insertRow(0);
+                row.insertCell(0).innerHTML = 'PRODUCT';
+                row.insertCell(1).innerHTML = 'QUANTITY';
+                row.insertCell(2).innerHTML = 'PACK';
+                row.insertCell(3).innerHTML = 'RATE';
+                row.insertCell(4).innerHTML = 'RMK';
+                row.insertCell(5).innerHTML = '';
+                qualAdd = true;
+            }
+
+            var row = table.insertRow(ID);
+            var Cellqualname = row.insertCell(0);
+            // var Cellptype = row.insertCell(1);
+            var Cellqty = row.insertCell(1);
+            var Cellpack = row.insertCell(2);
+            var Cellrate = row.insertCell(3);
+            var CellRMK = row.insertCell(4);
+            var CellACT = row.insertCell(5);
+            Cellqualname.innerHTML = qualname;
+            // Cellptype.innerHTML = ptype;
+            Cellqty.innerHTML = qty;
+            Cellpack.innerHTML = pack;
+            Cellrate.innerHTML = rate;
+            CellRMK.innerHTML = productRemark;
+            CellACT.innerHTML = `<input autocomplete="off" style="background: none; border: none;"type="submit" onclick="removeProduct('` + ID + `',this);" value="&#10060;">`;
+            $('#product_list').css('display', '');
+            modal.style.display = "none";
+            clearQualVal();
+        }
+    }
+
+
+
+    function saveThenAddProduct() {
+        saveProduct();
+        clearQualVal();
+        modal.style.display = "block";
+        document.getElementById('qualname').focus();
+    }
+    function clearQualVal() {
+        $("#qualname").val("");
+        $("#qty").val("");
+        $("#rate").val("");
+        $("#productRemark").val("");
+    }
+    function clearPartyVal() {
+        partyname = $('#partyname').val("");
+        city = $('#city').val("");
+        GSTIN = $('#GSTIN').val("");
+        BK_STATION = $('#BK_STATION').val("");
+        broker = $('#broker').val("");
+        haste = $('#haste').val("");
+        BK_TRANSPORT = $('#BK_TRANSPORT').val("");
+        BK_TRANSPORT = $('#RMK').val("");
+        ccd = $('#ccd').val("");
+        ccdAdd = $('#ccdAdd').val("");
+    }
+    function checkValue() {
+        qualname = document.getElementById('qualname').value;
+        qty = document.getElementById('qty').value;
+        rate = document.getElementById('rate').value;
+
+        if (qualname == "") {
+            $('#Lqualname').css('display', '');
+        } else {
+            $('#Lqualname').css('display', 'none');
+        }
+        if (qty == "") {
+            $('#Lqty').css('display', '');
+        } else {
+            $('#Lqty').css('display', 'none');
+        }
+        if (rate == "") {
+            $('#Lrate').css('display', '');
+        } else {
+            $('#Lrate').css('display', 'none');
+        }
+        if (qualname != "" && qty != "" && rate != "") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function saveOrderForm() {
+        var partyname = $('#partyname').val();
+        var confirmedBy = $('#confirmedBy').val();
+        var ccd = $('#ccd').val();
+        if (partyname == "" || confirmedBy == ""|| ccd == "") {
+            partyname == "" ? $('#Lpartyname').css('display', '') : $('#Lpartyname').css('display', 'none');
+            confirmedBy == "" ? $('#LconfirmedBy').css('display', '') : $('#LconfirmedBy').css('display', 'none');
+            ccd == "" ? $('#Lccd').css('display', '') : $('#Lccd').css('display', 'none');
+        } else {
+            if (productArray.length > 0) {
+                $('#Lpartyname').css('display', 'none');
+                $('#LconfirmedBy').css('display', 'none');
+                $('#Lccd').css('display', 'none');
+                FIRM = $('#FIRM').val();
+                BK_DATE = $('#BK_DATE').val();
+                RMK = $('#RMK').val();
+                confirmedBy = $('#confirmedBy').val();
+                confirmedBy = confirmedBy == null ? "" : confirmedBy.toUpperCase();
+                partyname = $('#partyname').val();
+                city = $('#city').val();
+                GSTIN = $('#GSTIN').val();
+                BK_STATION = $('#BK_STATION').val();
+                BK_TRANSPORT = $('#BK_TRANSPORT').val();
+                ccd = $('#ccd').val();
+                ccdAdd = $('#ccdAdd').val();
+                var orderDet = {};
+                orderDet.ACTYPE = "AGENCY";
+                orderDet.FIRM = FIRM;
+                orderDet.maincompanyObj = getFirmDetailsByFirmName(FIRM);
+                orderDet.BK_DATE = BK_DATE;
+                orderDet.partyname = partyname;
+                orderDet.partyObj = getPartyDetailsBySendName(partyname);
+                orderDet.city = city;
+                orderDet.GSTIN = GSTIN;
+                orderDet.BK_STATION = BK_STATION;
+                orderDet.broker = broker;
+                orderDet.haste = haste;
+                orderDet.BK_TRANSPORT = BK_TRANSPORT;
+                orderDet.RMK = RMK;
+                orderDet.ccd = ccd;
+                orderDet.ccdObj = getPartyDetailsBySendName(ccd);
+                orderDet.ccdAdd = ccdAdd;
+                orderDet.confirmedBy = confirmedBy;
+                var OrderID = $('#orderFormNo').html();
+                orderDet.OrderID = OrderID;
+                orderDet.dispatch = "N";
+                orderDet.UPDATEBY = "";
+                orderDet.DELETEBY = "";
+                orderDet.DISPATCHBY = "";
+                var milliseconds = new Date().getTime();
+                orderDet.c_time = milliseconds;
+                orderDet.u_time = milliseconds;
+                orderDet.billDetails = productArray;
+                orderData.push(orderDet);
+                //console.log(orderDet);
+                cloudStD("ORDER", JSON.stringify(orderDet)).then(function (data) {
+                    IDE = data;
+                    productArray = [];
+                    $('#orderFormNo').html(new Date());
+                    storedatatoIndexdb(DSN, "ORDER", JSON.stringify(orderData));
+                    ARR_RMK = localsaveInArray('RMK');
+                    $("#loader").css('display', '');
+                    $("#loader").css('display', 'none');
+                    clearPartyVal();
+                    // makeOrderPdf(OrderID, IDE, [], orderDet, "share");
+                    $("#product_list").empty();
+                    document.getElementById('partyname').focus();
+                }, function (error) {
+                    alert("check your internet connection and try again");
+                });
+
+
+            } else {
+                alert("No Product Added");
+                addProduct();
+            }
+        }
+    }
+
+    var OrderFormNo;
+    jsGetObjectByKey(DSN, "ORDER", "").then(function (data) {
+        orderData = data;
+        jsGetObjectByKey(DSN, "COMPMST", "").then(function (COMPMSTdata) {
+            COMPMST = COMPMSTdata;
+            this.COMPMST = COMPMST;
+            COMPMST = COMPMST.sort(function (a, b) {
+                a.label=a.FIRM;
+                if (a.FIRM > b.FIRM) { return -1; }
+                if (a.FIRM < b.FIRM) { return 1; }
+                return 0;
+            });
+        
+            MFIRM = COMPMST.filter(function (data) {
+              return data.CNO == MCNO;
+            })
+            var xfirm = document.getElementById("FIRM");
+            if (COMPMST.length > 0) {
+                COMPMST.forEach(function (element, index) {
+                    var option = document.createElement("option");
+                    option.value = element.FIRM;
+                    option.text = element.FIRM;
+                    xfirm.add(option, xfirm[0]);
+                    //  alert(element.FIRM);
+                });
+            }
+            var FIX_FIRM = AllUrlString["FIX_FIRM"];
+        
+            $("#FIRM").change(function(){
+                var val=$("#FIRM").val();
+                localStorage.setItem(DSN+"MCNO_SELECT",val)
+                });
+            OrderFormNo = new Date();
+            $('#orderFormNo').html(OrderFormNo);
+            makeOrderPdf(orderData.length-1, "", orderData, "", "")
+        })
+    })
+    function getFirmDetailsByFirmName(FIRM) {
+        var  NMFIRM = COMPMST.filter(function (data) {       
+            return data.FIRM.trim() == FIRM.trim();
+        })
+        if(NMFIRM.length>0){
+            return NMFIRM[0];
+        }else{
+            return {};
+        }
+    }
+    function getPartyDetailsBySendName(partyname) {
+        var v= masterData.filter(function (data) {
+            return data.partyname == partyname;
+        })
+        if(v.length>0){
+            return v[0];
+        }else{
+            return {};
+        }
+    }
+    // setValueInId('RMK', 'SL_RMK', '');
+    setValueInId('confirmedBy', 'SL_confirmedBy', '');
+    SelectFirmOptions("FIRM");
+    if(IosPlateForm=="true"){
+        $('head').append('<meta name="viewport"content="width=device-width, initial-scale=.7, maximum-scale=100, user-scalable=no"/>');
+        }
+    
+</script>
+<script>
+   
+</script>
+<body>
+
+</body>
+
+<script>
+</script>

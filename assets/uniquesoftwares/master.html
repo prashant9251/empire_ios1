@@ -1,0 +1,201 @@
+<html>
+
+<head>
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=.7, maximum-scale=100, user-scalable=no" /> -->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Address Book</title>
+    <style>
+        @media print {
+            a[href]::after {
+                content: none !important;
+            }
+
+            #result {
+                width: 90%;
+            }
+
+            #hideAbleDiv {
+                display: none;
+            }
+
+            .content-table th {
+                font-size: 30px;
+            }
+        }
+    </style>
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.2/jquery.js"></script>
+    <script src="1.10.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="css/styleAutoComplete.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jsGetUrlParams.js"></script>
+
+</head>
+
+<body>
+    <div style="background-color: #588c7e;" id="hideAbleDiv">
+        <div>
+            <a class="navbar-brand" style="color:white" href="#"> Address Book</a>
+        </div>
+        <div class="form-row" align="center">
+            <div class="col form-group">
+                <input type="text" autocomplete="off" onfocus="this.value=''" name="partyname" id="partyname"
+                    onchange="" placeholder="SERACH BY CUSTOMER NAME" class="form-control" />
+            </div>
+            <div class="col form-group">
+                <input type="text" autocomplete="off" onfocus="this.value=''" name="searchByAnything"
+                    id="searchByAnything" onchange="" placeholder="SEARCH" class="form-control" />
+            </div>
+        </div>
+        <div class="form-row" align="center">
+            <div class="col form-group">
+                <input type="text" autocomplete="off" onfocus="this.value=''" name="broker" id="broker"
+                    onchange="" placeholder="BROKER NAME" class="form-control" />
+            </div>
+            <div class="col form-group">
+                <input type="text" autocomplete="off" onfocus="this.value=''" name="city"
+                    id="city" onchange="" placeholder="CITY" class="form-control" />
+            </div>
+        </div>
+        <div class="form-row" align="center">
+            <div class="col form-group">
+                <select class="form-control inputText" style="height: 40px;"onchange="loadparty();" id="atypeSelect" name="atypeSelect">
+                </select>
+             </div>
+            <div class="col form-group" align="center">
+                <span class="btn brn-primary" onclick="loadparty();"
+                    style="color:white;background-color: darkslategrey;"> SEARCH </span>
+            </div>
+        </div>
+        <input type="hidden" name="partycode" id="partycode" onchange="" placeholder="SERACH BY CUSTOMER NAME"
+            class="form-control" />
+    </div>
+    <!-- <span class="" onclick="clear_search();" style="color:white;"> Clear </span> -->
+
+    <div style="size:10px;" id="partyCard" align="center">
+        <table id="result" class="content-table">
+
+        </table>
+    </div>
+
+</body>
+
+
+<script>
+    // var DSN = 'MTEx2021';
+    // var Db = '111';
+    // var Crntyear = '2021';
+
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+</script>
+<script src="js/localStorageSet.js"></script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsLoadCallMASTER_NEW.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsSearchfrm.js"></script>
+<script>
+    var ATYPE=[];
+    var Data;
+    var partycode;
+    var atypeSelect;
+    var SubUserPermitionArray;
+    $(document).ready(function () {
+        jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+            masterData = data;
+            jsGetObjectByKey(DSN, "ATYPE", "").then(function (ATYPE) {
+            this.ATYPE = ATYPE;
+            ATYPE=ATYPE.sort(function(a,b){
+                return a.ATYPE - b.ATYPE;
+            })
+            var selectOpt = document.getElementById("atypeSelect");
+            if (ATYPE.length > 0) {
+                ATYPE.forEach(function (element, index) {
+                    var option = document.createElement("option");
+                    option.value = element.ATYPE;
+                    option.text = element.NAME;
+                    selectOpt.add(option, selectOpt[0]);
+                    //  alert(element.FIRM);
+                });
+                atypeSelect;
+                selectOpt.value="";
+            }
+            $("#partyname").keyup(function (e) {
+                if (e.which == 38 || e.which == 40 || e.which == 13) {
+                    return;
+                } else {
+                    var partyname = $(this).val();
+                    //alert(partyname);
+                    if (partyname !== "") {
+                        if (masterData.length > 0) {
+                            //console.log("----" + partyname);
+                            $("#partyname").autocomplete({
+                                minLength: 1,
+                                source: function (request, response) {
+                                    var term = $.ui.autocomplete.escapeRegex(
+                                        request.term
+                                    ),
+                                        startsWithMatcher = new RegExp("^" + term, "i"),
+                                        startsWith = $.grep(masterData, function (
+                                            value
+                                        ) {
+                                            return startsWithMatcher.test(
+                                                value.label || value.value || value
+                                            );
+                                        }),
+                                        containsMatcher = new RegExp(term, "i"),
+                                        contains = $.grep(masterData, function (value) {
+                                            return (
+                                                $.inArray(value, startsWith) < 0 &&
+                                                containsMatcher.test(
+                                                    value.label || value.value || value
+                                                )
+                                            );
+                                        });
+
+                                    response(startsWith.concat(contains));
+                                },
+                                select: function (event, ui) {
+                                    event.preventDefault();
+                                    $(this).val(ui.item.label);
+                                    $("#partycode").val(ui.item.value);
+                                    $("#partyname").val(ui.item.partyname);
+                                    partycode = ui.item.value;
+                                    loadCall(partycode);
+                                },
+                            });
+                        }
+                    }
+                }
+            });
+
+            Data = data;
+            partycode = $('#partyname').val();
+            loadCall(partycode);
+        });
+    });
+});
+
+
+    function loadparty() {
+        atypeSelect = $('#atypeSelect').val();
+        partycode = $('#partycode').val();
+        searchByAnything = $('#searchByAnything').val();
+        loadCall(partycode, searchByAnything);
+    }
+
+    function clear_search() {
+        $('#partyname').val('');
+        $('#partycode').val('');
+        loadCall("");
+    }
+    
+
+    if(IosPlateForm=="true"){
+        $('head').append('<meta name="viewport" content="width=device-width, initial-scale=.7, maximum-scale=100, user-scalable=no" />');
+    }else{
+    }
+</script>

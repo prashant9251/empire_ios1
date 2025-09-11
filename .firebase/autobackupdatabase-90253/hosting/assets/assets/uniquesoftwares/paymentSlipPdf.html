@@ -1,0 +1,86 @@
+<html>
+
+<head>
+    <title>BILL</title>
+    <link rel="stylesheet" type="text/css" href="css/billPdf.css">
+    <script src="3.3.1/jquery.min.js"></script>
+    <script src="3.3.7/bootstrap.min.js"></script>
+    <script src="js/jsGetUrlParams.js"></script>
+
+</head>
+
+<body style="font-family: serif;">
+    <div style="display: none;" id="loader">
+        <div class="loader"></div>
+        <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+    </div>
+</body>
+<script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+    // var Crntyear = getUrlParams(url, "Currentyear");
+    // var ClDb = DSN.replace(Crntyear, "");
+</script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jstoFixedNumber.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsGetDaysDif.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jsgetValueNotDefineNo.js"></script>
+<script src="js/jsGetYearChange.js"></script>
+<script src="js/jsPaymentSlipPdf.js"></script>
+<script>
+    var IDE = (getUrlParams(url, "IDE"));
+    var VNO = (getUrlParams(url, "VNO"));
+    var YearChange = (getUrlParams(url, "YearChange"));
+    var FIRM = '';
+    var cno = '';
+    DataCompmst = [];
+    var Data;
+    var partyname = getUrlParams(url, "partyname");
+    var partycode = getUrlParams(url, "partycode");
+    if (partyname == '') {
+        partycode = '';
+    }
+    var broker = getUrlParams(url, "broker");
+    var CITY = getUrlParams(url, "city");
+    var haste = getUrlParams(url, "haste");
+    var fromdate = getUrlParams(url, "search_FromDate");
+    var todate = getUrlParams(url, "search_ToDate");
+    var CrntYearStartdate = getUrlParams(url, "CrntYearStartdate");
+
+    $(document).ready(function () {
+        $("#loader").addClass('has-loader');
+        load_data();
+    });
+
+    function load_data() {
+        jsGetObjectByKey(DSN, "COMPMST", "").then(function (data) {
+            //console.log(data);
+            DataCompmst = data;
+            if (FIRM != '' && FIRM !=null) {
+                for (var i = 0; i < DataCompmst.length; i++) {
+                    if (DataCompmst[i].FIRM == FIRM) {
+                        cno = DataCompmst[i].CNO;
+                    }
+                }
+            }
+        jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+            masterData = data;
+            jsGetObjectByKey(DSN, "LEDGER", "").then(function (dataBLS) {
+                Data = dataBLS;
+                if (YearChange != '' && YearChange != null) {
+                    DSN = ClDb + YearChange;
+                }
+                jsGetObjectByKey(DSN, "BILLREC", "").then(function (dataDET) {
+                    DETdata = dataDET;
+                    loadBillPdfCall();
+                });
+            });
+        });
+    });
+    }
+</script>

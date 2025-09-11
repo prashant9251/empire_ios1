@@ -1,0 +1,95 @@
+<html>
+
+<head>
+    <title>ITEMWISE SALE </title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.2/jquery.js"></script>
+    <script src="1.10.4/jquery-ui.js"></script>
+    <script src="js/jsGetUrlParams.js"></script>
+</head>
+
+<body class="loader-enabled">
+    <div align="center" class="table-responsive">
+        <table id="result" class="content-table">
+
+        </table>
+    </div>
+    <div style="display: none;" id="loader">
+        <div class="loader"></div>
+        <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+    </div>
+</body>
+
+<script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+</script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsopenSubReport.js"></script>
+<script src="js/jsGetYearChange.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jstoFixedNumber.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsLoadCallITEMWISESALE.js"></script>
+<script src="js/jsOpenBillDetilasAsTable.js"></script>
+
+<script>
+    var Data;
+    var productDet = '';
+    var paidStatus = '';
+    var searchType = '';
+    var PAID = 'N';
+    var ATYPE = '1';
+    var tr = '';
+    var FIRM = getUrlParams(url, "FIRM");
+
+    var CNO = '';
+    var EMP;
+    var partyname = getUrlParams(url, "partyname");
+    var partycode = getUrlParams(url, "partycode");
+    if (partyname == '') {
+        partycode = '';
+    }
+    var qualname = getUrlParams(url, "qualname");
+    var qualcode = getUrlParams(url, "qualcode");
+    if (qualname == '') {
+        qualcode = '';
+    }
+    var broker = getUrlParams(url, "broker");
+    var CITY = getUrlParams(url, "city");
+    var haste = getUrlParams(url, "haste");
+    var fromdate = getUrlParams(url, "search_FromDate");
+    var todate = getUrlParams(url, "search_ToDate");
+    var nowDate = new Date();
+    if (FIRM != '') {
+        jsGetObjectByKey(DSN, "COMPMST", "").then(function (data) {
+            //console.log(data);
+            DataCompmst = data;
+            for (var i = 0; i < DataCompmst.length; i++) {
+                if (DataCompmst[i].FIRM == FIRM) {
+                    cno = DataCompmst[i].CNO;
+                }
+            }
+        })
+    }
+    $(document).ready(function () {
+        $("#loader").addClass('has-loader');
+        load_data();
+    });
+    function load_data() {
+        jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+            masterData = data;
+            jsGetObjectByKey(DSN, "ITEMWISESALE", "").then(function (data) {
+                loadCall(data);
+            });
+        })
+    }
+
+
+</script>
+<script src="js/jsHeaderTbl.js"></script>

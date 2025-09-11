@@ -1,0 +1,409 @@
+<html>
+
+<head>
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=.7, maximum-scale=100, user-scalable=no" /> -->
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>CATALOG CHART</title>
+    <style>
+        @media print {
+            a[href]::after {
+                content: none !important;
+            }
+        }
+    </style>
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.2/jquery.js"></script>
+    <script src="1.10.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="css/styleAutoComplete.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jsGetUrlParams.js"></script>
+
+</head>
+
+<body>
+    <div style="background-color: #588c7e;" id="hideAbleDiv" class="hideTr">
+        <div>
+            <a class="navbar-brand" style="color:white" href="#"> QUALITY CHART</a>
+        </div>
+        <div class="form-row" align="center">
+            <div class="col form-group">
+                <input type="text" autocomplete="off" name="qualname" id="qualname" onchange=""
+                    placeholder="Search by Quality" class="form-control" />
+                <input type="hidden" name="qualcode" id="qualcode" onchange="" placeholder="Search by Customer Name"
+                    class="form-control" />
+            </div>
+            <div class="col form-group">
+                <select name="qualType" onchange="changeOption();" class="form-control" id="qualType">
+                </select>
+            </div>
+            <div class="col form-group">
+                <select name="qualPACK" onchange="changeOption();" class="form-control" id="qualPACK">
+                </select>
+            </div>
+            <div class="col form-group">
+                <select name="isBaseQual" onchange="changeOption();" class="form-control" id="isBaseQual">
+                    <option value="N"> No (BASE QUALITY)</option>
+                    <option value="Y">Yes(BASE QUALITY)</option>
+                    <option value="">ALL</option>
+                </select>
+            </div>
+            
+        </div>
+        <div class="form-row" align="center">
+            <div class="col form-group">
+                <select name="qualOrderBy" onchange="changeOption();" class="form-control" id="qualOrderBy">
+                    <option value="">ORDER BY</option>
+                    <option value="S1">RATE1</option>
+                    <option value="S2">RATE2</option>
+                    <option value="S3">RATE3</option>
+                </select>
+            </div>
+            <div class="col form-group">
+                <select name="qualOrderByOption" onchange="changeOption();" class="form-control" id="qualOrderByOption">
+                    <option value="ASC">ASC</option>
+                    <option value="DESC">DESC</option>
+                </select>
+            </div>
+            <div class="col form-group">
+                <select name="lengthLimit" onchange="changeOption();" class="form-control" id="lengthLimit">
+                    <option >500</option>
+                    <option >1000</option>
+                    <option >2000</option>
+                    <option >3000</option>
+                    <option >4000</option>
+                    <option >5000</option>
+                    <option >6000</option>
+                    <option >10000</option>
+                    <option >20000</option>
+                    <option >30000</option>
+                </select>
+            </div>
+            <div class="col form-group" align="center">
+                <span class="btn brn-primary" onclick="loadparty();"
+                    style="color:white;background-color: darkslategrey;"> SEARCH </span>
+            </div>
+        </div>
+    </div>
+
+
+    <div style="size:10px;" align="center">
+        <table id="result" style="width: 100%;" class="content-table">
+
+        </table>
+    </div>
+
+
+    <div id="CostingDateShow" class="modal" style="overflow: auto;height:100% ;">
+        <div id="CostingDateShowContent" class="modal-content">
+            <div class="modal-header" style="text-align:left;">
+                <h2 style="padding: 20px;">Calculation</h2>
+                <span class="close" onclick="closeCostingDateShow();">&times;</span><br>
+            </div>
+            <div class="modal-body" style="    width: 100%;">
+                <div class="tab">
+                    <button class="tablinks" onclick="openTab(event, 'CostingCALCULATION')">Costing </button>
+                </div>
+                <div id="CostingCALCULATION" class="tabcontent">
+
+
+                    <div style="display:flex;">
+                        <div style="width:50%;"><b>Quality Name :</b></div>
+                        <div style="width:50%;text-align:right;">
+                            <input type="text" class="form-control" style="min-width: 50%;text-align:right;"
+                                id="QualityName" />
+                        </div>
+                    </div>
+
+
+                    <div style="display:flex;">
+                        <div style="width:50%;"><b>Purchase Rate :</b></div>
+                        <div style="width:50%;text-align:right;">
+                            <input type="text" class="form-control" style="min-width: 50%;text-align:right;"
+                                onkeyup="localStorageSave('purchaseRate');" id="purchaseRate" />
+                        </div>
+                    </div>
+
+
+                    <div style="display:flex;">
+                        <div style="width:50%;"><b>Shortage % :</b></div>
+                        <div style="width:50%;text-align:right;">
+                            <input type="text" class="form-control" style="min-width: 50%;text-align:right;"
+                                onkeyup="localStorageSave('Shortage');" id="Shortage" />
+                        </div>
+                    </div>
+
+
+
+                    <div style="display:flex;">
+                        <div style="width:50%;"><b>Mill Rate 1 :</b></div>
+                        <div style="width:50%;text-align:right;">
+                            <input type="text" class="form-control" style="min-width: 50%;text-align:right;"
+                                onkeyup="localStorageSave('millRate1');" id="millRate1" />
+                        </div>
+                    </div>
+
+
+                    <div style="display:flex;">
+                        <div style="width:50%;"><b>Mill Rate 2 :</b></div>
+                        <div style="width:50%;text-align:right;">
+                            <input type="text" class="form-control" style="min-width: 50%;text-align:right;"
+                                onkeyup="localStorageSave('millRate2');" id="millRate2" />
+                        </div>
+                    </div>
+
+
+                    <div style="display:flex;">
+                        <div style="width:50%;"><b>CUT :</b></div>
+                        <div style="width:50%;text-align:right;">
+                            <input type="text" class="form-control" style="min-width: 50%;text-align:right;"
+                                onkeyup="localStorageSave('CUT');" id="CUT" />
+                        </div>
+                    </div>
+
+
+                    <div style="display:flex;">
+                        <div style="width:50%;"><b>Add Extra :</b></div>
+                        <div style="width:50%;text-align:right;">
+                            <input type="text" class="form-control" style="min-width: 50%;text-align:right;"
+                                onkeyup="localStorageSave('ADDRatExtra');" id="ADDRatExtra" />
+                        </div>
+                    </div>
+
+                    <div style="display:flex;">
+                        <div style="width:50%;"><b>Add Profit % :</b></div>
+                        <div style="width:50%;text-align:right;">
+                            <input type="text" class="form-control" style="min-width: 50%;text-align:right;"
+                                onkeyup="localStorageSave('addProfitPersent');" id="addProfitPersent" />
+                        </div>
+                    </div>
+
+                    <div style="display:flex;">
+                        <div style="width:50%;"><b>Profit Amount :</b></div>
+                        <div style="width:50%;text-align:right;">
+                            <input type="text" class="form-control" style="min-width: 50%;text-align:right;" disabled
+                                onkeyup="localStorageSave('addProfitAmt');" id="addProfitAmt" />
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex;">
+                    <div style="width:50%;font-weight: 900;" id="FINALAMT"> FINAL AMT</div>
+                    <div style="width:50%;text-align:right;"><button class="btn" onclick="calculate();">
+                            <b> CALCULATE</b></button class="btn"></div>
+                    <div style="width:50%;text-align:right;"><button class="btn" onclick="closeCostingDateShow();">
+                            CLOSE</button class="btn"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+<script>
+
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+    var privateNetworkIp = getUrlParams(url, "privateNetworkIp");
+    var CLDb = DSN.replace(Currentyear, "");
+    ClDb = CLDb;
+    var clnt = atob(CLDb);
+
+</script>
+<script src="js/jsLoadCallQualChart.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jsgetValueNotDefineNo.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="firebasejs/8.6.2/firebase-app.js"></script>
+<script src="firebasejs/8.6.2/firebase-auth.js"></script>
+<script src="firebasejs/8.6.2/firebase-database.js"></script>
+<script src="firebasejs/8.6.2/firebase-storage.js"></script>
+
+<script id="MainScript" src="firebasejs/8.6.2/retrieveImg.js"></script>
+<script>
+    var Data;
+    var qualcode;
+    var SubUserPermitionArray;
+    var QualArr;
+    var qualType = "";
+    var qualPACK = "";
+    var isBaseQual="N";
+    var qualOrderBy = "";
+    var qualOrderByOption = "ASC";
+    var lengthLimit="500";
+    var OnSelect = "QT"
+    $(document).ready(function () {
+
+        jsGetObjectByKey(DSN, "QUL", "").then(function (data) {
+            QualData = data;
+            //console.log(QualData);
+            QualArr = data;
+            Data = data;
+            qualcode = $('#qualname').val();
+            SelectQualOptions("qualType")
+            SelectPACKOptions("qualPACK")
+            loadCall(qualcode);
+        });
+
+    });
+
+    function load_data() {
+
+    }
+
+    $("#qualname").keyup(function (e) {
+        var qualname = $(this).val();
+        if (qualname !== "") {
+            loadCall(qualname);
+        }
+    })
+    function loadparty() {
+        qualcode = $('#qualname').val();
+        //console.log(qualcode);
+        loadCall(qualcode);
+    }
+
+    function clear_search() {
+        $('#qualname').val('');
+        $('#qualcode').val('');
+        loadCall("");
+    }
+    function SelectQualOptions(IdQualOptions) {
+        var xQual = document.getElementById(IdQualOptions);
+        var categories = [];
+
+        $.each(QualData, function (index, value) {
+            if ($.inArray(value.QT, categories) === -1) {
+                categories.push(value.QT);
+            }
+        });
+        QualArr = categories;
+        //console.log(QualArr);
+        if (QualArr.length > 0) {
+            QualArr.forEach(function (element, index) {
+                var option = document.createElement("option");
+                option.value = element;
+                option.text = element;
+                xQual.add(option, xQual[0]);
+                //  alert(element.Qual);
+            });
+
+        }
+    }
+    function SelectPACKOptions(IdQualOptions) {
+        var xQual = document.getElementById(IdQualOptions);
+        var categories = [];
+        $.each(QualData, function (index, value) {
+            if ($.inArray(value.PCK, categories) === -1) {
+                categories.push(value.PCK);
+            }
+        });
+        QualArr = categories;
+        //console.log(QualArr);
+        if (QualArr.length > 0) {
+            QualArr.forEach(function (element, index) {
+                var option = document.createElement("option");
+                option.value = element;
+                option.text = element;
+                xQual.add(option, xQual[0]);
+                //  alert(element.Qual);
+            });
+
+        }
+    }
+    function changeOption() {
+        qualType = document.getElementById('qualType').value;
+        qualPACK = document.getElementById('qualPACK').value;
+        isBaseQual = document.getElementById('isBaseQual').value;
+        qualOrderBy = document.getElementById('qualOrderBy').value;
+        qualOrderByOption = document.getElementById('qualOrderByOption').value;
+        lengthLimit = document.getElementById('lengthLimit').value;
+        loadparty();
+    }
+    function getlocalStorageVal(key) {
+        val = localStorage.getItem(key);
+        $('#' + key).val(val);
+    }
+
+    function localStorageSave(id) {
+        var QualityName = $('#QualityName').val();;
+        QualityName = QualityName.replaceAll(" ", "");
+        QualityName = QualityName.replace(/[^a-zA-Z ]/g, "");
+        var val = $('#' + id).val();
+        localStorage.setItem(id, val);
+    }
+
+    function costingOpen(QualityName) {
+
+        var Quality = QualityName.replaceAll(" ", "");
+        Quality = Quality.replace(/[^a-zA-Z ]/g, "");
+        var OutstandingCalculate = document.getElementById("CostingDateShow");
+        OutstandingCalculate.style.display = "block";
+        document.getElementById("CostingCALCULATION").style.display = "block";
+        document.getElementById('QualityName').value = QualityName;
+        getlocalStorageVal("purchaseRate");
+        getlocalStorageVal("Shortage");
+        getlocalStorageVal("millRate1");
+        getlocalStorageVal("millRate2");
+        getlocalStorageVal("addProfitPersent");
+        getlocalStorageVal("addProfitAmt");
+        getlocalStorageVal("CUT");
+        getlocalStorageVal("ADDRatExtra");
+        calculate();
+    }
+
+    function closeCostingDateShow() {
+
+        var OutstandingCalculate = document.getElementById("CostingDateShow");
+        OutstandingCalculate.style.display = "none";
+        document.getElementById("CostingCALCULATION").style.display = "none";
+        $('#Shortage').val("");
+        $('#millRate1').val("");
+        $('#millRate2').val("");
+        $('#ADDRatExtra').val("");
+        $('#addProfitPersent').val("");
+        $('#addProfitAmt').val("");
+        $('#FINALAMT').html("");
+
+    }
+
+    function calculate() {
+        var purchaseRate = $('#purchaseRate').val();
+        purchaseRate = purchaseRate == null || purchaseRate == "" ? 0 : parseFloat(purchaseRate);
+        var Shortage = $('#Shortage').val();
+        Shortage = Shortage == null || Shortage == "" ? 0 : parseFloat(Shortage);
+        var shortageRate = purchaseRate * Shortage / 100;  //-----shorteg rate
+        var cost = purchaseRate + shortageRate;
+        var millRate1 = $('#millRate1').val();
+        millRate1 = millRate1 == null || millRate1 == "" ? 0 : parseFloat(millRate1);
+        cost += millRate1;
+        var millRate2 = $('#millRate2').val();
+        millRate2 = millRate2 == null || millRate2 == "" ? 0 : parseFloat(millRate2);
+        cost += millRate2;
+
+
+        var CUT = $('#CUT').val();
+        CUT = CUT == null || CUT == "" ? 0 : parseFloat(CUT);
+
+        cost = cost * CUT;
+        var ADDRatExtra = $('#ADDRatExtra').val();
+        ADDRatExtra = ADDRatExtra == null || ADDRatExtra == "" ? 0 : parseFloat(ADDRatExtra);
+        cost += ADDRatExtra;
+
+        var addProfitPersent = $('#addProfitPersent').val();
+        addProfitPersent = addProfitPersent == null || addProfitPersent == "" ? 0 : parseFloat(addProfitPersent);
+        var addProfitAmt = cost * addProfitPersent / 100;
+        $('#addProfitAmt').val(parseFloat(addProfitAmt).toFixed(2));
+        cost += addProfitAmt;
+        $('#FINALAMT').html(parseFloat(cost).toFixed(2));
+        //console.log(cost);
+    }
+
+    if (IosPlateForm == "true") {
+        $('head').append('<meta name="viewport" content="width=device-width, initial-scale=.7, maximum-scale=100, user-scalable=no" />');
+    } else {
+    }
+</script>

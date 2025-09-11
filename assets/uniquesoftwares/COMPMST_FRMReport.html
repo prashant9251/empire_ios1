@@ -1,0 +1,230 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=.7, maximum-scale=100, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <script src="2.1.3/jquery.min.js"></script>
+    <script src="3.3.6/bootstrap.min.js"></script>
+    <script src="js/jsGetUrlParams.js"></script>
+
+
+</head>
+
+<script>
+    var url = window.location.href;
+    var MCNO = getUrlParams(url, "MCNO");
+    var MTYPE = getUrlParams(url, "MTYPE");
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+    //alert(DSN);
+
+</script>
+<script src="js/localStorageSet.js"></script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsStoreDatatoIndexeddb.js"></script>
+<script src="js/jsPopUpTblSetting.js"></script>
+<!-- <script src="js/jsSearchfrm.js"></script> -->
+<script src="js/jsgetValueNotDefine.js"></script>
+<html>
+
+<head>
+    <title>Bank Account Details</title>
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="1.10.4/jquery-ui.js"></script>
+    <style>
+        @media print {
+            .hidetr {
+                display: none;
+            }
+
+            body {
+                -webkit-print-color-adjust: exact !important;
+            }
+
+            #tableResult {
+                width: 100%;
+            }
+        }
+
+        .footer {
+            /* display: none; */
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: transparent;
+            color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <BR>
+
+
+
+    <div class="container " style="width: 100%;">
+
+        <div class="row justify-content-center hidetr">
+            <div class="col-md-6">
+                <div class="card">
+                    <header class="card-header">
+                        <h2 class="card-title mt-2">Bank Account Details</h2>
+                    </header>
+                    <article class="card-body">
+                        <form action="ALLSALE_AJXREPORT.html?" method="get" target="_blank" autocomplete="off">
+
+
+                            <div class="form-row">
+                                <div class="col form-group">
+                                    <h3>Please select Firm  from here &#8595;</h3>
+                                    <select class="form-control inputText" style="height: 40px;" id="FIRM"
+                                        onchange="selectFirm(this);" name="FIRM">
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="hidden" class="form-control " id="firm" name="firm" value="">
+                                    <input type="hidden" class="form-control" id="partycode" name="partycode">
+                                    <input type="hidden" class="form-control" id="ntab" name="ntab" value="NTAB">
+                                    <input type="hidden" class="form-control" id="mobileNo" name="mobileNo" value="">
+                                    <input type="hidden" class="form-control" id="partyEmail" name="partyEmail"
+                                        value="">
+                                </div>
+
+
+                            </div>
+                </div>
+
+                </form>
+            </div>
+        </div>
+        <div align="center" id="result" class="table-responsive">
+    </div>
+
+</body>
+
+
+</html>
+
+<script>
+    var FirmData = [];
+    $(document).ready(function () {
+
+        jsGetObjectByKey(DSN, "COMPMST", "").then(function (data) {
+            FirmData = data;
+            SelectFirmOptions("FIRM");
+            // BuildAccountdetaisl([1]);
+
+        })
+    });
+
+
+
+    var CNOArray = [];
+    function BuildAccountdetaisl() {
+     try {
+            var div = `<table class="content-table" align="center" id="tableResult">
+    <tbody style="border:1px solid grey; border-radius: 15px;">
+    <tr>
+    <th colspan="3"style=" border-top-right-radius: 15px;border-top-left-radius: 15px;"><b>BANK  ACCOUNT DETAILS</b></th>
+    </tr>
+    `;
+            var sr = 0;
+            var shareText = "Account Details \n\n";
+            for (var i = 0; i < CNOArray.length; i++) {
+                // var FIRM_Array = getFirmDetailsBySendCode(CNOArray[i]);
+                shareText += "FIRM :-" + getValueNotDefine(CNOArray[i].FIRM) + "\n";
+                shareText += "ACCOUNT NO :-" + getValueNotDefine(CNOArray[i].ADDRESS3) + "\n";
+                shareText += "IFSC :-" + getValueNotDefine(CNOArray[i].ADDRESS4) + "\n";
+                shareText += "\n\n\n";
+                // //console.log(CNOArray)
+                sr += 1
+                div += ` <tr style="background-color: #dddddd; border-top-right-radius: 15px;border-top-left-radius: 15px;">
+       <td><h6><b>`+ sr + `</b> </h6></td>
+       <td><h6><b>FIRM NAME</b></h6></td>
+       <td> <h6><b>` + getValueNotDefine(CNOArray[i].FIRM) + ` </b></h6></td>
+        </tr>
+        <tr>
+       <td><h6></h6></td>
+       <td><h6> ACCOUNT NO.</h6> </td>
+       <td> <h6>` + getValueNotDefine(CNOArray[i].ADDRESS3) + `</h6></td>
+        </tr>
+        <tr>
+       <td><h6></h6></td>
+       <td><h6> IFSC CODE</h6></td>
+       <td> <h6>` + getValueNotDefine(CNOArray[i].ADDRESS4) + `</h6></td>
+        </tr>
+        <tr>
+        <td colspan="3"></td>
+        </tr>
+       
+        `;
+
+            }
+            div += `
+        </tbody></table>
+        <div class="footer pdfBtnHide hidetr" id="footer" style="">
+            <h4 style="color:black;"> You Can share Your (Bank Account Detail) from here &#8595;</h4>
+                <button class="btn btn-success btn-lg btn-block" onclick="shareTextToFlutterApp('`+encodeURIComponent(shareText)+`');">Text Share</button>
+        </div>`;
+
+            $('#result').html(div);
+
+        } catch (error) {
+
+        }
+    }
+
+    function getFirmDetailsBySendCode(CNO) {
+        return FirmData.filter(function (data) {
+            return data.CNO == CNO;
+        })
+    }
+
+    function selectFirm(evt) {
+        var val = evt.value;
+        if (val != null && val != "") {
+            CNOArray = FirmData.filter(function (d) {
+                return d.FIRM == val;
+            })
+        } else {
+            CNOArray = FirmData;
+        }
+        //console.log(CNOArray);
+        BuildAccountdetaisl();
+    }
+
+
+    function SelectFirmOptions(IdFirmOptions) {
+        var xfirm = document.getElementById(IdFirmOptions);
+        if (FirmData.length > 0) {
+            FirmData.forEach(function (element, index) {
+                var option = document.createElement("option");
+                option.value = element.FIRM;
+                option.text = element.FIRM;
+                xfirm.add(option, xfirm[0]);
+                //  alert(element.FIRM);
+            });
+
+        }
+
+        var option = document.createElement("option");
+        option.value = "";
+        option.text = "ALL";
+        xfirm.add(option, xfirm[0]);
+        var MCNO_SELECT = localStorage.getItem("MCNO_SELECT");
+        document.getElementById(IdFirmOptions).value = "";
+        selectFirm("");
+    }
+
+if(IosPlateForm=="true"){
+    $('head').append('<meta name="viewport"content="width=device-width, initial-scale=.6, user-scalable=no" />');
+}else{
+    $('head').append('<meta name="viewport"content="width=device-width, initial-scale=1, user-scalable=yes" />');
+}
+</script>

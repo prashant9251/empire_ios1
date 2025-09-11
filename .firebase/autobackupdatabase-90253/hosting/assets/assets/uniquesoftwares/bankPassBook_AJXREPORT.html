@@ -1,0 +1,254 @@
+<html>
+
+<head>
+    <title> BANK BOOK </title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.2/jquery.js"></script>
+    <script src="1.10.4/jquery-ui.js"></script>
+    <script src="js/jsGetUrlParams.js"></script>
+    <script>
+        var url = window.location.href;
+        REPORTTYPE = getUrlParams(url, "REPORTTYPE");
+        var FIRM = getUrlParams(url, "FIRM");
+
+
+    </script>
+</head>
+
+<body class="loader-enabled">
+    <div align="center" class="table-responsive">
+        <table id="result" class="content-table" style="">
+
+        </table>
+    </div>
+    <div style="display: none;" id="loader">
+        <div class="loader"></div>
+        <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+    </div>
+</body>
+
+<script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+</script>
+<script src="js/jsLoadCallBANK_BROKERWISE_PARTYWISE.js"></script>
+<script src="js/jsLoadCallBANK.js"></script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jsgetEMPdata.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jsgetArrayProductdetailsbyIDE.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jsOpenBillDetilasAsTable.js"></script>
+<script src="js/jsGetDaysDif.js"></script>
+
+<script>
+    var Data;
+    var PAID = 'N';
+    var ATYPE = '1';
+    var tr = '';
+    var FIRM = getUrlParams(url, "FIRM");
+    var cno = '';
+    var EMP;
+    var partyname = getUrlParams(url, "partyname");
+    var partycode = getUrlParams(url, "partycode");
+    if (partyname == '') {
+        partycode = '';
+    }
+    var adjustDet = getUrlParams(url, "adjustDet");
+    var broker = getUrlParams(url, "broker");
+    var CITY = getUrlParams(url, "city");
+    var haste = getUrlParams(url, "haste");
+    var CrDrEntryType = getUrlParams(url, "CrDrEntryType");
+    var fromdate = getUrlParams(url, "search_FromDate");
+    var todate = getUrlParams(url, "search_ToDate");
+    GRD = getUrlParams(url, "GRD");
+    var order = getUrlParams(url, "order");
+    var Currentyear = getUrlParams(url, "Currentyear");
+    if (fromdate == '' || fromdate == null) {
+        if (CrntYearStartdate != '' || CrntYearStartdate != null) {
+            fromdate = CrntYearStartdate;
+        }
+    }
+    var nowDate = new Date();
+    var BILLREC=[];
+    $(document).ready(function () {
+        $("#loader").addClass('has-loader');
+        load_data();
+    });
+    function load_data() {
+        jsGetObjectByKey(DSN, "COMPMST", "").then(function (data) {
+            //console.log(data);
+            DataCompmst = data;
+            if (FIRM != '' && FIRM !=null) {
+                for (var i = 0; i < DataCompmst.length; i++) {
+                    if (DataCompmst[i].FIRM == FIRM) {
+                        cno = DataCompmst[i].CNO;
+                    }
+                }
+            }
+        jsGetObjectByKey(DSN, "BILLREC", "").then(function (BILLREC) {
+            this.BILLREC = BILLREC;
+            jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+            masterData = data;
+            try { AddHeaderTbl(); } catch (error) { }
+            jsGetObjectByKey(DSN, "LEDGER", "").then(function (data) {
+                Data = data;
+                Data = Data.filter(function (bill) {
+                    return ((bill.TYPE.toUpperCase().indexOf("B") > -1) || (bill.TYPE.toUpperCase().indexOf("C") > -1))
+                        && ((bill.SRNO == 1));
+                })
+
+                if (cno != '' && cno != null) {
+                    Data = Data.filter(function (data) {
+                        return data.CNO == cno;
+                    })
+                }
+                if (partycode != '' && partycode != null) {
+                    Data = Data.filter(function (data) {
+                        return data.RFCODE == partycode;
+                    })
+                    //console.log(Data);
+                }
+                if (fromdate != '' && fromdate != null) {
+                    Data = Data.filter(function (billDetails) {
+                        return new Date(DateRpl(billDetails.DATE)).setHours(0, 0, 0, 0) >= new Date(DateRpl(fromdate)).setHours(0, 0, 0, 0);
+                    })
+                }
+                if (todate != '' && todate != null) {
+                    Data = Data.filter(function (billDetails) {
+                        return new Date(DateRpl(billDetails.DATE)).setHours(24, 0, 0, 0) <= new Date(DateRpl(todate)).setHours(24, 0, 0, 0);
+                    })
+                }
+                // Data = Data.sort(
+                //   (a, b) => new Date(a.DATE) - new Date(b.DATE));
+                if (order == 'ASC') {
+                    Data = Data.sort(function (a, b) { return a.VNO - b.VNO });
+                    Data = Data.sort((a, b) => new Date(a.DATE) - new Date(b.DATE));
+                } else {
+                    Data = Data.sort(function (a, b) { return b.VNO - a.VNO });
+                    Data = Data.sort((a, b) => new Date(b.DATE) - new Date(a.DATE));
+                }
+                Data = PaymentEntryFilter(Data);
+
+                if (REPORTTYPE == 'BROKER WISE PARTY WISE') {
+                    jsLoadCallBANK_BROKERWISE_PARTYWISE(Data);
+                } else {
+                    loadCall(Data);
+                }
+            });
+        })
+    })
+    })
+    }
+
+    var BrokerNameList;
+    var PartyNameList;
+    var TransectionArray = [];
+    function PaymentEntryFilter(Arr) {
+        var flagBroker = [];
+        var flagParty = [];
+        BrokerNameList = [];
+        PartyNameList = [];
+        for (let i = 0; i < Arr.length; i++) {
+            const element = Arr[i];
+            var REFCODE = element.RFCODE;
+            brokerName = "";
+            REF_Arr = getPartyDetailsBySendCode(REFCODE);
+            if (REF_Arr.length > 0) {
+                brokerName = REF_Arr[0].broker
+            }
+            if (!flagBroker[brokerName]) {
+                BrokerNameList.push(brokerName);
+                flagBroker[brokerName] = true;
+            }
+            if (!flagParty[REFCODE + brokerName]) {
+                var obj = {};
+                obj.REFCODE = REFCODE;
+                obj.broker = brokerName;
+                PartyNameList.push(obj);
+                flagParty[REFCODE + brokerName] = true;
+            }
+            element.broker = brokerName;
+        }
+        if (broker != '' && broker != null) {
+            BrokerNameList = BrokerNameList.filter(function (data) {
+                return data == broker;
+            })
+            //console.log(Data);
+        }
+        TransectionArray = Arr;
+        //console.log(BrokerNameList, PartyNameList, TransectionArray);
+        return Arr;
+    }
+
+    
+function getAdjustDetails(IDE,paymentDate){
+    var  adjustDetails = BILLREC.filter(function (DET) {
+        return DET.IDE == IDE;
+    });
+    tr="";
+    
+    try {
+      
+    var billDet = (adjustDetails[0].billDetails)??[];
+  if(billDet.length>0){
+    tr += ` <tr >
+  <th style="border-top: 1px solid black;border-bottom: 1px solid black;"></th>
+  <th style="border-top: 1px solid black;border-bottom: 1px solid black;"></th>
+  <th style="border-top: 1px solid black;border-bottom: 1px solid black;">BILL</th>
+  <th style="border-top: 1px solid black;border-bottom: 1px solid black;">DATE</th>
+  <th style="border-top: 1px solid black;border-bottom: 1px solid black;">BILL.AMT</th>
+  <th style="border-top: 1px solid black;border-bottom: 1px solid black;">RG</th>
+  <th style="border-top: 1px solid black;border-bottom: 1px solid black;">ADJ.AMT</th>
+  <th style="border-top: 1px solid black;border-bottom: 1px solid black;">REC.IN DAYS</th>
+    </tr>
+    `;
+    for (let j = 0; j < billDet.length; j++) {
+      var GA = (billDet[j].GA);
+      var L1A = (billDet[j].L1A);
+      var TXA = (billDet[j].TXA);
+      var GST = (billDet[j].GST);
+      var BA = (billDet[j].BA);
+      var RGA = (billDet[j].RGA);
+      var TDA = (billDet[j].TDA);
+      var OLA = (billDet[j].OLA);
+      var ADA = (billDet[j].ADA);
+      var FA = (billDet[j].FA);
+      var AMT = (billDet[j].AMT);
+      var ACA = (billDet[j].ACA);
+      var PA = (billDet[j].PA);
+      if (billDet[j].DOC.indexOf('CN') > -1) {
+          PA = -Math.abs(PA)
+          AMT = -Math.abs(AMT)
+          FA = -Math.abs(FA)
+          BA = -Math.abs(BA)
+          TXA = -Math.abs(TXA)
+          GA = -Math.abs(GA)
+      }
+      tr += ` <tr style="border-bottom: 1px solid black;">
+      <td> </td>
+      <td> </td>
+      <td> `+getValueNotDefineNo(billDet[j].BL)+`</td>
+      <td> `+formatDate(billDet[j].DT)+`</td>
+      <td> `+getValueNotDefineNo(Math.round(BA))+`</td>
+      <td> `+getValueNotDefineNo(Math.round(RGA))+`</td>
+      <td> `+getValueNotDefineNo(Math.round(AMT))+`</td>
+      <td> `+getDaysDif(billDet[j].DT, paymentDate)+`</td>
+      </tr>
+      `;
+      
+    }
+  }
+  } catch (error) {
+    //console.log(error);
+  
+  }
+  return tr;
+  }
+</script>
+<script src="js/jsHeaderTbl.js"></script>

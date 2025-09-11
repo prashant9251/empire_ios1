@@ -1,0 +1,510 @@
+/*----------------------------------------------
+CSS Settings For HTML Div ExactCenter
+------------------------------------------------*/
+* {
+  font-family: sans-serif; /* Change your font family */
+}
+
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+#tblHead {
+  width: 100%;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border-collapse: separate;
+  -moz-border-radius: 6px;
+  border-radius: 25px;
+  border: 4px solid #588c7e;
+  padding: 20px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  position: relative;
+  background-color: #fefefe;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #888;
+  width: 80%;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: 0.4s;
+  animation-name: animatetop;
+  animation-duration: 0.4s;
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+  from {
+    top: -300px;
+    opacity: 0;
+  }
+  to {
+    top: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes animatetop {
+  from {
+    top: -300px;
+    opacity: 0;
+  }
+  to {
+    top: 0;
+    opacity: 1;
+  }
+}
+
+/* The Close Button */
+.close {
+  color: white;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-header {
+  padding: 2px 16px;
+  background-color: #588c7e;
+  color: white;
+}
+
+.modal-footer {
+  padding: 2px 16px;
+  background-color: #588c7e;
+  color: white;
+}
+@media only screen and (max-width: 600px) {
+  .modal-body {
+    padding: 2px 16px;
+    align-self: center;
+  }
+}
+@media only screen and (min-width: 768px) {
+  .modal-body {
+    padding: 2px 16px;
+    width: 50%;
+    align-self: center;
+  }
+}
+
+/*----------------*/
+.content-table {
+  font-size: 0.9em;
+  min-width: 400px;
+  border-radius: 5px 5px 0 0;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.content-table thead tr {
+  background-color: #588c7e;
+  color: #ffffff;
+  text-align: left;
+  font-weight: bold;
+}
+.trPartyHead {
+  background-color: #588c7e;
+  color: #ffffff;
+  text-align: left;
+  font-weight: bold;
+}
+@media only screen and (max-width: 600px) {
+}
+@media only screen and (min-width: 768px) {
+}
+.content-table th {
+  padding: 12px 10px;
+}
+.content-table td {
+  /* padding: 5px 2px; */
+  /* font */
+  padding: 8px 8px;
+
+}
+
+.content-table tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.content-table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.content-table tbody tr:last-of-type {
+  border-bottom: 2px solid #588c7e;
+}
+
+.content-table tr :hover {
+  font-weight: bold;
+  color: #588c7e;
+  background-color: rgb(63, 61, 61) !important;
+}
+.content-table tfoot tr {
+  font-weight: bold;
+  color: #588c7e;
+}
+.tfootcard {
+  font-weight: bolder;
+  color: #000000;
+  border-top: 3px solid #588c7e;
+  background-color: #f3f3f3;
+}
+.trhead {
+  font-weight: bolder;
+  color: #588c7e;
+  padding: 12px 15px;
+  background-color: white;
+}
+.thead2 {
+  font-weight: bolder !important;
+  color: white !important;
+  padding: 12px 15px !important;
+  background-color: grey !important;
+}
+.td1 {
+  font-weight: bolder !important;
+  color: black !important;
+  padding: 12px 15px !important;
+  background-color: rgb(255, 255, 255) !important;
+}
+
+body {
+  -webkit-print-color-adjust: exact !important;
+  font-family: serif !important;
+}
+
+button:hover {
+  background-color: black !important;
+  color: white;
+}
+@media print {
+  .stickybuttonsTopBottom{
+    opacity: 0;
+    display: none;
+  }
+  .displayNone{
+    display: none;
+  }
+  .selectBoxReport {
+    display: none;
+  }
+  a[href]::after {
+    content: none !important;
+    display: contents;
+    text-decoration: none;
+  }
+  button{
+    content: none !important;
+    display: contents;
+    text-decoration: none;
+  }
+
+
+  #footerbottom {
+    display: contents !important;
+  }
+  #logoImg {
+    width: 300;
+    height: 300;
+  }
+  #hideTr {
+    display: none;
+  }
+ 
+  .displayTr {
+    display: ;
+  }
+  .hideTr {
+    display: none;
+  }
+  .QualtableSetting {
+    border: 2px solid black;
+    background-color: white;
+    color: black;
+  }
+  .ageingColor {
+    background-color: #ffffff !important;
+  }
+  .PrintBtnHide {
+    display: contents;
+    text-decoration: none;
+  }
+  .pdfBtnHide {
+    display: none;
+  }
+}
+.ageingColor {
+  background-color: #ffffff;
+}
+span {
+  color: rgb(223, 175, 175);
+}
+h2 {
+  text-align: center;
+  border-radius: 10px 10px 0 0;
+  margin: -10px -10px;
+  padding: 1px;
+}
+
+#login {
+  margin: auto;
+  width: 100px;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+  padding: 10px 40px 25px;
+  background-color: #b6e6ff;
+}
+
+#profile {
+  padding: 0px;
+  border: 1px dashed grey;
+  font-size: 11px;
+  background-color: #dce6f7;
+}
+#logout {
+  float: right;
+  padding: 5px;
+  border: dashed 1px gray;
+}
+a {
+  text-decoration: none;
+  color: #6495ed;
+}
+i {
+  color: #6495ed;
+}
+
+/*loader*/
+
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #343a40;
+  border-bottom: 16px solid #343a40;
+  width: 130px;
+  height: 130px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+  margin: 0px auto;
+}
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.has-loader {
+  display: block !important;
+}
+.remove-loader {
+  display: none !important;
+}
+
+@import url("https://fonts.googleapis.com/css?family=Numans");
+
+.container {
+  height: 100%;
+  align-content: center;
+}
+
+.social_icon span {
+  font-size: 60px;
+  margin-left: 10px;
+  color: #ffc312;
+}
+
+.social_icon span:hover {
+  color: white;
+  cursor: pointer;
+}
+
+.card-header h3 {
+  color: white;
+}
+
+.social_icon {
+  position: absolute;
+  right: 20px;
+  top: -45px;
+}
+
+.input-group-prepend span {
+  width: 50px;
+  background-color: #ffc312;
+  color: black;
+  border: 0 !important;
+}
+
+input:focus {
+  outline: 0 0 0 0 !important;
+  box-shadow: 0 0 0 0 !important;
+}
+
+.remember {
+  color: white;
+}
+
+.remember input {
+  width: 20px;
+  height: 20px;
+  margin-left: 15px;
+  margin-right: 5px;
+}
+
+.login_btn {
+  color: black;
+  background-color: #ffc312;
+  width: 100px;
+}
+
+.login_btn:hover {
+  color: black;
+  background-color: white;
+}
+
+.links {
+  color: white;
+}
+
+.links a {
+  margin-left: 4px;
+}
+
+.fixed_header {
+  width: 400px;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.headDetails {
+  color: white;
+  height: 15px;
+  font-size: 10px;
+  font-weight: bold;
+  background: -moz-linear-gradient(center, #7b1fa2 100%, #9e9e9e);
+}
+.subtotalDetails {
+  height: 15px;
+  border: 0.22mm solid black;
+}
+.Grandtotalbottom {
+  color: white;
+  background: -moz-linear-gradient(center, #7b1fa2 100%, #9e9e9e);
+  height: 18px;
+  font-size: 12px;
+  border: 0.22mm solid black;
+}
+
+.pinkHeading {
+  color: #c107a2;
+  font-size: 18px;
+  font-weight: 700;
+}
+.partyNameHeading {
+  color: #588c7e;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.footer {
+  /* display: none; */
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: transparent;
+  color: white;
+  text-align: center;
+}
+
+.alignRight {
+  text-align: right;
+}
+.alignLeft {
+  text-align: left;
+}
+
+.alignCenter{
+  text-align: center;
+}
+.date{
+  width: 100px;
+}
+
+
+input[type="checkbox"] {
+  transform: scale(2); /* Increase the size */
+}

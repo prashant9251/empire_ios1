@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<h1><button id="downloadButton">Download ZIP file</button></h1>
+
+<body>
+
+</body>
+<script src="jszip.min.js"></script>
+<script src="js/jsGetUrlParams.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+
+<script>
+  var DSN = getUrlParams(url, "DatabaseSource");
+
+  const downloadButton = document.getElementById('downloadButton');
+
+  downloadButton.addEventListener('click', async () => {
+    const response = await fetch('url');
+    const blob = await response.blob();
+    const zip = new JSZip();
+
+    await zip.loadAsync(blob);
+    const decoder = new TextDecoder('utf-8');
+    // extract the contents of the ZIP file
+    zip.forEach((relativePath, file) => {
+      file.async('uint8array').then((data) => {
+        const filename = file.name;
+        if (filename.indexOf(".json") > -1) {
+          var keyName = filename.replace(".json", "");
+          const jsonString = decoder.decode(data);
+          const jsonObject = JSON.parse(jsonString);
+          storedatatoIndexdb(DSN, keyName.trim(), jsonString).then(function (d) {
+            // //console.log(d);
+          })
+        }
+      });
+    });
+  });
+
+
+  window.addEventListener("flutterInAppWebViewPlatformReady", function (event) {
+    window.flutter_inappwebview.callHandler('handlerFoo')
+      .then(function (result) {
+      });
+  });
+  function saveData(DSN, key, val) {
+    ////console.log(JSON.stringify(DSN));
+    return promise = new Promise(function (resolve, reject) {
+      ////console.log(DSN+key);
+      val = JSON.stringify(val);
+      storedatatoIndexdb(DSN, key.trim(), val).then(function (d) {
+        //  //console.log(d);
+        resolve(d);
+      })
+    });
+  }
+  var timeJson = [];
+
+  async function fileSave(DSN, key, base64Data) {
+    const binaryData = atob(base64Data);
+    const uint8Array = new Uint8Array(binaryData.length);
+    for (let i = 0; i < binaryData.length; i++) {
+      uint8Array[i] = binaryData.charCodeAt(i);
+    }
+    const blob = new Blob([uint8Array], { type: 'application/octet-stream' });
+    const zip = new JSZip();
+    var totalFiles = 0;
+    var fileProcessDone = 0;
+    try {
+      await zip.loadAsync(blob)
+        .then(() => {
+          totalFiles = Object.keys(zip.files).length;
+        });
+    } catch (err) {
+      showOnSyncData("invalid file", 0, 0);
+      return;
+    }
+    const decoder = new TextDecoder('utf-8');
+    // extract the contents of the ZIP file
+    // //console.log(blob);
+    zip.forEach((relativePath, file) => {
+      file.async('uint8array').then(async (data) => {
+        const filename = file.name;
+        fileProcessDone += 1;
+        if (filename.indexOf("json") > -1) {
+          var keyName = filename.replace(".json", "");
+          const jsonString = await decoder.decode(data);
+          const jsonObject = JSON.parse(jsonString);
+          //console.log(filename);
+          storedatatoIndexdb(DSN, keyName.trim(), jsonString).then(function (d) {
+            ////console.log(d);
+            var progressProcess = fileProcessDone / totalFiles * 100;
+            progressProcess = parseInt(progressProcess);
+            if (keyName.indexOf("TIME") > -1) {
+              timeJson = jsonObject;
+            } else if (keyName.indexOf("QUL") > -1) {
+              try {
+                window.flutter_inappwebview.callHandler("SaveToLocal", DSN + keyName, jsonString).then(function (result) {
+                },
+                  function (err) {
+                  }
+                );
+              } catch (error) {
+                // alert(error);
+              }
+            }
+            showOnSyncData(keyName, jsonObject.length, progressProcess);
+
+          })
+        }
+      });
+    });
+  }
+  //----tempPdfCreate
+  function showOnSyncData(keyName, jsonObjectlength, progressProcess) {
+    try {
+      window.flutter_inappwebview.callHandler("showOnSyncData", keyName, jsonObjectlength, progressProcess, timeJson).then(function (result) {
+      },
+        function (err) {
+        }
+      );
+    } catch (error) {
+      // alert(error);
+    }
+
+  }
+
+</script>
+
+</html>

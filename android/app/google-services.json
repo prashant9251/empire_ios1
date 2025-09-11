@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "56693222734",
+    "project_id": "autobackupdatabase-90253",
+    "storage_bucket": "autobackupdatabase-90253.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56693222734:android:4b39db3ca93f397751421f",
+        "android_client_info": {
+          "package_name": "com.unique.empire_ios"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "56693222734-083gvkik01cmbte0esagh1s1jtf6f7a2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsmSi_dbCS9UELlwPieyRqCf5saSe12Uc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "56693222734-083gvkik01cmbte0esagh1s1jtf6f7a2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "56693222734-vlr3gd9lseg7pbo90p51vnlm9l2l3ct2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.uniqsoftwaressurat.iOS.Empire"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

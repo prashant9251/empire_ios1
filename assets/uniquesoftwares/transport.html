@@ -1,0 +1,121 @@
+<html>
+
+<head>
+    
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>TRANSPORT</title>
+    <style>
+        @media print {
+            a[href]::after {
+                content: none !important;
+            }
+        }
+    </style>
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.2/jquery.js"></script>
+    <script src="1.10.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="css/styleAutoComplete.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jsGetUrlParams.js"></script>
+
+</head>
+
+<body>
+    <div style="background-color: #588c7e;" id="hideAbleDiv" class="hideTr">
+        <div>
+            <a class="navbar-brand" style="color:white" href="#"> TRANSPORT</a>
+        </div>
+        <div class="form-row" align="center">
+            <div class="col form-group">
+                <input type="text" autocomplete="off" name="transport" id="transport" onchange=""
+                    placeholder="Search by Transport" class="form-control" />
+                <input type="hidden" name="transportcode" id="transportcode" onchange="" placeholder="Search by Customer Name"
+                    class="form-control" />
+            </div>
+            <div class="col form-group" align="center">
+                <span class="btn brn-primary" onclick="loadparty();"
+                    style="color:white;background-color: darkslategrey;"> SEARCH </span>
+            </div>
+        </div>
+    </div>
+
+
+    <div style="size:10px;" align="center">
+        <table id="result" style="width: 100%;" class="content-table">
+
+        </table>
+    </div>
+
+
+</body>
+
+
+<script>
+
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+    var privateNetworkIp = getUrlParams(url, "privateNetworkIp");
+    var CLDb = DSN.replace(Currentyear, "");
+    ClDb = CLDb;
+    var clnt = atob(CLDb);
+
+</script>
+<script src="js/jsLoadCallTransport.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jsgetValueNotDefineNo.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<script>
+    var Data;
+    var transportcode;
+    var SubUserPermitionArray;
+    var QualArr;
+    var qualType = "";
+    var qualPACK = "";
+    var OnSelect = "QT"
+    $(document).ready(function () {
+
+        jsGetObjectByKey(DSN, "TRANSPORT", "").then(function (data) {
+            QualData = data;
+            //console.log(QualData);
+            QualArr = data;
+            Data = data;
+            transportcode = $('#transport').val();
+            loadCall(transportcode);
+        });
+
+    });
+
+    function load_data() {
+
+    }
+
+    $("#transport").keyup(function (e) {
+        var transport = $(this).val();
+        if (transport !== "") {
+            loadCall(transport);
+        }
+    })
+    function loadparty() {
+        transportcode = $('#transport').val();
+        //console.log(transportcode);
+        loadCall(transportcode);
+    }
+
+    function clear_search() {
+        $('#transport').val('');
+        $('#transportcode').val('');
+        loadCall("");
+    }
+    
+
+    if(IosPlateForm=="true"){
+        $('head').append('<meta name="viewport" content="width=device-width, initial-scale=.7, maximum-scale=100, user-scalable=no" />');
+    }else{
+    }
+    </script>

@@ -1,0 +1,59 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-uniquemainapp-staging-121310-authRole",
+      "UnauthRoleArn": "arn:aws:iam::102572230783:role/amplify-uniquemainapp-staging-121310-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::102572230783:role/amplify-uniquemainapp-staging-121310-authRole",
+      "Region": "ap-south-1",
+      "DeploymentBucketName": "amplify-uniquemainapp-staging-121310-deployment",
+      "UnauthRoleName": "amplify-uniquemainapp-staging-121310-unauthRole",
+      "StackName": "amplify-uniquemainapp-staging-121310",
+      "StackId": "arn:aws:cloudformation:ap-south-1:102572230783:stack/amplify-uniquemainapp-staging-121310/41b99cc0-c0cf-11ed-83d6-0a22c52a8c78",
+      "AmplifyAppId": "d2v7gofp1j65y2"
+    },
+    "categories": {
+      "auth": {
+        "uniquemainapp": {}
+      },
+      "storage": {
+        "s3uniquemainappstorage00bd8ddc": {}
+      }
+    }
+  },
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-empireios-dev-144915-authRole",
+      "UnauthRoleArn": "arn:aws:iam::102572230783:role/amplify-empireios-dev-144915-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::102572230783:role/amplify-empireios-dev-144915-authRole",
+      "Region": "ap-south-1",
+      "DeploymentBucketName": "amplify-empireios-dev-144915-deployment",
+      "UnauthRoleName": "amplify-empireios-dev-144915-unauthRole",
+      "StackName": "amplify-empireios-dev-144915",
+      "StackId": "arn:aws:cloudformation:ap-south-1:102572230783:stack/amplify-empireios-dev-144915/cc371630-bfed-11ed-b890-0694020cf60e",
+      "AmplifyAppId": "d361todv6x9obq"
+    },
+    "categories": {
+      "auth": {
+        "empireios8781cadf": {}
+      }
+    }
+  },
+  "empireios": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-empireios-empireios-145712-authRole",
+      "UnauthRoleArn": "arn:aws:iam::102572230783:role/amplify-empireios-empireios-145712-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::102572230783:role/amplify-empireios-empireios-145712-authRole",
+      "Region": "ap-south-1",
+      "DeploymentBucketName": "amplify-empireios-empireios-145712-deployment",
+      "UnauthRoleName": "amplify-empireios-empireios-145712-unauthRole",
+      "StackName": "amplify-empireios-empireios-145712",
+      "StackId": "arn:aws:cloudformation:ap-south-1:102572230783:stack/amplify-empireios-empireios-145712/e8b91a00-bfee-11ed-82e6-0610c15b6a8c",
+      "AmplifyAppId": "d361todv6x9obq"
+    },
+    "categories": {
+      "auth": {
+        "empireios8781cadf": {}
+      }
+    }
+  }
+}

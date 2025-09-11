@@ -1,0 +1,622 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=.1,  user-scalable=yes" />
+  <title>BILL</title>
+  <!-- <link rel="stylesheet" type="text/css" href="css/billPdf.css"> -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+  <!-- //pdf attach karne ke liye h -->
+  <link rel="stylesheet" href="css/styleSideNav.css" />
+  <script src="3.3.1/jquery.min.js"></script>
+  <script src="3.3.7/bootstrap.min.js"></script>
+  <script src="js/jsGetUrlParams.js"></script>
+  <style>
+    canvas {
+      width: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: white;
+      font: 12pt "Tahoma" !important;
+    }
+
+    * {
+      box-sizing: unset;
+      -moz-box-sizing: border-box;
+    }
+
+    .pageNew {
+      width: 22cm;
+      min-height: 29.7cm;
+      padding: 1cm;
+      margin: 1cm;
+      border: 1px #d3d3d3 solid;
+      border-radius: 5px;
+      background: white;
+      box-shadow: 0 0 5px rgb(248, 248, 248);
+    }
+
+    .subpage {
+      padding: 1cm;
+      border: 5px red solid;
+      height: 237mm;
+      outline: 2cm #ffeaea solid;
+    }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    @media print {
+      a[href]::after {
+        content: none !important;
+      }
+
+      .pageNew {
+        margin: 0;
+        border: initial;
+        border-radius: initial;
+        width: initial;
+        min-height: initial;
+        box-shadow: initial;
+        background: initial;
+        page-break-after: always;
+      }
+
+      a[href]::after {
+        content: none !important;
+      }
+
+      .FRM {
+        display: none;
+      }
+    }
+
+    .pdfhr {
+      width: 100%;
+      margin-top: 3px;
+      margin-bottom: 3px;
+      border-top: 1px dashed black;
+    }
+
+    .halfBold {
+      font-weight: 600;
+    }
+
+    .loader {
+      border: 16px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 16px solid #343a40;
+      border-bottom: 16px solid #343a40;
+      width: 130px;
+      height: 130px;
+      -webkit-animation: spin 2s linear infinite;
+      animation: spin 2s linear infinite;
+      margin: 0px auto;
+    }
+
+    @-webkit-keyframes spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+      }
+
+      100% {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .has-loader {
+      display: block !important;
+    }
+
+    @media only screen and (min-width: 600px) {}
+
+    @media only screen and (min-width: 768px) {}
+
+    .font14 {
+      font-size: 1em !important;
+    }
+
+    .font13 {
+      font-size: 1em !important;
+    }
+
+    .font12 {
+      font-size: .6em !important;
+    }
+
+    .font11 {
+      font-size: 1em !important;
+    }
+
+    .font10 {
+      font-size: 1.2em !important;
+    }
+
+    .font8 {
+      font-size: 0.7em !important;
+    }
+
+    .font23 {
+      font-size: 1.4em !important;
+    }
+
+    .font26 {
+      font-size: 1.5em !important;
+    }
+
+    /* The Modal (background) */
+    .modal {
+      display: none;
+      /* Hidden by default */
+      position: fixed;
+      /* Stay in place */
+      z-index: 1;
+      /* Sit on top */
+      padding-top: 100px;
+      /* Location of the box */
+      left: 0;
+      top: 0;
+      width: 100%;
+      /* Full width */
+      height: 100%;
+      /* Full height */
+      overflow: auto;
+      /* Enable scroll if needed */
+      background-color: rgb(0, 0, 0);
+      /* Fallback color */
+      background-color: rgba(0, 0, 0, 0.4);
+      /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+      position: relative;
+      background-color: #fefefe;
+      margin: auto;
+      padding: 0;
+      border: 1px solid #888;
+      width: 80%;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      -webkit-animation-name: animatetop;
+      -webkit-animation-duration: 0.4s;
+      animation-name: animatetop;
+      animation-duration: 0.4s;
+    }
+
+    /* Add Animation */
+    @-webkit-keyframes animatetop {
+      from {
+        top: -300px;
+        opacity: 0;
+      }
+
+      to {
+        top: 0;
+        opacity: 1;
+      }
+    }
+
+    @keyframes animatetop {
+      from {
+        top: -300px;
+        opacity: 0;
+      }
+
+      to {
+        top: 0;
+        opacity: 1;
+      }
+    }
+
+    /* The Close Button */
+    .close {
+      color: white;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .modal-header {
+      padding: 2px 16px;
+      background-color: #588c7e;
+      color: white;
+    }
+
+    .modal-footer {
+      padding: 2px 16px;
+      background-color: #588c7e;
+      color: white;
+    }
+
+    @media only screen and (max-width: 600px) {
+      .modal-body {
+        padding: 2px 16px;
+        align-self: center;
+      }
+    }
+
+    @media only screen and (min-width: 768px) {
+      .modal-body {
+        padding: 2px 16px;
+        width: 50%;
+        align-self: center;
+      }
+    }
+
+    .image-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-items: flex-start;
+      width: 100%;
+      padding: 30px;
+      box-sizing: border-box;
+    }
+
+    .image-container .image-wrapper {
+      position: relative;
+      width: calc(25% - 20px);
+      height: auto;
+      margin-bottom: 20px;
+      margin-right: 10px;
+    }
+
+    .image-container .image-wrapper img {
+      width: 100%;
+      height: auto;
+    }
+
+    .image-container .image-name {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      font-size: 14px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    /* Custom styles for the select element */
+    .custom-select {
+      border: 2px solid #588c7e;
+      /* Custom border color */
+      border-radius: 5px;
+      /* Rounded corners */
+      padding: 10px;
+      /* Padding inside the select */
+      background-color: #f2f2f2;
+      /* Custom background color */
+      color: #333;
+      /* Custom text color */
+      font-size: 16px;
+      /* Custom font size */
+    }
+
+    .FRM {
+      position: sticky;
+      top: 0;
+      /* Adjust this value as needed */
+      background-color: #fff;
+      /* Background color for the sticky header */
+      z-index: 100;
+      /* Ensure it's on top of other content */
+    }
+
+    /*----------------*/
+  </style>
+</head>
+
+<body style="font-family: sans-serif !important;">
+
+  <div class="container FRM">
+
+    <div>
+      <div style="display: inline">
+        <div style="float: left; width: 50%">
+          <div style="display: inline">
+            <div style="float: left; width: 30%">
+              <div id="btnBack" style="float: left">
+                <a href="#" class="previous">FIRM</a>
+              </div>
+            </div>
+            <div style="float: right; width: 70%">
+              <select style="width: 70%" class="custom-select" name="firm" id="firm"
+                onchange="handleVnoChangeMax();"></select>
+            </div>
+          </div>
+        </div>
+        <div style="float: right; width: 50%">
+          <div style="display: inline">
+            <div style="float: left; width: 40%">
+
+              <div id="btnBack" style="float: left">
+                <a href="#" class="previous">BILL&nbsp;TYPE</a>
+              </div>
+            </div>
+            <div style="float: right; width: 60%">
+              <select style="width: 60%" class="custom-select" name="type" id="type"
+                onchange="handleVnoChangeMax();"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display: inline">
+        <div style="float: left; width: 100%">
+          <div style="display: inline">
+            <div id="btnBack" style="float: left;">
+              <a style="background-color: grey;" href="#" class="previous">VNO</a>
+            </div>
+            <div style="float: left; width: 80%">
+              <input type="text" class="custom-select" name="search_text" id="billNo" onkeyup="loadIDE();" value=""
+                placeholder="Search by VNO" />
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+      <div>
+        <div id="btnBack" onclick="callBackbill();" style="float: left">
+          <a href="#" class="previous">&laquo; Previous</a>
+        </div>
+        &nbsp;
+        &nbsp;
+        &nbsp;
+        &nbsp;
+
+        <div style="float: left">
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a id="billNoId" style="font-weight: bold;color: blue;font-size: large;">
+          </a>
+        </div>
+
+
+        <div id="btnNext" onclick="callNextbill();" style="float: left">
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <a href="#" class="next">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Next &raquo;</a>
+        </div>
+
+      </div>
+      <br>
+      <br>
+      <br>
+      <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a target="_blank" href="#" id="hrefSALE">SALE</a>
+        <a target="_blank" href="#" id="hrefOUTSTANDING">OUTSTANDING</a>
+        <a target="_blank" href="#" id="hrefLEDGER">LEDGER</a>
+        <a target="_blank" href="#" id="hrefITEMWISESALE">ITEM WISE SALE</a>
+        <a target="_blank" href="#" id="hrefBank">BANK ENTRY</a>
+      </div>
+      <span style="font-size: 30px; cursor: pointer;color: blue;" onclick="openNav()">&#9776;MORE
+      </span>
+    </div>
+    <hr>
+  </div>
+  <div style="display: none" id="loader">
+    <div class="loader"></div>
+    <div style="text-align: center; margin-top: -80px; font-weight: 700">
+      Please wait...
+    </div>
+  </div>
+
+
+  <div style="size:10px;" align="center" class="table-responsive">
+    <div id="result" class="content-table">
+
+    </div>
+  </div>
+
+</body>
+<script>
+  var url = window.location.href;
+  var DSN = getUrlParams(url, "DatabaseSource");
+  // var Crntyear = getUrlParams(url, "Currentyear");
+  // var ClDb = DSN.replace(Crntyear, "");
+</script>
+<script src="js/localStorageSet.js"></script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/getDataUserSetting.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jstoFixedNumber.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsGetDaysDif.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jsgetValueNotDefineNo.js"></script>
+<script src="js/jsoptionSeriesSelect.js"></script>
+<script src="js/jsfindBill.js"></script>
+
+<script src="js/jsGetYearChange.js"></script>
+<script src="js/jsmakePdf1.js"></script>
+<script>
+  var IDE = getUrlParams(url, "IDE");
+  var VNO = getUrlParams(url, "VNO");
+  var YearChange = getUrlParams(url, "YearChange");
+  var CrntyearSelectYear;
+  var FIRM = getUrlParams(url, "FIRM");
+  var cno = "";
+
+  var Data = [];
+  var partyname = getUrlParams(url, "partyname");
+  var partycode = getUrlParams(url, "partycode");
+  if (partyname == "") {
+    partycode = "";
+  }
+  var broker = getUrlParams(url, "broker");
+  var haste = getUrlParams(url, "haste");
+  var CITY = getUrlParams(url, "city");
+  var fromdate = getUrlParams(url, "search_FromDate");
+  var todate = getUrlParams(url, "search_ToDate");
+  var search_FromVNO = getUrlParams(url, "search_FromVNO");
+  var search_ToVNO = getUrlParams(url, "search_ToVNO");
+  var CrntYearStartdate = getUrlParams(url, "CrntYearStartdate");
+  var pdfBillType = getUrlParams(url, "pdfBillType");
+  var PDFBILLTYPE = getUrlParams(url, "PDFBILLTYPE");
+
+  if (PDFBILLTYPE == "BULK") {
+    if (fromdate == "" || fromdate == null) {
+      if (CrntYearStartdate != "" || CrntYearStartdate != null) {
+        fromdate = CrntYearStartdate;
+      }
+    }
+  }
+
+  $(document).ready(function () {
+    $("#loader").addClass("has-loader");
+    //var interval = setInterval(function () {
+    //  if (checkAppReady()) {
+    //    clearInterval(interval);
+    //    SelectTypeOptions("type", SelectSeries);
+    //    $("#billNo").val(VNO);
+    //    load_data();
+    //  } else {
+    //    // App is not ready yet
+    //    // Handle accordingly or retry after a certain interval
+    //    // For example, you can show a loading indicator or retry after a delay
+    //  }
+    //}, 500);
+    SelectTypeOptions("type", SelectSeries);
+    $("#billNo").val(VNO);
+    load_data();
+  });
+  var PRODUCTIMG_LIST = [];
+  // Check app readiness every 500 milliseconds (adjust the interval as needed)
+  var COMPMST = [];
+  var BLSdata = [];
+  var TRANSPORT = [];
+  function load_data() {
+    if (YearChange != "" && YearChange != null) {
+      yearChangeDSN = DSN.replace(Currentyear, YearChange);
+    } else {
+      yearChangeDSN = DSN;
+    }
+    jsGetObjectByKey(DSN, "TIME", "").then(function (data) {
+      var TIMEData = data;
+
+      jsGetObjectByKey(yearChangeDSN, "COMPMST", "").then(function (C) {
+        DataCompmst = C;
+        COMPMST = C;
+        SelectFirmOptions("firm");
+        if (FIRM != "") {
+          for (var i = 0; i < DataCompmst.length; i++) {
+            if (DataCompmst[i].FIRM == FIRM) {
+              cno = DataCompmst[i].CNO;
+            }
+          }
+        }
+        jsGetObjectByKey(yearChangeDSN, "TRANSPORT", "").then(function (data) {
+          TRANSPORT = data;
+          jsGetObjectByKey(yearChangeDSN, "MST", "").then(function (data) {
+            masterData = data;
+            jsGetObjectByKey(yearChangeDSN, "BLS", "").then(function (dataBLS) {
+              Data = dataBLS;
+              BLSdata = Data;
+
+              if (PDFBILLTYPE == "BULK") {
+                $('.FRM').css("display", "none");
+                BLSdata = BLSdata.filter(function (data) {
+                  return data.billDetails.some(
+                    (bill) => bill["DT"] != null && bill["DT"] != ""
+                  );
+                }).map(function (subdata) {
+                  return {
+                    code: subdata.code,
+                    billDetails: subdata.billDetails.filter(function (bill) {
+                      return bill["DT"] != null && bill["DT"] != "";
+                    }),
+                  };
+                });
+
+                BLSdata = BLSdata.filter(function (data) {
+                  return data.billDetails.some(
+                    (bill) => bill.DT.trim().toUpperCase().indexOf("OS") > -1
+                  );
+                }).map(function (subdata) {
+                  return {
+                    code: subdata.code,
+                    billDetails: subdata.billDetails.filter(function (bill) {
+                      return bill.DT.trim().toUpperCase().indexOf("OS") > -1;
+                    }),
+                  };
+                });
+
+              } else if (PDFBILLTYPE == 'BULK_FILTERED') {
+                $('.FRM').css("display", "none");
+              } else if (PDFBILLTYPE == "findBill") {
+                IDE = getIDE();
+              } else {
+                $('.FRM').css("display", "none");
+              }
+              jsGetObjectByKey(yearChangeDSN, "DET", "").then(function (dataDET) {
+                DETdata = dataDET;
+                PRODUCTIMG_LIST = [];
+                handleVnoChangeMax();
+                //getBoxData(DSN, "PRODUCT", "").then(function (P) {
+                //  PRODUCTIMG_LIST = P;
+                //  loadBillPdfCall();
+                //});
+              });
+            });
+          });
+        });
+      });
+    });
+  }
+  function handleVnoChangeMax() {
+    getLastVnoNo();
+    loadIDE();
+  }
+  function getLastVnoNo() {
+    console.log(window.location.href);
+    if (PDFBILLTYPE == "findBill") {
+      try {
+        let maxVNO = -Infinity; // Initialize with negative infinity
+        var typeSelected = $("#type").val();
+        var cnoVal = $("#firm").val();
+        BLSdata.filter(function (data) {
+          data.billDetails.filter(function (detail) {
+            if (detail.CNO === cnoVal && detail.TYPE.toUpperCase() === typeSelected.toUpperCase() && parseInt(detail.VNO) > maxVNO) {
+              maxVNO = detail.VNO;
+            }
+            return true;
+          });
+          return true;
+        })
+        $("#billNo").val(maxVNO);
+      } catch (err) {
+        //   alert(err);
+      }
+    }
+  }
+
+</script>
+
+</html>

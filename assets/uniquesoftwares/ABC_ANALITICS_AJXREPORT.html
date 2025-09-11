@@ -1,0 +1,115 @@
+<html>
+
+<head>
+    <title>LEDGER </title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.2/jquery.js"></script>
+    <script src="1.10.4/jquery-ui.js"></script>
+    <script src="js/jsGetUrlParams.js"></script>
+
+</head>
+<Style>
+    td {
+        max-width: 193px;
+        word-wrap: break-word;
+    }
+</Style>
+
+<body>
+    <div align="center" class="table-responsive overflow-hidden">
+        <table id="result" class="content-table">
+
+        </table>
+    </div>
+    <div style="display: none;" id="loader">
+        <div class="loader"></div>
+        <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+    </div>
+
+</body>
+
+
+</html>
+<script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+</script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jsGetYearChange.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsopenSubReport.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jsGetDaysDif.js"></script>
+<!-- <script src="js/jsLoadCallLEDGER.js"></script> -->
+<script src="js/jsLoadCallABC_ANALITICS.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/filterSelected.js"></script>
+
+<script>
+    var Data;
+    var finalData;
+    var offset;
+    var isDataLoaded = false;
+    var finalLimit;
+    $(document).ready(function () {
+        $("#loader").addClass('has-loader');
+        load_data();
+    });
+    var tr = '';
+    var FIRM = getUrlParams(url, "FIRM");
+    var cno = '';
+    var EMP;
+    var partyname = getUrlParams(url, "partyname");
+    var partycode = getUrlParams(url, "partycode");
+    if(partyname=="" ){
+        partycode=""; 
+    }
+    var broker =  getUrlParams(url, "broker");
+    var CITY = '';
+    var haste = '';
+    var CrDrEntryType = getUrlParams(url, "CrDrEntryType");
+    var fromdate = getUrlParams(url, "search_FromDate");
+    var todate = getUrlParams(url, "search_ToDate")?? "2023-06-26";
+    // var CrntYearStartdate = getUrlParams(url, "CrntYearStartdate");
+
+    if (fromdate == '' || fromdate == null) {
+        if (CrntYearStartdate != '' || CrntYearStartdate != null) {
+            fromdate = DateRpl(CrntYearStartdate);
+        }
+    }
+    var DataCompmst;
+    document.title = "ABC ANALITICS " + partyname + " " + broker + " " + CITY;
+    var LEDGER_MEARGE=[];
+    var BILLREC_MEARGE=[];
+    function load_data() {
+
+        jsGetObjectByKey(DSN, "COMPMST", "").then(function (data) {
+            //console.log(data);
+            DataCompmst = data;
+            if (FIRM != '' && FIRM != null) {
+                for (var i = 0; i < DataCompmst.length; i++) {
+                    if (DataCompmst[i].FIRM == FIRM) {
+                        cno = DataCompmst[i].CNO;
+                    }
+                }
+            }
+            jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+                masterData = data;
+                jsGetObjectByKey(DSN, "LEDGER", "").then(function (LEDGER_MEARGE) {
+                    this.LEDGER_MEARGE = LEDGER_MEARGE;
+                    jsGetObjectByKey(DSN, "BILLREC", "").then(function (BILLREC_MEARGE) {
+                        this.BILLREC_MEARGE = BILLREC_MEARGE;
+                        loadCall(BILLREC_MEARGE);
+                    });
+                });
+            });
+        })
+    }
+
+
+</script>
+<script src="js/jsHeaderTbl.js"></script>

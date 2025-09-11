@@ -1,0 +1,150 @@
+<html>
+
+<head>
+
+  <title>BILL</title>
+  <link rel="stylesheet" type="text/css" href="css/billPdf.css">
+  <script src="3.3.1/jquery.min.js"></script>
+  <script src="3.3.7/bootstrap.min.js"></script>
+  <script src="js/jsGetUrlParams.js"></script>
+  <style>
+    .hcategory {
+      display: none;
+    }
+
+    .hNetMts {
+      display: none;
+    }
+
+    .hLessFold {
+      display: none;
+    }
+
+    .hDiscRate {
+      display: none;
+    }
+  </style>
+</head>
+
+<body style="font-family: serif;">
+  <div style="display: none;" id="loader">
+    <div class="loader"></div>
+    <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+  </div>
+</body>
+<script>
+  var url = window.location.href;
+  var DSN = getUrlParams(url, "DatabaseSource");
+  var Crntyear = getUrlParams(url, "Currentyear");
+  var ClDb = DSN.replace(Crntyear, "");
+</script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jstoFixedNumber.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsGetDaysDif.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jsgetValueNotDefineNo.js"></script>
+<script src="js/jsGetYearChange.js"></script>
+<script src="js/paymentSlip.js"></script>
+<script>
+  var IDE = (getUrlParams(url, "IDE"));
+  var VNO = (getUrlParams(url, "VNO"));
+  var YearChange = (getUrlParams(url, "YearChange"));
+  var FIRM = (getUrlParams(url, "FIRM"));
+  var cno = '';
+  DataCompmst = [];
+
+  var Data;
+  var partyname = getUrlParams(url, "partyname");
+  var partycode = (getUrlParams(url, "partycode"));
+  var ccd = getUrlParams(url, "ccd");
+  if (partyname == '') {
+    partycode = '';
+  }
+  var broker = getUrlParams(url, "broker");
+  var haste = getUrlParams(url, "haste");
+  var CITY = getUrlParams(url, "city");
+  var fromdate = getUrlParams(url, "search_FromDate");
+  var todate = getUrlParams(url, "search_ToDate");
+  var CrntYearStartdate = getUrlParams(url, "CrntYearStartdate");
+  var pdfBillType = getUrlParams(url, "pdfBillType");
+  if (pdfBillType == 'BULK') {
+    if (fromdate == '' || fromdate == null) {
+      if (CrntYearStartdate != '' || CrntYearStartdate != null) {
+        fromdate = CrntYearStartdate;
+      }
+    }
+  }
+
+  $(document).ready(function () {
+    $("#loader").addClass('has-loader');
+
+    load_data();
+  });
+  var SERIESData;
+
+  function load_data() {
+    jsGetObjectByKey(DSN, "COMPMST", "").then(function (DD) {
+      DataCompmst = DD;
+      if (FIRM != '') {
+          for (var i = 0; i < DataCompmst.length; i++) {
+              if (DataCompmst[i].FIRM == FIRM) {
+                  cno = DataCompmst[i].CNO;
+              }
+          }
+      }
+      jsGetObjectByKey(DSN, "SERIES", "").then(function (data) {
+        SERIESData = data;
+        //console.log(SERIESData);
+        jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+          masterData = data;
+          jsGetObjectByKey(DSN, "LEDGER", "").then(function (dataLEDGER) {
+            BLS = dataLEDGER;
+            BLS=BLS.filter(function(d){
+              return d!=null;
+            })
+            // Data = Data.sort(function (a, b) {
+            //   if (a.code < b.code) {
+            //     return -1;
+            //   }
+            //   if (a.code > b.code) {
+            //     return 1;
+            //   }
+            //   return 0;
+            // })
+            //console.log(IDE, Data);
+
+         
+            if (IDE != '' && IDE != null) {
+              BLS = BLS.filter(function (data) {
+                return data['IDE'].toUpperCase() == IDE.toUpperCase() && data['SRNO']=="1";
+              })
+            }
+         
+            //console.log(Data);
+            LEDGER = Data;
+            //console.log(IDE, Data);
+
+            if (YearChange != '' && YearChange != null) {
+              yearChangeDSN = ClDb + YearChange;
+            } else {
+              yearChangeDSN = DSN;
+            }
+            jsGetObjectByKey(yearChangeDSN, "BILLREC", "").then(function (dataDET) {
+              DETdata = dataDET;
+
+              loadBillPdfCall();
+            });
+          });
+        })
+      })
+    })
+      try {
+    } catch (error) {
+      noteError(error);
+    }
+  }
+</script>

@@ -1,0 +1,16 @@
+{
+  "resourceName": "s3uniquemainappstorage00bd8ddc",
+  "bucketName": "unique-main-app-storage-00bd8ddc",
+  "policyUUID": "649d3631",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "DELETE",
+    "READ",
+    "CREATE_AND_UPDATE"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ]
+}

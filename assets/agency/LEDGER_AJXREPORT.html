@@ -1,0 +1,108 @@
+<html>
+
+<head>
+    <title>LEDGER </title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.2/jquery.js"></script>
+    <script src="1.10.4/jquery-ui.js"></script>
+    <script src="js/jsGetUrlParams.js"></script>
+
+</head>
+<Style>
+</Style>
+
+<body>
+    <div align="center" class="table-responsive">
+        <table id="result" class="content-table">
+
+        </table>
+    </div>
+    <div style="display: none;" id="loader">
+        <div class="loader"></div>
+        <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+    </div>
+</body>
+
+
+</html>
+<script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+</script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsopenSubReport.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsGetYearChange.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jsLoadCallLEDGER.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+
+<script>
+    var Data;
+    var finalData;
+    var offset;
+    var isDataLoaded = false;
+    var finalLimit;
+    $(document).ready(function () {
+        $("#loader").addClass('has-loader');
+        load_data();
+    });
+    var tr = '';
+    var FIRM = getUrlParams(url, "FIRM");
+    var cno = '';
+    var EMP;
+    var ccd = getUrlParams(url, "ccd");
+    var ccdcode = getUrlParams(url, "ccdcode");
+    if (ccd == '') {
+        ccdcode = '';
+    }
+    var partyname = getUrlParams(url, "partyname");
+    var partycode = getUrlParams(url, "partycode");
+    if (partyname == '') {
+        partycode = '';
+    }
+    //console.log(partyname, partycode, ccd, ccdcode);
+    var broker = '';
+    var CITY = '';
+    var haste = '';
+    var CrDrEntryType = getUrlParams(url, "CrDrEntryType");
+    var fromdate = getUrlParams(url, "search_FromDate");
+    var todate = getUrlParams(url, "search_ToDate");
+    var CrntYearStartdate = getUrlParams(url, "CrntYearStartdate");
+    if (fromdate == '' || fromdate == null) {
+        if (CrntYearStartdate != '' || CrntYearStartdate != null) {
+            fromdate = DateRpl(CrntYearStartdate);
+        }
+    }
+    var DataCompmst = [];
+    var nowDate = new Date();
+
+    document.title = "LEDGER " + partyname + " " + broker + " " + CITY + "" + ccd;
+
+    function load_data() {
+        jsGetObjectByKey(DSN, "COMPMST", "").then(function (DD) {
+            DataCompmst = DD;
+            if (FIRM != '') {
+                for (var i = 0; i < DataCompmst.length; i++) {
+                    if (DataCompmst[i].FIRM == FIRM) {
+                        cno = DataCompmst[i].CNO;
+                    }
+                }
+            }
+            jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+                masterData = data;
+
+                jsGetObjectByKey(DSN, "LEDGER", "").then(function (data) {
+                    loadCall(data);
+                });
+            })
+        })
+    }
+
+
+</script>
+<script src="js/jsHeaderTbl.js"></script>

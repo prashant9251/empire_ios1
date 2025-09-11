@@ -1,0 +1,427 @@
+<html>
+
+<head>
+  <title> OUTSTANDING </title>
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+  <script src="1.10.2/jquery.js"></script>
+  <script src="1.10.4/jquery-ui.js"></script>
+  <script src="js/jsGetUrlParams.js"></script>
+
+</head>
+<Style>
+
+</Style>
+
+<body>
+  <div align="center" class="table-responsive">
+    <table id="result" class="content-table">
+    </table>
+  </div>
+
+
+  <div style="display: none;" id="loader">
+    <div class="loader"></div>
+    <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+  </div>
+</body>
+
+</html>
+<script>
+  var url = window.location.href;
+  var DSN = getUrlParams(url, "DatabaseSource");
+</script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsopenSubReportCOMM.js"></script>
+<script src="js/jsGetUrlParams.js"></script>
+<script src="js/jsGetYearChange.js"></script>
+<script src="js/jsGetDaysDif.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jsfunction.js"></script>
+<script>
+
+  var ReportType = getUrlParams(url, "ReportType");
+  var ReportSeriesTypeCode = getUrlParams(url, "ReportSeriesTypeCode");
+  var ReportATypeCode = getUrlParams(url, "ReportATypeCode");
+  var ReportDOC_TYPECode = getUrlParams(url, "ReportDOC_TYPECode");
+  var GRD;
+
+  function loadCall(Data) {
+    try {
+
+      Data = Data;
+
+
+      if (ReportATypeCode != "" && ReportATypeCode != null && ReportATypeCode != undefined) {
+        Data = Data.filter(function (data) {
+          return data['ATP'] == ReportATypeCode;
+        })
+      }
+
+      if (cno != '' && cno != null) {
+        Data = Data.filter(function (data) {
+          return data.billDetails.some((billDetails) => billDetails['CNO'] === cno);
+        }).map(function (subdata) {
+          return {
+            COD: subdata.COD,
+            ATP: subdata.ATP,
+            billDetails: subdata.billDetails.filter(function (billDetails) {
+              return (billDetails['CNO'] === cno);
+            })
+          }
+        })
+      }
+      if (ccdcode != '' && ccdcode != null) {
+        Data = Data.filter(function (data) {
+          return data['COD'] == ccdcode;
+        })
+      }
+      //  
+      // if (this.broker != '' && this.broker != null) {
+      //   Data = Data.filter(function (data) {
+      //     return data.billDetails.some((billDetails) => billDetails['BCODE'] === this.broker);
+      //   }).map(function (subdata) {
+      //     return {
+      //       code: subdata.COD,
+      //       billDetails: subdata.billDetails.filter(function (billDetails) {
+      //         return (billDetails['BCODE'] === this.broker);
+      //       })
+      //     }
+      //   })
+      // }
+      //  
+      // if (CITY != '' && CITY != null) {
+      //   Data = Data.filter(function (data) {
+      //     return data.billDetails.some((billDetails) => billDetails['CITY'] == this.CITY);
+      //   }).map(function (subdata) {
+      //     return {
+      //       code: subdata.COD,
+      //       billDetails: subdata.billDetails.filter(function (billDetails) {
+      //         return (billDetails['CITY'] == this.CITY);
+      //       })
+      //     }
+      //   })
+      // }
+
+      if (partyname != '' && partyname != null) {
+        Data = Data.filter(function (data) {
+          return data.billDetails.some((billDetails) => billDetails['ccd'] == partyname);
+        }).map(function (subdata) {
+          return {
+            COD: subdata.COD,
+            ATP: subdata.ATP,
+            billDetails: subdata.billDetails.filter(function (billDetails) {
+              return (billDetails['ccd'] == partyname);
+            })
+          }
+        })
+      }
+      if (fromdate !== '' && fromdate !== null) {
+        Data = Data.filter(function (data) {
+          return data.billDetails.some((billDetails) => new Date(billDetails.RDT).setHours(0, 0, 0, 0) >= new Date(fromdate).setHours(0, 0, 0, 0));
+        }).map(function (subdata) {
+          return {
+            COD: subdata.COD,
+            ATP: subdata.ATP,
+            billDetails: subdata.billDetails.filter(function (billDetails) {
+              return new Date(billDetails.RDT).setHours(0, 0, 0, 0) >= new Date(fromdate).setHours(0, 0, 0, 0);
+            })
+          }
+        })
+      }
+      if (todate !== '' && todate !== null) {
+        Data = Data.filter(function (data) {
+          return data.billDetails.some((billDetails) => new Date(billDetails.RDT).setHours(24, 0, 0, 0) <= new Date(todate).setHours(24, 0, 0, 0));
+        }).map(function (subdata) {
+          return {
+            COD: subdata.COD,
+            ATP: subdata.ATP,
+            billDetails: subdata.billDetails.filter(function (billDetails) {
+              return new Date(billDetails.RDT).setHours(24, 0, 0, 0) <= new Date(todate).setHours(24, 0, 0, 0);
+            })
+          }
+        })
+      }
+
+
+
+
+      var ccode;
+      var pcode;
+      var city;
+      var broker;
+      var label;
+      var grandtotalPDA = 0;
+      var grandtotalBA = 0;
+      var grandtotalCL = 0;
+      var grandtotalCMA = 0;
+      var totalPDA = 0;
+      var totalBA = 0;
+      var totalCL = 0;
+      var totalCMA = 0;
+      var subtotalPDA = 0;
+      var subtotalBA = 0;
+      var subtotalCL = 0;
+      var subtotalCMA = 0;
+      var BLL;
+      var FdataUrl
+      var DL = Data.length;
+      if (DL > 0) {
+        grandtotalPDA = 0;
+        grandtotalBA = 0;
+        grandtotalCL = 0;
+        grandtotalCMA = 0;
+        tr = "<tbody>";
+
+        for (var i = 0; i < DL; i++) {
+          ccode = getPartyDetailsBySendCode(Data[i].COD);
+
+          if (ccode.length > 0) {
+            label = getValueNotDefine(ccode[0].label);
+            pcode = getValueNotDefine(ccode[0].partyname);
+            city = getValueNotDefine(ccode[0].city);
+            CODE = getValueNotDefine(ccode[0].value);
+            broker = getValueNotDefine(ccode[0].broker);
+            MO = getValueNotDefine(ccode[0].MO);
+            ATYPE = getValueNotDefine(ccode[0].ATYPE);
+            lbl = parseInt(ATYPE) == 1 ? "CUST : " : parseInt(ATYPE) == 2 ? "SUPP : " : "";
+
+          }
+          tr += `<tr class="trPartyHead"onclick="trOnClick('` + Data[i].COD + `','` + city + `','` + broker + `');">
+                          <th colspan="17" class="trPartyHead">` + lbl + (label) + `<a href="tel:` + MO + `"><button>MO:` + MO + `</button></a></th>
+                        </tr>
+                        `;
+
+          BLL = Data[i].billDetails.length;
+          if (BLL > 0) {
+            totalPDA = 0;
+            totalBA = 0;
+            totalCL = 0;
+            totalCMA = 0;
+            var codex = null;
+            var CodePrev = null;
+            for (j = 0; j < BLL; j++) {
+              var sr = 0
+              codex = Data[i].billDetails[j].ccd;
+              if (j == 0 && codex != CodePrev) {
+                tr += ` <tr style="font-weight:500;font-weight:bold;"align="center">                    
+            <td>CUSTOMER</td>
+            <td>BILL</td>
+            <td>VNO</td>
+            <td>DATE</td>
+            <td>CHQ.NO.</td>
+            <td>PAY DATE</td>
+            <td>PAY(DRAF)</td>
+            <td>GROSS<BR>AMT.</td>
+            <td>GOODS RET.</td>
+            <td>DD DATE</td>
+            <td>COMM AMT.</td>
+            </tr>  `;
+                CodePrev = codex;
+              }
+
+              if (j != 0 && codex != CodePrev) {
+
+                tr += `  
+            <tr class="tfootcard"style="background-color:#3e3b3b26;color:#c107a2;text-align: center;">
+            <td class="hideAbleTr" colspan="6">SUBTOTAL</td>
+            <td class="unhideAbleTr" colspan="6"onclick="openSubR('`+ Data[i].COD + `','` + Data[i].billDetails[j - 1].ccd + `')">` + Data[i].billDetails[j - 1].ccd + `</td>
+            <td>`+ subtotalPDA + `</td>
+            <td>`+ subtotalBA + `</td>
+            <td>`+ subtotalCL + `</td>
+            <td colspan="1"></td>
+            <td>`+ subtotalCMA + `</td>
+            </tr>  `;
+
+                totalPDA += subtotalPDA;
+                totalBA += subtotalBA;
+                totalCL += subtotalCL;
+                totalCMA += subtotalCMA;
+                totalCMA += subtotalCMA;
+                subtotalPDA = 0;
+                subtotalBA = 0;
+                subtotalCL = 0;
+                subtotalCMA = 0;
+                CodePrev = codex;
+
+              }
+
+              PDA = 0;
+              BA = 0;
+              CL = 0;
+              CMA = 0;
+              PDA = parseFloat((Data[i].billDetails[j].PDA == null) ? 0 : Data[i].billDetails[j].PDA);
+              BA = parseFloat((Data[i].billDetails[j].BA == null) ? 0 : Data[i].billDetails[j].BA);
+              CL = parseFloat((Data[i].billDetails[j].CL == null) ? 0 : Data[i].billDetails[j].CL);
+              CMA = parseFloat((Data[i].billDetails[j].CMA == null) ? 0 : Data[i].billDetails[j].CMA);
+              subtotalPDA += PDA;
+              subtotalBA += BA;
+              subtotalCL += CL;
+              subtotalCMA += CMA;
+
+              tr += ` 
+                              
+                                <tr class="hideAbleTr"align="center"style="">
+                                <td class="TRNSPT"onclick="openSubR('`+ Data[i].COD + `','` + Data[i].billDetails[j].ccd + `')">` + (Data[i].billDetails[j].ccd) + `</td>
+                                <td onclick="openSubR('`+ Data[i].COD + `')">` + (Data[i].billDetails[j].BLL) + `</td>
+                                <td onclick="openSubR('`+ Data[i].COD + `')">` + (Data[i].billDetails[j].VNO) + `</td>
+                                <td onclick="openSubR('`+ Data[i].COD + `')">` + formatDate(Data[i].billDetails[j].BDT) + `</td>
+                                <td onclick="openSubR('`+ Data[i].COD + `')">` + (Data[i].billDetails[j].CQN) + `</td>
+                                <td onclick="openSubR('`+ Data[i].COD + `')">` + formatDate(Data[i].billDetails[j].RDT) + `</td>
+                                <td onclick="openSubR('`+ Data[i].COD + `')">` + (Data[i].billDetails[j].PDA) + `</td>
+                                <td onclick="openSubR('`+ Data[i].COD + `')">` + (BA) + `</td>
+                                <td onclick="openSubR('`+ Data[i].COD + `')">` + (CL) + `</td>
+                                <td onclick="openSubR('`+ Data[i].COD + `')">` + (Data[i].billDetails[j].RDT) + `</td>
+                                <td onclick="openSubR('`+ Data[i].COD + `')">` + (Data[i].billDetails[j].CMA) + `</td>             
+                                </tr>`;
+
+
+              if (j == BLL - 1) {
+
+                tr += `  
+            <tr class="tfootcard"style="background-color:#3e3b3b26;color:#c107a2;text-align: center;">
+            <td class="hideAbleTr" colspan="6">SUBTOTAL</td>
+            <td class="unhideAbleTr" colspan="6"onclick="openSubR('`+ Data[i].COD + `','` + Data[i].billDetails[j].ccd + `')">` + Data[i].billDetails[j].ccd + `</td>
+             <td>`+ subtotalPDA + `</td>
+            <td>`+ subtotalBA + `</td>
+            <td>`+ subtotalCL + `</td>
+            <td colspan="1"></td>
+            <td>`+ subtotalCMA + `</td>
+            </tr>  `;
+
+
+                totalPDA += subtotalPDA;
+                totalBA += subtotalBA;
+                totalCL += subtotalCL;
+                totalCMA += subtotalCMA;
+                subtotalPDA = 0;
+                subtotalBA = 0;
+                subtotalCL = 0;
+                subtotalCMA = 0;
+
+              }
+            }
+
+            grandtotalPDA += totalPDA;
+            grandtotalBA += totalBA;
+            grandtotalCL += totalCL;
+            grandtotalCMA += totalCMA;
+
+            tr += `<tr class="tfootcard"style="background-color:#3e3b3b26;">
+                <td  colspan="6">TOTAL</td>
+                <td>`+ totalPDA + `</td>
+                <td>`+ totalBA + `</td>
+                <td>`+ totalCL + `</td>
+                <td colspan="1"></td>
+                <td>`+ totalCMA + `</td>
+                                </tr>`;
+            totalPDA = 0;
+            totalBA = 0;
+            totalCL = 0;
+            totalCMA = 0;
+          }
+
+        }
+        tr += `<tr class="tfootcard"style="background-color:#3e3b3b26;color:#080844;">
+    <td  colspan="6">GRAND TOTAL</td>
+    <td>`+ grandtotalPDA + `</td>
+    <td>`+ grandtotalBA + `</td>
+    <td>`+ grandtotalCL + `</td>
+    <td colspan="1"></td>
+    <td>`+ grandtotalCMA + `</td>
+    </tr>`;
+
+        $('#result').html(tr);
+        $("#loader").removeClass('has-loader');
+
+        var hideAbleTr = getUrlParams(url, "hideAbleTr");
+        if (hideAbleTr == "true") {
+          $('.hideAbleTr').css("display", "none");
+          $('.unhideAbleTr').css("display", "");
+        } else {
+          $('.unhideAbleTr').css("display", "none");
+        }
+
+        AddHeaderTbl();
+      } else {
+        $('#result').html('<h1>No Data Found</h1>');
+        $("#loader").removeClass('has-loader');
+      }
+
+    } catch (e) {
+      var shareText = "Error in : " + e;
+      $('#result').html(`<h5>error:` + e + `<br> please send this error screen shot to whatsApp No. <a href="https://wa.me/918469190530?text=` + encodeURIComponent(shareText) + `">8469190530</a></h5>`);
+      $("#loader").removeClass('has-loader');
+    }
+  }
+  loadCalljsLoaded = true;
+
+  var my_awesome_script = document.createElement('script');
+  my_awesome_script.setAttribute('src', 'js/jsPopUpModelParty.js');
+  document.head.appendChild(my_awesome_script);
+
+</script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script>
+
+  var url = window.location.href;
+  var pdfStatus = false;
+  var Data;
+  var PAID = 'N';
+  var ATYPE = '1';
+  var tr = '';
+  var FIRM = getUrlParams(url, "FIRM");
+  var cno = '';
+  var EMP;
+  var partyname = getUrlParams(url, "partyname");
+  var partycode = getUrlParams(url, "partycode");
+  var ccd = getUrlParams(url, "ccd");
+  var ccdcode = getUrlParams(url, "ccdcode");
+  if (ccd == '') {
+    ccdcode = '';
+  }
+  if (partyname == '') {
+    partycode = '';
+  }
+  var broker = getUrlParams(url, "broker");
+  var CITY = getUrlParams(url, "city");
+  var haste = getUrlParams(url, "haste");
+  var fromdate = getUrlParams(url, "search_FromDate");
+  var todate = getUrlParams(url, "search_ToDate");
+  var DAYSCONDITION = getUrlParams(url, "DAYSCONDITION");
+  GRD = getUrlParams(url, "GRD");
+  var DataCompmst = [];
+  var nowDate = new Date();  
+</script>
+<script>
+  document.title = "COMM. REPORT " + partyname + " " + broker + " " + CITY;
+  $(document).ready(function () {
+    $("#loader").addClass('has-loader');
+    load_data();
+  });
+
+  function load_data() {
+    jsGetObjectByKey(DSN, "COMPMST", "").then(function (DD) {
+      DataCompmst = DD;
+      if (FIRM != '') {
+        for (var i = 0; i < DataCompmst.length; i++) {
+          if (DataCompmst[i].FIRM == FIRM) {
+            cno = DataCompmst[i].CNO;
+          }
+        }
+      }
+      jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+        masterData = data;
+        jsGetObjectByKey(DSN, "COMM", "").then(function (data) {
+          Data = data;
+          loadCall(Data);
+        });
+      });
+    })
+  }
+
+</script>
+<script src="js/jsHeaderTbl.js"></script>

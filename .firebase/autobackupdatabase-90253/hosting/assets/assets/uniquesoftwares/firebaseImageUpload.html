@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Document</title>
+  <style>
+    img {
+      height: 200px;
+      width: 200px;
+      border: 2px solid black;
+    }
+  </style>
+</head>
+
+<body>
+  Image name<input type="text" id="namebox"><br><br>
+  <img id="myimg"><label id="upProgress"></label><br><br>
+  <button id="select">Select Image</button>
+  <button id="upload">Upload Image</button>
+  <button id="retrieve">Retrieve Image</button>
+</body>
+
+</html>
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<!--------------------------FIRBASE LIBRARIES-------------------------------------------------->
+<script src="firebasejs/8.6.2/firebase-app.js"></script>
+<script src="firebasejs/8.6.2/firebase-auth.js"></script>
+<script src="firebasejs/8.6.2/firebase-database.js"></script>
+<script src="firebasejs/8.6.2/firebase-storage.js"></script>
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<script id="MainScript" src="firebasejs/8.6.2/connFirebase.js"></script>

@@ -1,0 +1,46 @@
+{
+    "sourceFile": "js/jsGetUrlParams.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 7,
+            "patches": [
+                {
+                    "date": 1660546480446,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1660547409470,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,9 +9,9 @@\n var http = getUrlParams(url, \"http\");\r\n var ServerLocation = getUrlParams(url, \"ServerLocation\");\r\n var extraPathSelected = getUrlParams(url, \"extraPathSelected\");\r\n \r\n-extraPath = \"\";\r\n+var extraPath = \"\";\r\n if (extraPathSelected != null) {\r\n     if (extraPathSelected.indexOf(\"MAIN\") < 0) {\r\n         LFolder = extraPathSelected;\r\n         extraPath = extraPathSelected + \"/\";\r\n"
+                },
+                {
+                    "date": 1660547500314,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,8 +11,9 @@\n var extraPathSelected = getUrlParams(url, \"extraPathSelected\");\r\n \r\n var extraPath = \"\";\r\n if (extraPathSelected != null) {\r\n+    console.log(extraPathSelected);\r\n     if (extraPathSelected.indexOf(\"MAIN\") < 0) {\r\n         LFolder = extraPathSelected;\r\n         extraPath = extraPathSelected + \"/\";\r\n     }\r\n"
+                },
+                {
+                    "date": 1660547536558,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,10 +11,10 @@\n var extraPathSelected = getUrlParams(url, \"extraPathSelected\");\r\n \r\n var extraPath = \"\";\r\n if (extraPathSelected != null) {\r\n-    console.log(extraPathSelected);\r\n     if (extraPathSelected.indexOf(\"MAIN\") < 0) {\r\n         LFolder = extraPathSelected;\r\n         extraPath = extraPathSelected + \"/\";\r\n     }\r\n }\r\n+console.log(extraPath);\r\n"
+                },
+                {
+                    "date": 1660547568036,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,7 @@\n+var url = window.location.href;\r\n+\r\n+\r\n function getUrlParams(url_string, key) {\r\n     var url = new URL(url_string);\r\n     var c = url.searchParams.get(key);\r\n     // console.log(key, c);\r\n"
+                },
+                {
+                    "date": 1660547615485,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,5 +19,4 @@\n         LFolder = extraPathSelected;\r\n         extraPath = extraPathSelected + \"/\";\r\n     }\r\n }\r\n-console.log(extraPath);\r\n"
+                },
+                {
+                    "date": 1660547746950,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,4 +19,5 @@\n         LFolder = extraPathSelected;\r\n         extraPath = extraPathSelected + \"/\";\r\n     }\r\n }\r\n+console.log(extraPath);\r\n"
+                },
+                {
+                    "date": 1660547785521,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n var ServerLocation = getUrlParams(url, \"ServerLocation\");\r\n var extraPathSelected = getUrlParams(url, \"extraPathSelected\");\r\n \r\n var extraPath = \"\";\r\n-if (extraPathSelected != null) {\r\n+if (extraPathSelected != null && extraPathSelected !=\"\") {\r\n     if (extraPathSelected.indexOf(\"MAIN\") < 0) {\r\n         LFolder = extraPathSelected;\r\n         extraPath = extraPathSelected + \"/\";\r\n     }\r\n"
+                }
+            ],
+            "date": 1660546480446,
+            "name": "Commit-0",
+            "content": "function getUrlParams(url_string, key) {\r\n    var url = new URL(url_string);\r\n    var c = url.searchParams.get(key);\r\n    // console.log(key, c);\r\n    return c;\r\n}\r\n\r\n\r\nvar http = getUrlParams(url, \"http\");\r\nvar ServerLocation = getUrlParams(url, \"ServerLocation\");\r\nvar extraPathSelected = getUrlParams(url, \"extraPathSelected\");\r\n\r\nextraPath = \"\";\r\nif (extraPathSelected != null) {\r\n    if (extraPathSelected.indexOf(\"MAIN\") < 0) {\r\n        LFolder = extraPathSelected;\r\n        extraPath = extraPathSelected + \"/\";\r\n    }\r\n}\r\n"
+        }
+    ]
+}

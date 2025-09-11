@@ -1,0 +1,30 @@
+{
+    "sourceFile": "js/localStorageGet.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1638343017044,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1646647098118,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,14 +1,14 @@\n var url = window.location.href;\r\n \r\n-var MCNO = localStorage.getItem(\"MCNO\");\r\n-var MTYPE = localStorage.getItem(\"MTYPE\");\r\n-var DSN = localStorage.getItem(\"DSN\");\r\n-var Currentyear = localStorage.getItem(\"Currentyear\");\r\n-var privateNetworkIp = localStorage.getItem(url, \"privateNetworkIp\");\r\n-var privateNetWorkSync = localStorage.getItem(url, \"privateNetWorkSync\");\r\n-var LFolder = localStorage.getItem(url, \"LFolder\");\r\n-var SyncType = localStorage.getItem(url, \"SyncType\");\r\n+var MCNO =  getUrlParams(url, \"MCNO\");\r\n+var MTYPE =  getUrlParams(url, \"MTYPE\");\r\n+var DSN =  getUrlParams(url, \"DSN\");\r\n+var Currentyear =  getUrlParams(url, \"Currentyear\");\r\n+var privateNetworkIp =  getUrlParams(url, \"privateNetworkIp\");\r\n+var privateNetWorkSync =  getUrlParams(url, \"privateNetWorkSync\");\r\n+var LFolder =  getUrlParams(url, \"LFolder\");\r\n+var SyncType =  getUrlParams(url, \"SyncType\");\r\n var Crntyear=Currentyear;\r\n var ClDb = DSN.replace(Currentyear, \"\");\r\n var Clnt=atob(ClDb);\r\n console.log(ClDb);\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1646716608981,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,14 +1,14 @@\n var url = window.location.href;\r\n \r\n-var MCNO =  getUrlParams(url, \"MCNO\");\r\n-var MTYPE =  getUrlParams(url, \"MTYPE\");\r\n-var DSN =  getUrlParams(url, \"DSN\");\r\n-var Currentyear =  getUrlParams(url, \"Currentyear\");\r\n-var privateNetworkIp =  getUrlParams(url, \"privateNetworkIp\");\r\n-var privateNetWorkSync =  getUrlParams(url, \"privateNetWorkSync\");\r\n-var LFolder =  getUrlParams(url, \"LFolder\");\r\n-var SyncType =  getUrlParams(url, \"SyncType\");\r\n-var Crntyear=Currentyear;\r\n+var MCNO = getUrlParams(url, \"MCNO\");\r\n+var MTYPE = getUrlParams(url, \"MTYPE\");\r\n+var DSN = getUrlParams(url, \"DSN\");\r\n+var Currentyear = getUrlParams(url, \"Currentyear\");\r\n+var privateNetworkIp = getUrlParams(url, \"privateNetworkIp\");\r\n+var privateNetWorkSync = getUrlParams(url, \"privateNetWorkSync\");\r\n+var LFolder = getUrlParams(url, \"LFolder\");\r\n+var SyncType = getUrlParams(url, \"SyncType\");\r\n+var Crntyear = Currentyear;\r\n var ClDb = DSN.replace(Currentyear, \"\");\r\n-var Clnt=atob(ClDb);\r\n+var Clnt = atob(ClDb);\r\n console.log(ClDb);\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1646716632042,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n var url = window.location.href;\r\n \r\n var MCNO = getUrlParams(url, \"MCNO\");\r\n var MTYPE = getUrlParams(url, \"MTYPE\");\r\n-var DSN = getUrlParams(url, \"DSN\");\r\n+var DSN = getUrlParams(url, \"DatabaseSource\");\r\n var Currentyear = getUrlParams(url, \"Currentyear\");\r\n var privateNetworkIp = getUrlParams(url, \"privateNetworkIp\");\r\n var privateNetWorkSync = getUrlParams(url, \"privateNetWorkSync\");\r\n var LFolder = getUrlParams(url, \"LFolder\");\r\n"
+                }
+            ],
+            "date": 1638343017044,
+            "name": "Commit-0",
+            "content": "var url = window.location.href;\r\n\r\nvar MCNO = localStorage.getItem(\"MCNO\");\r\nvar MTYPE = localStorage.getItem(\"MTYPE\");\r\nvar DSN = localStorage.getItem(\"DSN\");\r\nvar Currentyear = localStorage.getItem(\"Currentyear\");\r\nvar privateNetworkIp = localStorage.getItem(url, \"privateNetworkIp\");\r\nvar privateNetWorkSync = localStorage.getItem(url, \"privateNetWorkSync\");\r\nvar LFolder = localStorage.getItem(url, \"LFolder\");\r\nvar SyncType = localStorage.getItem(url, \"SyncType\");\r\nvar Crntyear=Currentyear;\r\nvar ClDb = DSN.replace(Currentyear, \"\");\r\nvar Clnt=atob(ClDb);\r\nconsole.log(ClDb);"
+        }
+    ]
+}

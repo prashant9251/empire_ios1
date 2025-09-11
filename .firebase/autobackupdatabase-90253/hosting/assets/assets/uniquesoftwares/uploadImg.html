@@ -1,0 +1,127 @@
+<script src="1.10.2/jquery.js"></script>
+<script src="1.10.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="css/uploadImg.css">
+<script src="js/jsGetUrlParams.js"></script>
+<script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+    var privateNetworkIp = getUrlParams(url, "privateNetworkIp");
+    var CLDb = DSN.replace(Currentyear, "");
+    ClDb = CLDb;
+    var clnt = atob(CLDb);
+</script>
+<div class="frame" id="">
+    <h3 id="productname" align="center">productname</h3>
+    <div class="center">
+        <div class="bar"></div>
+        <div class="title">Select file to upload</div>
+        <div class="dropzone">
+            <div class="">
+                <img class="upload">
+                <span class="filename"></span>
+                <img src="upload.svg" id="myimg" height="60px" width="60px">
+                <div id="myProgress">
+                    <div id="myBar"></div>
+                </div><label id="upProgress" style="color: #6ECE3B;    font-size: 10px;"></label>
+                <button multiple="multiple" id="select" class="input">SELECT</button>
+            </div>
+        </div>
+        <img src="syncing.svg" class="syncing">
+        <img src="checkmark.svg" class="done">
+        <div class="upload-btn" id="upload">Upload file</div>
+    </div>
+</div>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="firebasejs/8.6.2/firebase-app.js"></script>
+<script src="firebasejs/8.6.2/firebase-auth.js"></script>
+<script src="firebasejs/8.6.2/firebase-database.js"></script>
+<script src="firebasejs/8.6.2/firebase-storage.js"></script>
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<script id="MainScript" src="firebasejs/8.6.2/connFirebase.js"></script>
+<script id="MainScript" src="firebasejs/8.6.2/SelectOrUploadFileFirebase.js"></script>
+<script>
+
+    var droppedFiles = false;
+    var fileName = '';
+    var dropzone = $('.dropzone');
+    var button = $('.upload-btn');
+    var uploading = false;
+    var syncing = $('.syncing');
+    var done = $('.done');
+    var bar = $('.bar');
+    var timeOut;
+    var productname = getUrlParams(url, "folder");
+    $('#productname').html(productname);
+    document.title = productname;
+    dropzone.on('drag dragstart dragend dragover dragenter dragleave drop', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    })
+        .on('dragover dragenter', function () {
+            dropzone.addClass('is-dragover');
+        })
+        .on('dragleave dragend drop', function () {
+            dropzone.removeClass('is-dragover');
+        })
+        .on('drop', function (e) {
+            droppedFiles = e.originalEvent.dataTransfer.files;
+            fileName = droppedFiles[0]['name'];
+            $('.filename').html(fileName);
+            $('.dropzone .upload').hide();
+        });
+
+    button.bind('click', function () {
+        startUpload();
+    });
+
+    $("input:file").change(function () {
+        fileName = $(this)[0].files[0].name;
+        $('.filename').html(fileName);
+        $('.dropzone .upload').hide();
+    });
+
+    function startUpload() {
+        if (!uploading && fileName != '') {
+            uploading = true;
+            button.html('Uploading...');
+            dropzone.fadeOut();
+            syncing.addClass('active');
+            done.addClass('active');
+            bar.addClass('active');
+
+            var file_data = $('.input').prop('files')[0];
+            var form_data = new FormData();
+            form_data.append("file", file_data);
+            form_data.append("filename", fileName);
+            form_data.append("ClDb", ClDb);
+            form_data.append("clnt", clnt);
+            form_data.append("productname", productname);
+
+            //console.log(fileName);
+            $.ajax({
+                url: "http://aashaimpex.com/CLIENT/DATA/uploadImg.php",
+                type: "POST",
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: form_data,
+                success: function (response) {
+                    if (response == 1) {
+                        showDone();
+                    } else if (response == 0) {
+                        alert("Upload Failed ");
+                        button.html('Upload file');
+                    }
+                }
+            });
+
+        }
+    }
+
+    function showDone() {
+        button.html('Done');
+    }
+</script>

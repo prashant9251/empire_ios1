@@ -1,0 +1,142 @@
+<style>
+    .img {
+        width: 720px;
+        height: 1000;
+    }
+
+    @media print {
+        .pdfShow {
+            display: block;
+        }
+
+        .pdfDisplayNone {
+            display: none;
+        }
+    }
+
+    /* Paste this css to your style sheet file or under head tag */
+    /* This only works with JavaScript, 
+if it's not present, don't show loader */
+    .no-js #loader {
+        display: none;
+    }
+
+    .js #loader {
+        display: block;
+        position: absolute;
+        left: 100px;
+        top: 0;
+    }
+
+    .se-pre-con {
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+        background: url(https://smallenvelop.com/wp-content/uploads/2014/08/Preloader_11.gif) center no-repeat #fff;
+    }
+</style>
+<script src="1.10.2/jquery.js"></script>
+<script src="1.10.4/jquery-ui.js"></script>
+
+<script src="js/jsGetUrlParams.js"></script>
+<script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var Currentyear = getUrlParams(url, "Currentyear");
+    var privateNetworkIp = getUrlParams(url, "privateNetworkIp");
+    var CLDb = DSN.replace(Currentyear, "");
+    ClDb = CLDb;
+    var clnt = atob(CLDb);
+</script>
+<html>
+<div class="se-pre-con"></div>
+
+</html>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="firebasejs/8.6.2/firebase-app.js"></script>
+<script src="firebasejs/8.6.2/firebase-auth.js"></script>
+<script src="firebasejs/8.6.2/firebase-database.js"></script>
+<script src="firebasejs/8.6.2/firebase-storage.js"></script>
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<script id="MainScript" src="firebasejs/8.6.2/retrieveImg.js"></script>
+
+<script>
+    $(window).load(function () {
+        // Animate loader off screen
+        $(".se-pre-con").fadeOut("slow");;
+    });
+    var droppedFiles = false;
+    var fileName = '';
+    var dropzone = $('.dropzone');
+    var button = $('.upload-btn');
+    var uploading = false;
+    var syncing = $('.syncing');
+    var done = $('.done');
+    var bar = $('.bar');
+    var timeOut;
+    var productname = getUrlParams(url, "folder");
+    $('#productname').html(productname);
+    document.title = productname;
+    dropzone.on('drag dragstart dragend dragover dragenter dragleave drop', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    })
+        .on('dragover dragenter', function () {
+            dropzone.addClass('is-dragover');
+        })
+        .on('dragleave dragend drop', function () {
+            dropzone.removeClass('is-dragover');
+        })
+        .on('drop', function (e) {
+            droppedFiles = e.originalEvent.dataTransfer.files;
+            fileName = droppedFiles[0]['name'];
+            $('.filename').html(fileName);
+            $('.dropzone .upload').hide();
+        });
+
+    button.bind('click', function () {
+        startUpload();
+    });
+
+    $("input:file").change(function () {
+        fileName = $(this)[0].files[0].name;
+        $('.filename').html(fileName);
+        $('.dropzone .upload').hide();
+    });
+
+
+    function showDone() {
+        button.html('Done');
+    }
+    $(document).ready(function () {
+
+    });
+    var allSelected = false;
+
+    function select(nameOfImg) {
+        if (allSelected == false) {
+            $('.img').addClass('pdfDisplayNone');
+            $('.checkbox').addClass('pdfDisplayNone');
+            allSelected = true;
+        }
+        // alert(nameOfImg);
+        // var element = document.getElementsByClassName("img");
+        // element.className = "pdfDisplayNone";
+        var checkbox = document.getElementById("txt_" + nameOfImg).checked;
+        if (checkbox == false) {
+            document.getElementById("txt_" + nameOfImg).checked = true;
+            document.getElementById(nameOfImg).classList.remove("pdfDisplayNone");
+            document.getElementById(nameOfImg).classList.add("pdfShow");
+        } else {
+            document.getElementById("txt_" + nameOfImg).checked = false;
+            document.getElementById(nameOfImg).classList.remove("pdfShow");
+            document.getElementById(nameOfImg).classList.add("pdfDisplayNone");
+        }
+
+    }
+</script>

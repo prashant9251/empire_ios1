@@ -1,0 +1,41 @@
+.ui-corner-all {
+    font-size: 20px;
+
+  }
+
+  .ui-menu-item {
+    border: 1px solid black!important;
+    line-height: 2.5!important;
+    font-weight: 900!important;
+    margin: auto!important;
+    
+  }
+  input:focus {
+    background-color: #e6e6f1 !important;
+  }
+  input[type=submit]:focus {
+    background-color: black !important;
+  }
+    @media only screen and (max-width: 600px) {
+      .inputText{
+          height: 50px;
+          font-size: 15px;
+      }
+          #DirectWhatsapp{
+        display:none;
+    }
+      
+    }
+    @media only screen and (min-width: 768px) {
+      .inputText{
+          height: 40px;
+          font-size: 18px;
+      }
+      #DirectWhatsapp{
+          display:none;
+      }
+    } 
+
+  .custbadge{
+      background-color:#343a40;color:white;
+  }

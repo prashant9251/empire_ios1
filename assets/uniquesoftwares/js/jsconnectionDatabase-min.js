@@ -1,0 +1,1 @@
+function jsconnectionDatabase(e,t,n){var r;(r=window.indexedDB.open(e,1)).addEventListener("error",(function(e){alert("Could not open Indexed DB due to error: "+this.errorCode)})),r.addEventListener("success",(function(e){var r=this.result.transaction(t,"readwrite").objectStore(t);r.get(t).addEventListener("success",(function(e){var o=this.result;n=n.concat(o),r.put(n,t)}))}))}

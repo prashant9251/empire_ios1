@@ -1,0 +1,26 @@
+{
+    "sourceFile": "js/jstoFixed.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1644854225007,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1654962236509,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,4 +2,11 @@\n     value = value == null || value == '' || value == undefined ? 0 : value;\r\n     var n = parseFloat(value).toFixed(2)+\"/-\";\r\n     return n;\r\n }\r\n+\r\n+\r\n+function hide0(value){\r\n+    if(value==0){\r\n+        return \"\";\r\n+    }\r\n+}\r\n"
+                },
+                {
+                    "date": 1654962332097,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,12 +1,14 @@\n function valuetoFixed(value) {\r\n     value = value == null || value == '' || value == undefined ? 0 : value;\r\n-    var n = parseFloat(value).toFixed(2)+\"/-\";\r\n+    var n = parseFloat(value).toFixed(2) + \"/-\";\r\n     return n;\r\n }\r\n \r\n \r\n-function hide0(value){\r\n-    if(value==0){\r\n+function hide0(value) {\r\n+    if (value == 0) {\r\n         return \"\";\r\n+    }else{\r\n+        return value;\r\n     }\r\n }\r\n"
+                }
+            ],
+            "date": 1644854225007,
+            "name": "Commit-0",
+            "content": "function valuetoFixed(value) {\r\n    value = value == null || value == '' || value == undefined ? 0 : value;\r\n    var n = parseFloat(value).toFixed(2)+\"/-\";\r\n    return n;\r\n}\r\n"
+        }
+    ]
+}

@@ -1,0 +1,320 @@
+<html>
+
+<head>
+    <title> PENDING LR </title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+    <script src="1.10.2/jquery.js"></script>
+    <script src="1.10.4/jquery-ui.js"></script>
+    <script src="js/jsGetUrlParams.js"></script>
+</head>
+
+<body class="loader-enabled">
+    <div align="center" class="table-responsive">
+        <table id="result" class="content-table">
+
+        </table>
+    </div>
+    <div style="display: none;" id="loader">
+        <div class="loader"></div>
+        <div style="text-align: center; margin-top: -80px; font-weight:700">Please wait...</div>
+    </div>
+</body>
+
+<script>
+    var url = window.location.href;
+    var DSN = getUrlParams(url, "DatabaseSource");
+    var newDate = new Date();
+    REPORTTYPE = getUrlParams(url, "REPORTTYPE");
+
+</script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsLoadCallPENDINGLR_TRANSPORTWISE.js"></script>
+<script src="js/jsLoadCallPENDINGLR_DATEWISE.js"></script>
+<script src="js/jsLoadCallPENDINGLR.js"></script>
+<script src="js/jsopenSubReport.js"></script>
+<script src="js/jsGetYearChange.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsfunction.js"></script>
+<script src="js/jstoFixed.js"></script>
+<script src="js/jstoFixedNumber.js"></script>
+<script src="js/jsgetArrayProductdetailsbyIDE.js"></script>
+<script src="js/jsGetDateFormate.js"></script>
+<script src="js/jsgetValueNotDefine.js"></script>
+<script src="js/jsOpenBillDetilasAsTable.js"></script>
+
+<script>
+    var Data;
+    var PAID = 'N';
+    var ATYPE = '1';
+    var tr = '';
+    var Data;
+    var tr = '';
+    var FIRM = getUrlParams(url, "FIRM");
+    var cno = '';
+    var EMP;
+    var partyname = getUrlParams(url, "partyname");
+    var partycode = getUrlParams(url, "partycode");
+    if (partyname == '') {
+        partycode = '';
+    }
+    var broker = getUrlParams(url, "broker");
+    var CITY = getUrlParams(url, "city");
+    var haste = getUrlParams(url, "haste");
+    var fromdate = getUrlParams(url, "search_FromDate");
+    var todate = getUrlParams(url, "search_ToDate");
+    var LrRecToDate = getUrlParams(url, "LrRecToDate");
+    var LrRecFromDate = getUrlParams(url, "LrRecFromDate");
+    var productDet = getUrlParams(url, "productDet");
+    var ReportFilter = getUrlParams(url, "ReportFilter");
+    var transport = getUrlParams(url, "transport");
+
+    GRD = getUrlParams(url, "GRD");
+    var CrntYearStartdate = getUrlParams(url, "CrntYearStartdate");
+    if (fromdate == '' || fromdate == null) {
+        if (CrntYearStartdate != '' || CrntYearStartdate != null) {
+            fromdate = CrntYearStartdate;
+        }
+    }
+    var nowDate = new Date();
+    if (FIRM != '') {
+        jsGetObjectByKey(DSN, "COMPMST", "").then(function (data) {
+            //console.log(data);
+            DataCompmst = data;
+            for (var i = 0; i < DataCompmst.length; i++) {
+                if (DataCompmst[i].FIRM == FIRM) {
+                    cno = DataCompmst[i].CNO;
+                }
+            }
+        })
+    }
+    $(document).ready(function () {
+        $("#loader").addClass('has-loader');
+        load_data();
+    });
+    function load_data() {
+        jsGetObjectByKey(DSN, "MST", "").then(function (data) {
+            masterData = data;
+            try { AddHeaderTbl(); } catch (error) { }
+            jsGetObjectByKey(DSN, "BLS", "").then(function (data) {
+                Data = data;
+                if (ReportFilter != "" && ReportFilter != null) {
+                    if (ReportFilter == "PENDING") {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((bill) =>
+                                (bill["RRNO"] == null || bill["RRNO"] == "")
+                                && (bill["TRNSP"] != null && bill["TRNSP"] != "")
+                                && (bill['DT'] != null && bill['DT'] != ""));
+                        }).map(function (subdata) {
+                            return {
+                                code: subdata.code,
+                                billDetails: subdata.billDetails.filter(function (bill) {
+                                    return (bill["RRNO"] == null || bill["RRNO"] == "")
+                                        && (bill["TRNSP"] != null && bill["TRNSP"] != "")
+                                        && (bill['DT'] != null && bill['DT'] != "");
+                                })
+                            }
+                        })
+                    }
+                    if (ReportFilter == "RECEIVED") {
+                        Data = Data.filter(function (data) {
+                            return data.billDetails.some((bill) =>
+                                (bill["RRNO"] != null && bill["RRNO"] != "")
+                                && (bill["TRNSP"] != null && bill["TRNSP"] != "")
+                                && (bill['DT'] != null && bill['DT'] != "")
+                            );
+                        }).map(function (subdata) {
+                            return {
+                                code: subdata.code,
+                                billDetails: subdata.billDetails.filter(function (bill) {
+                                    return (bill["RRNO"] != null && bill["RRNO"] != "")
+                                        && (bill["TRNSP"] != null && bill["TRNSP"] != "")
+                                        && (bill['DT'] != null && bill['DT'] != "")
+                                        ;
+                                })
+                            }
+                        })
+                    }
+
+                } else {
+                    Data = Data.filter(function (data) {
+                        return data.billDetails.some((bill) =>
+                            (bill["TRNSP"] != null && bill["TRNSP"] != "")
+                            && (bill['DT'] != null && bill['DT'] != "")
+                        );
+                    }).map(function (subdata) {
+                        return {
+                            code: subdata.code,
+                            billDetails: subdata.billDetails.filter(function (bill) {
+                                return (bill["TRNSP"] != null && bill["TRNSP"] != "")
+                                    && (bill['DT'] != null && bill['DT'] != "")
+                                    ;
+                            })
+                        }
+                    })
+                }
+
+                Data = Data.filter(function (data) {
+                    return data.billDetails.some((bill) => (bill.DT.toUpperCase().indexOf('OS') > -1)
+                        && bill.TRNSP.toUpperCase().indexOf('OFFICE D') < 0);
+                }).map(function (subdata) {
+                    return {
+                        code: subdata.code,
+                        billDetails: subdata.billDetails.filter(function (bill) {
+                            return (bill.DT.toUpperCase().indexOf('OS') > -1)
+                                && bill.TRNSP.toUpperCase().indexOf('OFFICE D') < 0;
+                        })
+                    }
+                })
+                //console.log("RRNO", Data)
+
+
+                if (cno != '' && cno != null) {
+                    Data = Data.filter(function (data) {
+                        return data.billDetails.some((billDetails) => billDetails['CNO'] === cno);
+                    }).map(function (subdata) {
+                        return {
+                            code: subdata.code,
+                            billDetails: subdata.billDetails.filter(function (billDetails) {
+                                return (billDetails['CNO'] === cno);
+                            })
+                        }
+                    })
+                }
+                //  //console.log("BLS",Data);
+                if (partycode != '' && partycode != null) {
+                    Data = Data.filter(function (data) {
+                        return data.code == partycode;
+                    })
+                }
+                //  //console.log("BLS",Data);
+                if (this.broker != '' && this.broker != null) {
+                    Data = Data.filter(function (data) {
+                        return data.billDetails.some((billDetails) => billDetails['BCODE'] === this.broker);
+                    }).map(function (subdata) {
+                        return {
+                            code: subdata.code,
+                            billDetails: subdata.billDetails.filter(function (billDetails) {
+                                return (billDetails['BCODE'] === this.broker);
+                            })
+                        }
+                    })
+                }
+                //  //console.log("BLS",Data);
+                if (CITY != '' && CITY != null) {
+                    Data = Data.filter(function (data) {
+                        return data.billDetails.some((billDetails) => billDetails['CITY'] == this.CITY);
+                    }).map(function (subdata) {
+                        return {
+                            code: subdata.code,
+                            billDetails: subdata.billDetails.filter(function (billDetails) {
+                                return (billDetails['CITY'] == this.CITY);
+                            })
+                        }
+                    })
+                }
+                //  //console.log("BLS",Data);
+                if (haste != '' && haste != null) {
+                    Data = Data.filter(function (data) {
+                        return data.billDetails.some((billDetails) => billDetails['haste'] === haste);
+                    }).map(function (subdata) {
+                        return {
+                            code: subdata.code,
+                            billDetails: subdata.billDetails.filter(function (billDetails) {
+                                return (billDetails['haste'] === haste);
+                            })
+                        }
+                    })
+                }
+
+                if (transport != '' && transport != null) {
+                    Data = Data.filter(function (data) {
+                        return data.billDetails.some((billDetails) => billDetails['TRNSP'] == transport);
+                    }).map(function (subdata) {
+                        return {
+                            code: subdata.code,
+                            billDetails: subdata.billDetails.filter(function (billDetails) {
+                                return (billDetails['TRNSP'] == transport);
+                            })
+                        }
+                    })
+                }
+
+                //  //console.log("BLS",Data);
+                if (fromdate !== '' && fromdate !== null) {
+                    Data = Data.filter(function (data) {
+                        return data.billDetails.some((billDetails) => new Date(DateRpl(billDetails.DATE)).setHours(0, 0, 0, 0) >= new Date(DateRpl(fromdate)).setHours(0, 0, 0, 0));
+                    }).map(function (subdata) {
+                        return {
+                            code: subdata.code,
+                            billDetails: subdata.billDetails.filter(function (billDetails) {
+                                return new Date(DateRpl(billDetails.DATE)).setHours(0, 0, 0, 0) >= new Date(DateRpl(fromdate)).setHours(0, 0, 0, 0);
+                            })
+                        }
+                    })
+                }
+                //  //console.log("BLS",Data);
+                if (todate != '' && todate != null) {
+                    Data = Data.filter(function (data) {
+                        return data.billDetails.some((billDetails) => new Date(DateRpl(billDetails.DATE)).setHours(24, 0, 0, 0) <= new Date(DateRpl(todate)).setHours(24, 0, 0, 0));
+                    }).map(function (subdata) {
+                        return {
+                            code: subdata.code,
+                            billDetails: subdata.billDetails.filter(function (billDetails) {
+                                return new Date(DateRpl(billDetails.DATE)).setHours(24, 0, 0, 0) <= new Date(DateRpl(todate)).setHours(24, 0, 0, 0);
+                            })
+                        }
+                    })
+                }
+
+                if (LrRecFromDate !== '' && LrRecFromDate !== null) {
+                    Data = Data.filter(function (data) {
+                        return data.billDetails.some((billDetails) => new Date(billDetails.RRDET).setHours(0, 0, 0, 0) >= new Date(LrRecFromDate).setHours(0, 0, 0, 0));
+                    }).map(function (subdata) {
+                        return {
+                            code: subdata.code,
+                            billDetails: subdata.billDetails.filter(function (billDetails) {
+                                return new Date(billDetails.RRDET).setHours(0, 0, 0, 0) >= new Date(LrRecFromDate).setHours(0, 0, 0, 0);
+                            })
+                        }
+                    })
+                }
+                //  //console.log("BLS",Data);
+                if (LrRecToDate != '' && LrRecToDate != null) {
+                    Data = Data.filter(function (data) {
+                        return data.billDetails.some((billDetails) => new Date(billDetails.RRDET).setHours(24, 0, 0, 0) <= new Date(LrRecToDate).setHours(24, 0, 0, 0));
+                    }).map(function (subdata) {
+                        return {
+                            code: subdata.code,
+                            billDetails: subdata.billDetails.filter(function (billDetails) {
+                                return new Date(billDetails.RRDET).setHours(24, 0, 0, 0) <= new Date(LrRecToDate).setHours(24, 0, 0, 0);
+                            })
+                        }
+                    })
+                }
+                if (GRD != '' && GRD != null && GRD != undefined) {
+                    Data = Data.filter(function (data) {
+                        return data.billDetails.some((billDetails) => billDetails['GRD'] === GRD);
+                    }).map(function (subdata) {
+                        return {
+                            code: subdata.code,
+                            billDetails: subdata.billDetails.filter(function (billDetails) {
+                                return (billDetails['GRD'] === GRD);
+                            })
+                        }
+                    })
+                }
+                if (REPORTTYPE == 'TRANSPORT-WISE') {
+                    jsLoadCallPENDINGLR_TRANSPORTWISE(Data);
+                } else if (REPORTTYPE == 'DATE-WISE') {
+                    jsLoadCallPENDINGLR_DATEWISE(Data);
+                } else {
+                    loadCall(Data);
+                }
+            });
+        })
+    }
+
+
+</script>

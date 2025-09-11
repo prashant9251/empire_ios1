@@ -1,0 +1,332 @@
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <script src="2.1.3/jquery.min.js"></script>
+  <script src="3.3.6/bootstrap.min.js"></script>
+  <link href="3.3.6/bootstrap.min.css" rel="stylesheet" />
+  <script src="js/jsGetUrlParams.js"></script>
+
+
+</head>
+
+<script>
+  var url = window.location.href;
+  var MCNO = getUrlParams(url, "MCNO");
+  var MTYPE = getUrlParams(url, "MTYPE");
+  var DSN = getUrlParams(url, "DatabaseSource");
+  var Currentyear = getUrlParams(url, "Currentyear");
+        //alert(DSN);
+
+</script>
+<script src="js/localStorageGet.js"></script>
+<script src="js/jsGetObjectByKey.js"></script>
+<script src="js/jsStoreDatatoIndexeddb.js"></script>
+<script src="js/jsPopUpTblSetting.js"></script>
+<script src="js/jsoptionSeriesSelect.js"></script>
+<script src="js/jsoptionFirmSelect.js"></script>
+<script src="js/jsSearchfrm.js"></script>
+<html>
+
+<head>
+  <title>All Sale Report</title>
+  <link href="4.1.1/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <link href="1.10.4/jquery-ui.css" rel="stylesheet">
+  <script src="1.10.4/jquery-ui.js"></script>
+  <link rel="stylesheet" href="css/stylePrint.css">
+  <link rel="stylesheet" href="css/styleAutoComplete.css">
+
+</head>
+
+<body>
+  <br>
+
+  <div class="container" style="width: 100%;">
+
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <header class="card-header">
+            <h2 class="card-title mt-2">Sale Report Form</h2>
+          </header>
+          <article class="card-body">
+            <form action="ALLSALE_AJXREPORT.html" id="myForm" method="get" target="_blank" autocomplete="off">
+              <div class="form-row">
+                <div class="col form-group">
+                  <h3>FIRM</h3>
+                  <select class="form-control inputText" style="height: 40px;" id="FIRM" name="FIRM">
+                  </select>
+                </div>
+                <div class="col form-group">
+                  <h3>TYPE</h3>
+                  <input type="text" required class="form-control inputText" onfocus="this.value=''"
+                    placeholder="REPORT TYPE" value="" name="ReportType" id="ReportType">
+                  <input type="hidden" class="form-control inputText" onfocus="this.value=''" placeholder="REPORT TYPE"
+                    value="" name="ReportATypeCode" id="ReportATypeCode">
+                  <input type="hidden" class="form-control inputText" onfocus="this.value=''" placeholder="REPORT TYPE"
+                    value="" name="ReportSeriesTypeCode" id="ReportSeriesTypeCode">
+                  <input type="hidden" class="form-control inputText" onfocus="this.value=''" placeholder="REPORT TYPE"
+                    value="" name="ReportDOC_TYPECode" id="ReportDOC_TYPECode">
+                </div>
+                
+                <div class="col form-group">
+                  <h3 style="color: blue;">SUBTOTAL</h3>
+                  <select class="form-control inputText" style="height: 40px;" id="REPORTTYPE"
+                      name="REPORTTYPE">
+                      <option>PARTY WISE SUPPLIER WISE</option>
+                      <option>SUPPLIER WISE PARTY WISE</option>
+                      <option>DATE WISE</option>
+                      <option>MONTH WISE PARTY WISE</option>
+                  </select>
+              </div>
+              </div>
+              
+            <div class="form-group">
+              <h3>REC BILL DATE FILTER </h3>
+              <select type="date" class="form-control inputText" onchange="recDateChange();" style="height: 40px;" name="recDateFilterCondition" id="recDateFilterCondition">
+                <option></option>
+                <option>Today's sales</option>
+                <option>This week sale</option>
+                <option>This month sale</option>
+                <option>Last month sale</option>
+              </select>
+          </div>
+              <div class="form-row">
+                <div class="col form-group">
+                  <h3>CUSTOMER</h3>
+                  <input class="form-control inputText" onfocus="this.value=''" autocomplete="off" onchange=""
+                    placeholder="SEARCH BY CUSTOMER" name="partyname" id="partyname">
+                </div>
+                <div class="col form-group">
+                  <h3>CUSTOMER GROUP</h3>
+                  <input class="form-control inputText" onfocus="this.value=''" autocomplete="off" onchange=""
+                    placeholder="SEARCH BY CUSTOMER GROUP" name="partynamegrp" id="partynamegrp">
+                  <input type="hidden" class="form-control inputText" onfocus="this.value=''" autocomplete="off"
+                    onchange="" placeholder="SEARCH BY CUSTOMER GROUP" name="partycodegrp" id="partycodegrp">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="col form-group">
+                  <h3>SUPPLIER</h3>
+                  <input class="form-control inputText" onfocus="this.value=''" autocomplete="off" name="ccd" id="ccd"
+                    placeholder="SEARCH BY SUPPLIER">
+                </div>
+                <div class="col form-group">
+                  <h3>SUPPLIER GROUP</h3>
+                  <input class="form-control inputText" onfocus="this.value=''" autocomplete="off" onchange=""
+                    placeholder="SEARCH BY SUPPLIER GROUP" name="ccdgrp" id="ccdgrp">
+                  <input type="hidden" class="form-control inputText" onfocus="this.value=''" autocomplete="off"
+                    onchange="" placeholder="SEARCH BY SUPPLIER GROUP" name="ccdcodegrp" id="ccdcodegrp">
+                </div>
+              </div>
+
+
+              <!-- <div class="form-group">
+    
+                <h3>CITY</h3>
+                <input class="form-control inputText" onfocus="this.value=''" autocomplete="off" name="city" id="city" placeholder="SEARCH BY CITY NAME">
+              </div> -->
+              <!-- <div class="form-group">
+    
+                <h3>BROKER</h3>
+                <input class="form-control inputText"  onfocus="this.value=''" autocomplete="off" name="broker" id="broker" placeholder="SEARCH BY BROKER NAME">
+              </div> -->
+
+              <div class="form-row" style="display:none;">
+                <div class="col form-group" ></div><div style="width:50%;float:left;">
+                  <h3 for="materialUnchecked">PRODUCT DETAILS</h3>
+                </div>
+                <div style="width:50%;float:right;"><input type="checkbox" value="Y" id="productDet" name="productDet"
+                    class="form-control" id="materialUnchecked"></div>
+              </div>
+
+              <!-- <div class="col form-group"> -->
+              <!-- <div style="width:40%;float:left;"> <h3 for="materialUnchecked">GRADE</h3></div>
+                    <div style="width:60%;float:right;">
+                    <select id="GRD" name="GRD"  style="height: 50px;" class="form-control inputText">
+                        </select>
+                    </div>          -->
+              <!-- </div> -->
+              <div class="form-row">
+                <div class="col form-group">
+                  <h3>FROM BILL DATE</h3>
+                  <input type="date" class="form-control inputText" placeholder="SEARCH FROM DATE" value=""
+                    name="search_FromDate" id="search_FromDate">
+                </div>
+      
+                <div class="col form-group">
+                  <h3>TO BILL DATE</h3>
+                  <input type="date" class="form-control inputText" placeholder="SEARCH TO DATE" value="" name="search_ToDate"
+                    id="search_ToDate">
+                </div>
+              </div>
+      
+      
+              <div class="form-row">
+                <div class="col form-group">
+                  <h3>FROM REC BILL DATE </h3>
+                  <input type="date" class="form-control inputText" placeholder="SEARCH FROM DATE" value=""
+                    name="search_FromRecDate" id="search_FromRecDate">
+                </div>
+      
+                <div class="col form-group">
+                  <h3>TO REC BILL DATE </h3>
+                  <input type="date" class="form-control inputText" placeholder="SEARCH TO DATE" value="" name="search_ToRecDate"
+                    id="search_ToRecDate">
+                </div>
+              </div>
+      
+              <div class="form-group">
+                <input type="hidden" class="form-control " id="firm" name="firm" value="" placeholder="hidden party code">
+                <input type="hidden" class="form-control" id="partycode" name="partycode" placeholder="hidden party code">
+                <input type="hidden" class="form-control" id="ntab" name="ntab" value="NTAB" placeholder="hidden party code">
+              </div>
+      
+              <div class="form-group" id="">
+                <div style="width:50%;float:left;">
+                  <h3>SUMMARY REPORT</h3>
+                </div>
+                <div style="width:50%;float:right;">
+                  <input type="checkbox" class="form-control" name="hideAbleTr" id="hideAbleTr" value="true" />
+                </div>
+                <br><br>
+              </div>
+        </div>
+        
+
+        <div class="form-group">
+
+          <input type="submit" name="submit" id="submit" class="btn btn-primary btn-lg btn-block inputText"
+            value="SUBMIT" id="submit">
+        </div>
+      </div>
+    </div>
+
+    </form>
+  </div>
+  </div>
+  </div>
+
+</body>
+
+
+</html>
+
+<script>
+  $(document).ready(function () {
+    SelectFirmOptions("FIRM");
+    CheckBoxOption("productDet", "SL_productDet")
+  });
+  
+  function submitForm() {
+    
+  }
+  function recDateChange(){
+    var selectedValue=$('#recDateFilterCondition').val()
+    switch (selectedValue) {
+      case "Today's sales":
+        getTodaysDate();
+        break;
+      case "This week sale":
+        selectCurrentWeek();
+        break;
+        case "This month sale":
+        selectCurrentMonthDates();
+        break;
+        case "Last month sale":
+          getLastMonthDates();
+          break;
+      default:
+        break;
+    }
+  }
+  function getTodaysDate() {
+    var today = new Date();
+
+    var year = today.getFullYear();
+    var month = ("0" + (today.getMonth() + 1)).slice(-2); // Add leading zero to month if necessary
+    var day = ("0" + today.getDate()).slice(-2); // Add leading zero to day if necessary
+
+    var todaysDate = year + "-" + month + "-" + day;
+
+    document.getElementById("search_FromRecDate").value = todaysDate;
+    document.getElementById("search_ToRecDate").value = todaysDate;
+  }
+  function selectCurrentWeek() {
+    var today = new Date();
+    var currentDay = today.getDay(); // Get the current day of the week (0-6, where 0 is Sunday)
+    var firstDayOffset = currentDay > 0 ? currentDay - 1 : 6; // Calculate the number of days to subtract to reach the first day of the week (Monday)
+    var firstDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() - firstDayOffset);
+    var lastDay = new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() + 6);
+
+    var firstDayFormatted = formatDate(firstDay);
+    var lastDayFormatted = formatDate(lastDay);
+    try {
+      document.getElementById("search_FromRecDate").value = firstDayFormatted;
+      document.getElementById("search_ToRecDate").value = lastDayFormatted;
+      clearBillDate();
+    } catch (error) {        
+      }
+  }
+
+  function selectCurrentMonthDates() {
+    var today = new Date();
+    var year = today.getFullYear();
+    var month = today.getMonth();
+    var firstDay = new Date(year, month, 1);
+    var lastDay = new Date(year, month + 1, 0);
+
+    var firstDayFormatted = formatDate(firstDay);
+    var lastDayFormatted = formatDate(lastDay);
+    try {
+      document.getElementById("search_FromRecDate").value = firstDayFormatted;
+      document.getElementById("search_ToRecDate").value = lastDayFormatted;
+      clearBillDate();
+      } catch (error) {        
+      }
+  }
+  function getLastMonthDates() {
+    var today = new Date();
+
+    // Get the current month and year
+    var currentMonth = today.getMonth();
+    var currentYear = today.getFullYear();
+
+    // Subtract 1 from the current month to get the previous month
+    var previousMonth = currentMonth - 1;
+
+    // If the previous month is January, adjust the year accordingly
+    if (previousMonth < 0) {
+      previousMonth = 11; // December
+      currentYear--; // Decrement the year
+    }
+
+    // Create new date objects for the first and last day of the previous month
+    var firstDay = new Date(currentYear, previousMonth, 1);
+    var lastDay = new Date(currentYear, previousMonth + 1, 0);
+
+    // Format the dates as strings in the desired format
+    var firstDayFormatted = formatDate(firstDay);
+    var lastDayFormatted = formatDate(lastDay);
+    try {
+      document.getElementById("search_FromRecDate").value = firstDayFormatted;
+      document.getElementById("search_ToRecDate").value = lastDayFormatted;
+      clearBillDate();
+      } catch (error) {        
+      }
+  }
+
+
+ function clearBillDate(){
+  document.getElementById("search_FromDate").value = "";
+  document.getElementById("search_ToDate").value = "";
+  showtoast("Now press submit button to get report");
+  }
+  function formatDate(date) {
+    var year = date.getFullYear();
+    var month = ("0" + (date.getMonth() + 1)).slice(-2); // Add leading zero to month if necessary
+    var day = ("0" + date.getDate()).slice(-2); // Add leading zero to day if necessary
+    return year + "-" + month + "-" + day;
+  }
+  
+</script>
